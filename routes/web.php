@@ -1,7 +1,7 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
-use Illuminate\Foundation\Application;
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\RegisteredUserController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -10,29 +10,35 @@ use Inertia\Inertia;
 | Web Routes
 |--------------------------------------------------------------------------
 |
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
 */
 
+// Ruta para la página principal de bienvenida
 Route::get('/', function () {
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
     ]);
 });
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+// Ruta para mostrar el formulario de login
+Route::get('/login', [LoginController::class, 'create'])->name('login');
+Route::post('/login', [LoginController::class, 'store'])->name('login.authenticate');
 
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+// Ruta para mostrar el formulario de registro
+Route::get('/register', [RegisteredUserController::class, 'create'])->name('register');
+
+// Ruta para manejar el registro de un cliente
+Route::post('/register', [RegisteredUserController::class, 'store'])->name('register.store');
+
+// Rutas protegidas para los dashboards (auth middleware)
+Route::middleware(['auth'])->group(function () {
+    // Ruta para el dashboard del administrador
+    Route::get('/admin/dashboard', function () {
+        return Inertia::render('AdminDashboard');
+    })->name('admin.dashboard');
+
+    // Ruta para el dashboard del cliente
+    Route::get('/dashboard', function () {
+        return Inertia::render('Dashboard');
+    })->name('dashboard');
 });
-
-require __DIR__.'/auth.php';
