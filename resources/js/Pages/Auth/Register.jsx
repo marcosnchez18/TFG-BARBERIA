@@ -1,117 +1,93 @@
-import { useEffect } from 'react';
-import GuestLayout from '@/Layouts/GuestLayout';
-import InputError from '@/Components/InputError';
-import InputLabel from '@/Components/InputLabel';
-import PrimaryButton from '@/Components/PrimaryButton';
-import TextInput from '@/Components/TextInput';
-import { Head, Link, useForm } from '@inertiajs/react';
+import React from 'react';
+import { useForm } from '@inertiajs/react';
 
 export default function Register() {
-    const { data, setData, post, processing, errors, reset } = useForm({
-        name: '',
+    const { data, setData, post, errors } = useForm({
+        nombre: '',  // Cambia de name a nombre
         email: '',
         password: '',
         password_confirmation: '',
+        numero_tarjeta_vip: '', // Campo para el número de tarjeta del cliente que refiere
     });
-
-    useEffect(() => {
-        return () => {
-            reset('password', 'password_confirmation');
-        };
-    }, []);
 
     const submit = (e) => {
         e.preventDefault();
-
-        post(route('register'));
+        post(route('register.store'));
     };
 
     return (
-        <GuestLayout>
-            <Head title="Register" />
+        <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+            <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+                <h2 className="text-4xl text-center font-bold text-gray-800 mb-6">
+                    Regístrate en Barbería
+                </h2>
+                <form onSubmit={submit} className="space-y-6">
+                    <div>
+                        <label className="block text-sm font-bold text-gray-600">Nombre</label>
+                        <input
+                            type="text"
+                            className="w-full px-4 py-2 mt-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:border-blue-500"
+                            value={data.nombre}
+                            onChange={(e) => setData('nombre', e.target.value)} // Cambia de setData('name') a setData('nombre')
+                        />
+                        {errors.nombre && <div className="text-red-600 text-sm mt-1">{errors.nombre}</div>}
+                    </div>
 
-            <form onSubmit={submit}>
-                <div>
-                    <InputLabel htmlFor="name" value="Name" />
+                    <div>
+                        <label className="block text-sm font-bold text-gray-600">Correo electrónico</label>
+                        <input
+                            type="email"
+                            className="w-full px-4 py-2 mt-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:border-blue-500"
+                            value={data.email}
+                            onChange={(e) => setData('email', e.target.value)}
+                        />
+                        {errors.email && <div className="text-red-600 text-sm mt-1">{errors.email}</div>}
+                    </div>
 
-                    <TextInput
-                        id="name"
-                        name="name"
-                        value={data.name}
-                        className="mt-1 block w-full"
-                        autoComplete="name"
-                        isFocused={true}
-                        onChange={(e) => setData('name', e.target.value)}
-                        required
-                    />
+                    <div>
+                        <label className="block text-sm font-bold text-gray-600">Contraseña</label>
+                        <input
+                            type="password"
+                            className="w-full px-4 py-2 mt-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:border-blue-500"
+                            value={data.password}
+                            onChange={(e) => setData('password', e.target.value)}
+                        />
+                        {errors.password && <div className="text-red-600 text-sm mt-1">{errors.password}</div>}
+                    </div>
 
-                    <InputError message={errors.name} className="mt-2" />
-                </div>
+                    <div>
+                        <label className="block text-sm font-bold text-gray-600">Confirmar Contraseña</label>
+                        <input
+                            type="password"
+                            className="w-full px-4 py-2 mt-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:border-blue-500"
+                            value={data.password_confirmation}
+                            onChange={(e) => setData('password_confirmation', e.target.value)}
+                        />
+                        {errors.password_confirmation && (
+                            <div className="text-red-600 text-sm mt-1">{errors.password_confirmation}</div>
+                        )}
+                    </div>
 
-                <div className="mt-4">
-                    <InputLabel htmlFor="email" value="Email" />
+                    {/* Campo opcional para el número de tarjeta VIP */}
+                    <div>
+                        <label className="block text-sm font-bold text-gray-600">Número de tarjeta VIP (opcional)</label>
+                        <input
+                            type="text"
+                            className="w-full px-4 py-2 mt-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:border-blue-500"
+                            value={data.numero_tarjeta_vip}
+                            onChange={(e) => setData('numero_tarjeta_vip', e.target.value)}
+                        />
+                        {errors.numero_tarjeta_vip && <div className="text-red-600 text-sm mt-1">{errors.numero_tarjeta_vip}</div>}
+                    </div>
 
-                    <TextInput
-                        id="email"
-                        type="email"
-                        name="email"
-                        value={data.email}
-                        className="mt-1 block w-full"
-                        autoComplete="username"
-                        onChange={(e) => setData('email', e.target.value)}
-                        required
-                    />
-
-                    <InputError message={errors.email} className="mt-2" />
-                </div>
-
-                <div className="mt-4">
-                    <InputLabel htmlFor="password" value="Password" />
-
-                    <TextInput
-                        id="password"
-                        type="password"
-                        name="password"
-                        value={data.password}
-                        className="mt-1 block w-full"
-                        autoComplete="new-password"
-                        onChange={(e) => setData('password', e.target.value)}
-                        required
-                    />
-
-                    <InputError message={errors.password} className="mt-2" />
-                </div>
-
-                <div className="mt-4">
-                    <InputLabel htmlFor="password_confirmation" value="Confirm Password" />
-
-                    <TextInput
-                        id="password_confirmation"
-                        type="password"
-                        name="password_confirmation"
-                        value={data.password_confirmation}
-                        className="mt-1 block w-full"
-                        autoComplete="new-password"
-                        onChange={(e) => setData('password_confirmation', e.target.value)}
-                        required
-                    />
-
-                    <InputError message={errors.password_confirmation} className="mt-2" />
-                </div>
-
-                <div className="flex items-center justify-end mt-4">
-                    <Link
-                        href={route('login')}
-                        className="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                    <button
+                        type="submit"
+                        className="w-full bg-gray-800 text-white font-bold py-2 px-4 rounded-md hover:bg-gray-700 transition duration-300"
                     >
-                        Already registered?
-                    </Link>
-
-                    <PrimaryButton className="ms-4" disabled={processing}>
-                        Register
-                    </PrimaryButton>
-                </div>
-            </form>
-        </GuestLayout>
+                        Registrarse
+                    </button>
+                </form>
+            </div>
+        </div>
     );
 }

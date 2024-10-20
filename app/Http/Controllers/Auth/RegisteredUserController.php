@@ -32,16 +32,34 @@ class RegisteredUserController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
+            'nombre' => 'required|string|max:255', // Cambiamos 'name' a 'nombre'
+            'email' => 'required|string|email|max:255|unique:users',
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'numero_tarjeta_vip' => 'nullable|string|exists:users,numero_tarjeta_vip',
         ]);
 
+        // Crear el nuevo usuario (cliente)
         $user = User::create([
-            'name' => $request->name,
+            'nombre' => $request->nombre, // Guardamos en la columna 'nombre'
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'rol' => 'cliente',
+            'saldo' => 0,
         ]);
+
+        // Si fue referido por otro cliente (tarjeta VIP), actualizamos el saldo
+        if ($request->filled('numero_tarjeta_vip')) {
+            $referente = User::where('numero_tarjeta_vip', $request->numero_tarjeta_vip)->first();
+
+            if ($referente) {
+                $user->saldo += 2;
+                $user->referido_por = $referente->numero_tarjeta_vip;
+                $user->save();
+
+                $referente->saldo += 2;
+                $referente->save();
+            }
+        }
 
         event(new Registered($user));
 
