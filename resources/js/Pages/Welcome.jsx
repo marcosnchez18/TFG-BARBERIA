@@ -7,6 +7,9 @@ import SobreNosotros from '@/Components/Sobrenosotros';
 import Servicios from '@/Components/Servicios';
 import Infobarber from '@/Components/Infobarber';
 import LogosServicios from '@/Components/Logosservicios';
+import FinHome from '@/Components/Cortespelo';
+import Localizacion from '@/Components/Localizacion';
+import WhatsAppButton from '@/Components/Wasa'; // Componente del botón flotante de WhatsApp
 
 export default function Welcome() {
     return (
@@ -16,19 +19,20 @@ export default function Welcome() {
 
             {/* Sección de bienvenida */}
             <Header />
+            <Triangulo />
+            <Infobarber />
+            <LogosServicios />
+            <br /><br /><br /><br />
+            <Servicios />
+            <FinHome />
+            <Localizacion />
+            <SobreNosotros />
 
-            <Triangulo/>
-
-            <Infobarber/>
-
-            <LogosServicios/>
-
-            <Servicios/>
-
-
-            <SobreNosotros/>
-
+            {/* Footer */}
             <Footer />
+
+            {/* Botón flotante de WhatsApp */}
+            <WhatsAppButton />
         </div>
     );
 }

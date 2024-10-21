@@ -3,7 +3,7 @@ import '../../css/Barber.css';  // Importamos Barber.css para aplicar los estilo
 
 export default function Footer() {
     return (
-        <footer>
+        <footer className="footer-container">
             <div className="container mx-auto text-center">
                 <p>© 2024 Barbería. Todos los derechos reservados.</p>
                 <div className="mt-4 flex justify-center">

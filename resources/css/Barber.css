@@ -268,3 +268,275 @@ footer p {
         font-size: 0.9rem;
     }
 }
+
+/* Estilo para los precios en color ocre */
+.ocre-text {
+    color: #795e05; /* Color ocre */
+    font-weight: bold; /* Opcional: puedes hacer el texto más grueso si lo prefieres */
+
+}
+
+/* Estilo para el fondo marrón oscuro casi negro */
+.bg-dark-brown {
+    background-color: #171717; /* Marrón oscuro casi negro */
+    color: #171717; /* Para asegurarnos de que el texto sea legible */
+}
+
+/* Aplicar Times New Roman a todo el cuerpo del componente */
+body, h1, h2, h3,h4, p {
+    font-family: 'Times New Roman', Times, serif;
+}
+
+.texto-blanco {
+    color: white;
+}
+
+/* Fondo marrón oscuro casi negro */
+.bg-dark-brown {
+    background-color: #171717;
+}
+
+/* Color ocre para los precios */
+.ocre-text {
+    color: #cfa15d;
+}
+
+/* Animación para ampliar el servicio cuando se pasa el cursor */
+.servicio-container {
+    transition: transform 0.3s ease-in-out;
+    transform: scale(1);
+}
+
+.servicio-container:hover {
+    transform: scale(1.05); /* Aumenta un 5% al pasar el cursor */
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); /* Añade sombra para resaltar */
+}
+
+/* Estilo de la sección fin_home */
+.fin_home {
+    background-color: #171717;
+    color: #FFFFFF;
+    padding: 50px;
+    text-align: center;
+}
+
+/* Estilo de las imágenes */
+img.fotos_fades {
+    width: 410px;
+    height: 487px;
+    margin-right: 4%;
+}
+
+/* Estilo para los textos y botones */
+.precios {
+    font-size: 36px;
+    margin-top: 40px;
+    font-family: 'Times New Roman', serif;
+}
+
+.reser {
+    font-size: 30px;
+    font-family: 'Times New Roman', serif;
+    margin-top: 10px;
+}
+
+.reser_desc {
+    font-size: 18px;
+    font-family: 'Times New Roman', serif;
+    margin-top: 10px;
+}
+
+.boton_lugar {
+    background-color: #CFA15D;
+    color: #1E1E1E;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    font-family: 'Times New Roman', serif;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+.boton_lugar:hover {
+    background-color: #A87B43;
+}
+
+/* Estilo de la sección fin_home */
+.fin_home {
+    background-color: #171717;
+    color: #FFFFFF;
+    padding: 50px;
+    text-align: center;
+}
+
+/* Contenedor general para las imágenes */
+.imagenes-contenedor {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Estilo de cada fila de imágenes */
+.fila {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 30px;
+}
+
+/* Estilo para la fila centrada */
+.fila-centro {
+    display: flex;
+    justify-content: center;
+    margin-top: 40px;
+}
+
+/* Estilo de las imágenes */
+img.fotos_fades {
+    width: 300px;
+    height: 400px;
+    margin-right: 20px;
+    transition: transform 0.3s ease; /* Transición suave */
+}
+
+/* La última imagen más grande */
+img.fotos_fades.grande {
+    width: 350px;
+    height: 450px;
+}
+
+/* Efecto de zoom al pasar el cursor por encima de la imagen */
+img.fotos_fades:hover {
+    transform: scale(1.1); /* Agranda la imagen un 10% */
+}
+
+/* Estilo para los textos y botones */
+.precios {
+    font-size: 36px;
+    margin-top: 40px;
+    font-family: 'Times New Roman', serif;
+}
+
+.reser {
+    font-size: 30px;
+    font-family: 'Times New Roman', serif;
+    margin-top: 10px;
+}
+
+.reser_desc {
+    font-size: 18px;
+    font-family: 'Times New Roman', serif;
+    margin-top: 10px;
+}
+
+.boton_lugar {
+    background-color: #CFA15D;
+    color: #1E1E1E;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    font-family: 'Times New Roman', serif;
+    cursor: pointer;
+    margin-top: 20px;
+    font-weight: 600;
+}
+
+.boton_lugar:hover {
+    background-color: #A87B43;
+}
+
+.maps-fullscreen {
+    width: 100vw; /* Ocupa el 100% del ancho de la pantalla */
+    height: 100vh; /* Ocupa el 100% de la altura de la pantalla */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative; /* Asegura que el contenedor esté posicionado correctamente */
+    margin: 0;
+    padding: 0;
+}
+
+iframe {
+    width: 100%; /* Asegura que el iframe ocupe todo el ancho del contenedor */
+    height: 100%; /* Asegura que el iframe ocupe toda la altura del contenedor */
+    border: none; /* Elimina los bordes */
+}
+
+
+.fin_home {
+    background-color: #1E1E1E;
+    color: #FFFFFF;
+    padding: 50px;
+    text-align: center;
+}
+
+.logo_fin {
+    width: 150px; /* Ajusta el tamaño del logo según lo que necesites */
+    margin-bottom: 20px;
+}
+
+.dir {
+    font-size: 18px;
+    line-height: 1.6;
+}
+
+hr {
+    border: 1px solid #FFFFFF;
+    width: 80%;
+    margin: 0 auto;
+}
+
+.rrss {
+    width: 100px; /* Ajusta el tamaño del logo de redes sociales */
+    margin-top: 20px;
+}
+
+.fin-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+img.logo_fin {
+    height: 200px;
+    width: 200px;
+    align-content: center;
+}
+
+
+/* Footer Container */
+.footer-container {
+    background-color: #1E1E1E; /* Marrón oscuro casi negro */
+    padding: 20px 0;
+    color: #FFFFFF;
+    text-align: center;
+    font-family: 'Times New Roman', serif;
+}
+
+.footer-container p {
+    margin-bottom: 10px;
+    font-size: 18px;
+}
+
+.licencia {
+    width: 88px;
+    height: auto;
+    margin-top: 10px;
+}
+
+
+
+.whatsapp-button {
+    z-index: 1000; /* Para asegurar que se mantenga por encima de otros elementos */
+}
+
+.whatsapp-button img {
+    margin-right: 8px;
+}
+
+.whatsapp-button:hover {
+    background-color: #128C7E; /* Color más oscuro al pasar el mouse */
+}
+
