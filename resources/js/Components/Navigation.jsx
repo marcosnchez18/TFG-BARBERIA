@@ -19,11 +19,11 @@ export default function Navigation() {
                 {/* Menú de navegación */}
                 <div className="bg-neutral-800 p-4 md:p-10 rounded-lg shadow-md font-serif w-full md:w-auto mt-4 md:mt-0">
                     <ul className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
-                    <li>
-    <Link href={route('sobre-nosotros')} className="text-xl md:text-3xl text-white hover:text-gray-400">
-        Sobre Nosotros
-    </Link>
-</li>
+                        <li>
+                            <Link href={route('sobre-nosotros')} className="text-xl md:text-3xl text-white hover:text-gray-400">
+                                Sobre Nosotros
+                            </Link>
+                        </li>
 
                         <li>
                             <a href="#services" className="text-xl md:text-3xl text-white hover:text-gray-400">Servicios</a>

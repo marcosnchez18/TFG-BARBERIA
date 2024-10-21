@@ -540,3 +540,108 @@ img.logo_fin {
     background-color: #128C7E; /* Color más oscuro al pasar el mouse */
 }
 
+
+
+
+
+
+
+.historia-barber-container {
+    background-color: #f5f5f5;
+    padding: 4rem 0;
+    margin: 3%; /* Margen uniforme en todo */
+}
+
+/* Estilo para los bloques de información */
+.info-peluqueria, .info-historia {
+    background-color: #e9decb;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 12px 18px rgba(0, 0, 0, 0.1);
+    font-family: 'Times New Roman', serif;
+    margin: 2rem; /* Añadido margen a los bloques de texto */
+}
+
+/* Título principal de cada bloque */
+.titulo-principal {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+/* Descripción de texto */
+.texto-descripcion {
+    font-size: 1.125rem;
+    line-height: 1.8;
+
+}
+
+/* Estilo de las imágenes normales */
+.imagen-container {
+    margin: 2rem;
+}
+
+.img-normal {
+    width: 80%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease-in-out;
+}
+
+/* Efecto hover para agrandar la imagen */
+.img-normal:hover {
+    transform: scale(1.05);
+}
+
+/* Ajuste responsive */
+@media (max-width: 768px) {
+    .historia-barber-container {
+        padding: 2rem 0;
+        margin: 1rem; /* Margen más pequeño en móviles */
+    }
+
+    .imagen-container {
+        margin: 1rem;
+    }
+}
+
+
+
+
+
+
+
+
+/* Estilo de la sección con el fondo */
+.cabildo {
+    background-image: url('/images/sanlucar.png'); /* Cambia a la ruta correcta de la imagen */
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    padding: 100px 0; /* Asegura espacio interno para el vídeo */
+    height: 100vh; /* La sección ocupa toda la altura de la pantalla */
+}
+
+/* Estilo del vídeo */
+.local {
+    width: 398px;
+    height: 708px;
+    position: relative;
+    z-index: 1;
+    margin-top: 30px;
+    margin-left: 750px;
+    border-radius: 12px; /* Borde redondeado opcional */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Sombra para el vídeo */
+}
+
+/* Ajuste responsive para pantallas más pequeñas */
+@media (max-width: 768px) {
+    .local {
+        width: 90%;
+        height: auto;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: 50px;
+    }
+}

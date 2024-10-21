@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from '@inertiajs/react';
 import { Link } from '@inertiajs/react';
-import Navigation from '../../Components/Navigation'; // Asegúrate de que la ruta sea correcta
+import Navigation from '../../Components/Navigation';
 import Localizacion from '../../Components/Localizacion';
 import WhatsAppButton from '../../Components/Wasa'; // Componente del botón flotante de WhatsApp
 import SobreNosotros from '../../Components/Sobrenosotros';
-import Footer from '../../Components/Footer'; // Asegúrate de que la ruta sea correcta
+import Footer from '../../Components/Footer';
 
 export default function Login() {
     const { data, setData, post, errors } = useForm({
@@ -13,9 +13,38 @@ export default function Login() {
         password: '',
     });
 
+    // Estado para errores del lado del cliente
+    const [clientErrors, setClientErrors] = useState({});
+
+    // Función de validación del lado del cliente
+    const validateClient = () => {
+        const newErrors = {};
+
+        // Validar el correo electrónico
+        if (!data.email) {
+            newErrors.email = 'El correo electrónico es obligatorio.';
+        } else if (!/\S+@\S+\.\S+/.test(data.email)) {
+            newErrors.email = 'Introduce un correo electrónico válido.';
+        }
+
+        // Validar la contraseña
+        if (!data.password) {
+            newErrors.password = 'La contraseña es obligatoria.';
+        } else if (data.password.length < 4) {
+            newErrors.password = 'La contraseña debe tener al menos 4 caracteres.';
+        }
+
+        setClientErrors(newErrors);
+        return Object.keys(newErrors).length === 0; // Si no hay errores, devuelve true
+    };
+
     const submit = (e) => {
         e.preventDefault();
-        post(route('login.authenticate'));
+
+        // Verificamos las validaciones del lado del cliente
+        if (validateClient()) {
+            post(route('login.authenticate')); // Enviar el formulario si las validaciones pasan
+        }
     };
 
     return (
@@ -41,6 +70,7 @@ export default function Login() {
                             value={data.email}
                             onChange={(e) => setData('email', e.target.value)}
                         />
+                        {clientErrors.email && <div className="text-red-600 text-sm mt-1">{clientErrors.email}</div>}
                         {errors.email && <div className="text-red-600 text-sm mt-1">{errors.email}</div>}
                     </div>
 
@@ -52,6 +82,7 @@ export default function Login() {
                             value={data.password}
                             onChange={(e) => setData('password', e.target.value)}
                         />
+                        {clientErrors.password && <div className="text-red-600 text-sm mt-1">{clientErrors.password}</div>}
                         {errors.password && <div className="text-red-600 text-sm mt-1">{errors.password}</div>}
                     </div>
 

@@ -1,24 +1,63 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from '@inertiajs/react';
 import { Link } from '@inertiajs/react';
-import Navigation from '../../Components/Navigation'; // Asegúrate de que la ruta sea correcta
+import Navigation from '../../Components/Navigation';
 import Localizacion from '../../Components/Localizacion';
-import WhatsAppButton from '../../Components/Wasa'; // Componente del botón flotante de WhatsApp
+import WhatsAppButton from '../../Components/Wasa';
 import SobreNosotros from '../../Components/Sobrenosotros';
-import Footer from '../../Components/Footer'; // Asegúrate de que la ruta sea correcta
+import Footer from '../../Components/Footer';
 
 export default function Register() {
     const { data, setData, post, errors } = useForm({
-        nombre: '',  // Cambiado de "name" a "nombre"
+        nombre: '',
         email: '',
         password: '',
         password_confirmation: '',
-        numero_tarjeta_vip: '', // Campo para el número de tarjeta del cliente que refiere
+        numero_tarjeta_vip: '', 
     });
+
+    // Estado para errores del lado del cliente
+    const [clientErrors, setClientErrors] = useState({});
+
+    // Función de validación del lado del cliente
+    const validateClient = () => {
+        const newErrors = {};
+
+        // Validar el nombre
+        if (!data.nombre) {
+            newErrors.nombre = 'El nombre es obligatorio.';
+        }
+
+        // Validar el correo electrónico
+        if (!data.email) {
+            newErrors.email = 'El correo electrónico es obligatorio.';
+        } else if (!/\S+@\S+\.\S+/.test(data.email)) {
+            newErrors.email = 'Introduce un correo electrónico válido.';
+        }
+
+        // Validar la contraseña
+        if (!data.password) {
+            newErrors.password = 'La contraseña es obligatoria.';
+        } else if (data.password.length < 6) {
+            newErrors.password = 'La contraseña debe tener al menos 6 caracteres.';
+        }
+
+        // Validar la confirmación de la contraseña
+        if (data.password !== data.password_confirmation) {
+            newErrors.password_confirmation = 'Las contraseñas no coinciden.';
+        }
+
+        setClientErrors(newErrors);
+        return Object.keys(newErrors).length === 0; // Si no hay errores, devuelve true
+    };
 
     const submit = (e) => {
         e.preventDefault();
-        post(route('register.store'));
+
+        // Verificamos las validaciones del lado del cliente
+        if (validateClient()) {
+            post(route('register.store')); // Enviar el formulario si las validaciones pasan
+        }
     };
 
     return (
@@ -44,6 +83,7 @@ export default function Register() {
                             value={data.nombre}
                             onChange={(e) => setData('nombre', e.target.value)}
                         />
+                        {clientErrors.nombre && <div className="text-red-600 text-sm mt-1">{clientErrors.nombre}</div>}
                         {errors.nombre && <div className="text-red-600 text-sm mt-1">{errors.nombre}</div>}
                     </div>
 
@@ -55,6 +95,7 @@ export default function Register() {
                             value={data.email}
                             onChange={(e) => setData('email', e.target.value)}
                         />
+                        {clientErrors.email && <div className="text-red-600 text-sm mt-1">{clientErrors.email}</div>}
                         {errors.email && <div className="text-red-600 text-sm mt-1">{errors.email}</div>}
                     </div>
 
@@ -66,6 +107,7 @@ export default function Register() {
                             value={data.password}
                             onChange={(e) => setData('password', e.target.value)}
                         />
+                        {clientErrors.password && <div className="text-red-600 text-sm mt-1">{clientErrors.password}</div>}
                         {errors.password && <div className="text-red-600 text-sm mt-1">{errors.password}</div>}
                     </div>
 
@@ -77,6 +119,7 @@ export default function Register() {
                             value={data.password_confirmation}
                             onChange={(e) => setData('password_confirmation', e.target.value)}
                         />
+                        {clientErrors.password_confirmation && <div className="text-red-600 text-sm mt-1">{clientErrors.password_confirmation}</div>}
                         {errors.password_confirmation && (
                             <div className="text-red-600 text-sm mt-1">{errors.password_confirmation}</div>
                         )}
@@ -91,6 +134,7 @@ export default function Register() {
                             value={data.numero_tarjeta_vip}
                             onChange={(e) => setData('numero_tarjeta_vip', e.target.value)}
                         />
+                        {clientErrors.numero_tarjeta_vip && <div className="text-red-600 text-sm mt-1">{clientErrors.numero_tarjeta_vip}</div>}
                         {errors.numero_tarjeta_vip && <div className="text-red-600 text-sm mt-1">{errors.numero_tarjeta_vip}</div>}
                     </div>
 

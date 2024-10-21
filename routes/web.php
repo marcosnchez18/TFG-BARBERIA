@@ -30,11 +30,10 @@ Route::get('/register', [RegisteredUserController::class, 'create'])->name('regi
 // Ruta para manejar el registro de un cliente
 Route::post('/register', [RegisteredUserController::class, 'store'])->name('register.store');
 
-// Ruta para la página "Sobre Nosotros"
+// Ruta para la página de Sobre Nosotros
 Route::get('/sobre-nosotros', function () {
     return Inertia::render('PaginaSobreNos'); // Renderiza el componente PaginaSobreNos
 })->name('sobre-nosotros');
-
 
 // Rutas protegidas para los dashboards (auth middleware)
 Route::middleware(['auth'])->group(function () {
@@ -48,4 +47,3 @@ Route::middleware(['auth'])->group(function () {
         return Inertia::render('Dashboard');
     })->name('dashboard');
 });
-
