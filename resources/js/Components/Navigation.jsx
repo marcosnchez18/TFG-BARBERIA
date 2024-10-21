@@ -11,17 +11,20 @@ export default function Navigation() {
                         <img
                             src="/images/logo.png"
                             alt="Logo Barbería"
-                            className="w-30 h-30 md:w-40 md:h-30" // Ajuste de tamaño responsive
+                            className="w-30 h-30 md:w-40 md:h-30"
                         />
                     </Link>
                 </div>
 
-                {/* Menú de navegación en un rectángulo con fuente Times New Roman */}
-                <div className="bg-neutral-800 p-4 md:p-10 rounded-lg shadow-md font-serif w-full md:w-auto mt-4 md:mt-0" style={{ fontFamily: 'Times New Roman, serif' }}>
+                {/* Menú de navegación */}
+                <div className="bg-neutral-800 p-4 md:p-10 rounded-lg shadow-md font-serif w-full md:w-auto mt-4 md:mt-0">
                     <ul className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
-                        <li>
-                            <a href="#home" className="text-xl md:text-3xl text-white hover:text-gray-400">Sobre Nosotros</a>
-                        </li>
+                    <li>
+    <Link href={route('sobre-nosotros')} className="text-xl md:text-3xl text-white hover:text-gray-400">
+        Sobre Nosotros
+    </Link>
+</li>
+
                         <li>
                             <a href="#services" className="text-xl md:text-3xl text-white hover:text-gray-400">Servicios</a>
                         </li>
@@ -32,7 +35,7 @@ export default function Navigation() {
                 </div>
 
                 {/* Botones de Iniciar sesión y Registrarse */}
-                <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 space-x-0 md:space-x-4 font-serif mt-4 md:mt-0" style={{ fontFamily: 'Times New Roman, serif' }}>
+                <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 space-x-0 md:space-x-4 font-serif mt-4 md:mt-0">
                     <Link href="/login" className="text-lg md:text-xl text-white hover:text-gray-400">
                         Iniciar sesión
                     </Link>

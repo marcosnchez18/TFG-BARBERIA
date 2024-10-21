@@ -21,7 +21,7 @@ export default function Finpaginas() {
                     <a href="https://www.facebook.com/marcosnchez18" target="_blank" rel="noopener noreferrer">
                         <img src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg" alt="Facebook" className="w-8 h-8" />
                     </a>
-                    
+
                 </div>
             </div>
             <br /><br /><br /><br />

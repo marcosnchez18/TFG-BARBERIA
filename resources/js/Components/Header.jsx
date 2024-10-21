@@ -7,7 +7,7 @@ export default function Header() {
         <header id="home" className="header-container" style={{ backgroundImage: "url('/images/fondo.png')" }}>
             <div className="header-overlay">
                 <h1 className="rozha_titulo">ESTILO, TÉCNICA <br />E <br />INNOVACIÓN</h1>
-                <Link href="/login" className="header-button"><br />
+                <Link href="/login" className="boton_lugar">
                     Reservar Cita
                 </Link>
 
