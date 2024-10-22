@@ -18,7 +18,7 @@ Route::get('/', function () {
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
     ]);
-});
+})->name('home');
 
 // Ruta para mostrar el formulario de login
 Route::get('/login', [LoginController::class, 'create'])->name('login');
@@ -26,59 +26,49 @@ Route::post('/login', [LoginController::class, 'store'])->name('login.authentica
 
 // Ruta para mostrar el formulario de registro
 Route::get('/register', [RegisteredUserController::class, 'create'])->name('register');
-
-// Ruta para manejar el registro de un cliente
 Route::post('/register', [RegisteredUserController::class, 'store'])->name('register.store');
 
-// Ruta para la página de Sobre Nosotros
+// Rutas protegidas para los dashboards
+Route::middleware(['auth'])->group(function () {
+    Route::get('/mi-cuenta', function () {
+        // Verificar el rol del usuario y redirigir
+        if (auth()->user()->rol === 'admin') {  // Usar 'rol'
+            return redirect()->route('mi-gestion-admin'); // Si es admin, redirigir al dashboard del admin
+        }
+        return Inertia::render('Dashboard'); // Renderiza el dashboard del cliente
+    })->name('mi-cuenta');
+
+    // Ruta para el dashboard del admin
+    Route::get('/mi-gestion-admin', function () {
+        return Inertia::render('AdminDashboard');
+    })->name('mi-gestion-admin');
+});
+
+// Otras rutas adicionales
 Route::get('/sobre-nosotros', function () {
-    return Inertia::render('PaginaSobreNos'); // Renderiza el componente PaginaSobreNos
+    return Inertia::render('PaginaSobreNos');
 })->name('sobre-nosotros');
 
-// Ruta para la página principal de bienvenida
-Route::get('/home', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-    ]);
-})->name('home');
-
-// Ruta para la página de servicios
 Route::get('/servicios', function () {
     return Inertia::render('Servi');
 })->name('servicios');
 
-// Ruta para la página de contacto
 Route::get('/contacto', function () {
     return Inertia::render('Contacto');
 })->name('contacto');
 
-// Ruta para la página de equipo
 Route::get('/equipo', function () {
     return Inertia::render('Equipo');
 })->name('equipo');
 
-
-// Ruta para la página de Daniel
+// Páginas de Daniel y José
 Route::get('/daniel', function () {
     return Inertia::render('Daniel');
 })->name('daniel');
 
-// Ruta para la página de José
 Route::get('/jose', function () {
     return Inertia::render('Jose');
 })->name('jose');
 
-
-// Rutas protegidas para los dashboards (auth middleware)
-Route::middleware(['auth'])->group(function () {
-    // Ruta para el dashboard del administrador
-    Route::get('/admin/dashboard', function () {
-        return Inertia::render('AdminDashboard');
-    })->name('admin.dashboard');
-
-    // Ruta para el dashboard del cliente
-    Route::get('/dashboard', function () {
-        return Inertia::render('Dashboard');
-    })->name('dashboard');
-});
+// Ruta para cerrar sesión
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout');

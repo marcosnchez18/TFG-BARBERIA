@@ -7,7 +7,7 @@ import Infobarber from '@/Components/Infobarber';
 import LogosServicios from '@/Components/Logosservicios';
 import FinHome from '@/Components/Cortespelo';
 import Localizacion from '@/Components/Localizacion';
-import WhatsAppButton from '@/Components/Wasa'; 
+import WhatsAppButton from '@/Components/Wasa';
 import SobreNosotros from '@/Components/Sobrenosotros';
 import Footer from '../Components/Footer';
 
