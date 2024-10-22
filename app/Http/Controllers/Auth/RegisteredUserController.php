@@ -10,9 +10,11 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rules;
 use Inertia\Inertia;
 use Inertia\Response;
+use App\Mail\WelcomeMail;
 
 class RegisteredUserController extends Controller
 {
@@ -32,7 +34,7 @@ class RegisteredUserController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
-            'nombre' => 'required|string|max:255', // Cambiamos 'name' a 'nombre'
+            'nombre' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'numero_tarjeta_vip' => 'nullable|string|exists:users,numero_tarjeta_vip',
@@ -40,10 +42,10 @@ class RegisteredUserController extends Controller
 
         // Crear el nuevo usuario (cliente)
         $user = User::create([
-            'nombre' => $request->nombre, // Guardamos en la columna 'nombre'
+            'nombre' => $request->nombre,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'rol' => 'cliente',
+            'rol' => 'cliente',  // O 'admin' si es un administrador
             'saldo' => 0,
         ]);
 
@@ -61,10 +63,19 @@ class RegisteredUserController extends Controller
             }
         }
 
+        // Enviar correo de bienvenida
+        Mail::to($user->email)->send(new WelcomeMail($user));
+
         event(new Registered($user));
 
+        // Autenticar automáticamente al usuario
         Auth::login($user);
 
-        return redirect(RouteServiceProvider::HOME);
+        // Redirigir según el rol del usuario
+        if ($user->rol === 'admin') {
+            return redirect()->route('mi-gestion-admin');  // Si es admin, redirigir a /mi-gestion-admin
+        }
+
+        return redirect()->route('mi-cuenta'); // Si es cliente, redirigir a /mi-cuenta
     }
 }

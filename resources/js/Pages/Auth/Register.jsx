@@ -13,7 +13,7 @@ export default function Register() {
         email: '',
         password: '',
         password_confirmation: '',
-        numero_tarjeta_vip: '', 
+        numero_tarjeta_vip: '',
     });
 
     // Estado para errores del lado del cliente

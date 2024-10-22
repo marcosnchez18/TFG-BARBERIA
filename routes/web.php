@@ -30,6 +30,8 @@ Route::post('/register', [RegisteredUserController::class, 'store'])->name('regi
 
 // Rutas protegidas para los dashboards
 Route::middleware(['auth'])->group(function () {
+
+    // Ruta para el dashboard del cliente
     Route::get('/mi-cuenta', function () {
         // Verificar el rol del usuario y redirigir
         if (auth()->user()->rol === 'admin') {  // Usar 'rol'
@@ -42,9 +44,22 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/mi-gestion-admin', function () {
         return Inertia::render('AdminDashboard');
     })->name('mi-gestion-admin');
+
+    // Otras rutas protegidas que solo pueden ser accedidas tras autenticar
+    Route::get('/reservar-cita', function () {
+        return Inertia::render('ReservarCitaCliente');
+    })->name('reservar-cita');
+
+    Route::get('/mis-citas', function () {
+        return Inertia::render('MisCitasClientes');
+    })->name('mis-citas');
+
+    Route::get('/mis-datos', function () {
+        return Inertia::render('MisDatosClientes');
+    })->name('mis-datos');
 });
 
-// Otras rutas adicionales
+// Otras rutas adicionales (páginas públicas)
 Route::get('/sobre-nosotros', function () {
     return Inertia::render('PaginaSobreNos');
 })->name('sobre-nosotros');
@@ -72,3 +87,4 @@ Route::get('/jose', function () {
 
 // Ruta para cerrar sesión
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+
