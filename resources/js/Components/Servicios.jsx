@@ -51,7 +51,7 @@ export default function Servicios() {
                     <div className="p-4 bg-gray-100 rounded-md shadow-md servicio-container">
                         <h3 className="text-xl font-semibold mb-2">Corte + Barba + Cejas + Lavado</h3>
                         <h3 className="text-xl font-semibold mb-2 ocre-text">20€</h3>
-                        <p>Necesita un buen completo, aquí le dejamos una oferta irrechazable.</p>
+                        <p>¿Necesita un buen completo?, aquí le dejamos una oferta irrechazable.</p>
                     </div>
                 </div>
             </div>

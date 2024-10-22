@@ -5,7 +5,7 @@ export default function Footer() {
     return (
         <footer className="footer-container">
             <div className="container mx-auto text-center">
-                <p>© 2024 Barbería. Todos los derechos reservados.</p>
+                <p>© 2024 Barber's 18. Todos los derechos reservados.</p>
                 <div className="mt-4 flex justify-center">
                     <a href="http://creativecommons.org/licenses/by-sa/4.0/" rel="license">
                         <img

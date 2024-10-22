@@ -35,6 +35,26 @@ Route::get('/sobre-nosotros', function () {
     return Inertia::render('PaginaSobreNos'); // Renderiza el componente PaginaSobreNos
 })->name('sobre-nosotros');
 
+// Ruta para la página principal de bienvenida
+Route::get('/home', function () {
+    return Inertia::render('Welcome', [
+        'canLogin' => Route::has('login'),
+        'canRegister' => Route::has('register'),
+    ]);
+})->name('home');
+
+// Ruta para la página de servicios
+Route::get('/servicios', function () {
+    return Inertia::render('Servi');
+})->name('servicios');
+
+// Ruta para la página de contacto
+Route::get('/contacto', function () {
+    return Inertia::render('Contacto');
+})->name('contacto');
+
+
+
 // Rutas protegidas para los dashboards (auth middleware)
 Route::middleware(['auth'])->group(function () {
     // Ruta para el dashboard del administrador

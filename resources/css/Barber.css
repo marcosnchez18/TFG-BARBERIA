@@ -554,7 +554,7 @@ img.logo_fin {
 
 /* Estilo para los bloques de información */
 .info-peluqueria, .info-historia {
-    background-color: #e9decb;
+    background-color: #e0ce9c;;
     padding: 2rem;
     border-radius: 10px;
     box-shadow: 0 12px 18px rgba(0, 0, 0, 0.1);
@@ -644,4 +644,101 @@ img.logo_fin {
         margin-right: auto;
         margin-top: 50px;
     }
+}
+
+
+
+/* Acordeón Preguntas Frecuentes */
+.faq-item {
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.faq-question {
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.faq-question:hover {
+    color: #CFA15D;
+}
+
+.faq-answer {
+    padding-top: 0.5rem;
+    padding-left: 1rem;
+    color: #4a5568;
+}
+
+.faq-button {
+    background-color: white;
+    border: none;
+    text-align: left;
+    padding: 1rem;
+    width: 100%;
+    cursor: pointer;
+}
+
+.faq-button:focus {
+    outline: none;
+}
+
+
+
+
+/* Estilo para la página de contacto */
+
+/* Título principal */
+.contact-title {
+    font-family: 'Times New Roman', serif;
+    font-size: 4rem;
+    font-weight: 300;
+    font-weight: bold;
+    margin-bottom: 1.5rem;
+    color: #1E1E1E;
+}
+
+/* Descripción debajo del título */
+.contact-description {
+    font-size: 1.25rem;
+    margin-bottom: 3rem;
+    color: #4A4A4A;
+}
+
+/* Grid para la disposición de los cuadros */
+.contact-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+@media (min-width: 768px) {
+    .contact-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+/* Estilo para cada cuadro de información */
+.contact-box {
+    background-color: #e0ce9c; /* Fondo gris claro */
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Subtítulo dentro de cada cuadro */
+.contact-subtitle {
+    font-size: 2rem;
+    font-weight: 600;
+    font-family: 'Times New Roman', serif;
+    margin-bottom: 1rem;
+    color: #000000; /* Color oscuro para el subtítulo */
+}
+
+/* Texto dentro de cada cuadro */
+.contact-text {
+    font-size: 1.125rem;
+    color: #000000; /* Color gris medio para el texto */
+    margin-bottom: 0.5rem;
 }

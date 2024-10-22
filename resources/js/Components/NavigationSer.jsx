@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from '@inertiajs/react';
 
-export default function Navigation() {
+export default function Naviser() {
     return (
         <nav className="bg-neutral-900 p-4">
             <div className="container mx-auto flex flex-wrap justify-between items-center">
@@ -26,7 +26,7 @@ export default function Navigation() {
                         </li>
 
                         <li>
-                            <a href={route('servicios')} className="text-xl md:text-3xl text-white hover:text-gray-400">Servicios</a>
+                            <a href={route('sobre-nosotros')} className="text-xl md:text-3xl text-white hover:text-gray-400">Sobre Nosotros</a>
                         </li>
                         <li>
                         <a href={route('contacto')} className="text-xl md:text-3xl text-white hover:text-gray-400">Contacto</a>
