@@ -31,6 +31,11 @@ export default function Navigation() {
                         <li>
                         <a href={route('contacto')} className="text-xl md:text-3xl text-white hover:text-gray-400">Contacto</a>
                         </li>
+                        <li>
+                            <Link href={route('equipo')} className="text-xl md:text-3xl text-white hover:text-gray-400">
+                            Equipo
+                            </Link>
+                        </li>
                     </ul>
                 </div>
 

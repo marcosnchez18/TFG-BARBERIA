@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import Footer from '../Components/Footer'; // Componente de footer
 import { Link } from '@inertiajs/react';
 import SobreNosotros from '@/Components/Sobrenosotros';
+import WhatsAppButton from '@/Components/Wasa'
 import '../../css/Barber.css'; // Estilos específicos
 import Naviser from '@/Components/NavigationSer';
-import WhatsAppButton from '@/Components/Wasa'
 
 export default function Servi() {
     // Estado para gestionar el acordeón

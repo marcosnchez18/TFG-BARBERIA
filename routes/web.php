@@ -53,6 +53,21 @@ Route::get('/contacto', function () {
     return Inertia::render('Contacto');
 })->name('contacto');
 
+// Ruta para la página de equipo
+Route::get('/equipo', function () {
+    return Inertia::render('Equipo');
+})->name('equipo');
+
+
+// Ruta para la página de Daniel
+Route::get('/daniel', function () {
+    return Inertia::render('Daniel');
+})->name('daniel');
+
+// Ruta para la página de José
+Route::get('/jose', function () {
+    return Inertia::render('Jose');
+})->name('jose');
 
 
 // Rutas protegidas para los dashboards (auth middleware)

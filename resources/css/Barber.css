@@ -464,12 +464,7 @@ iframe {
 }
 
 
-.fin_home {
-    background-color: #1E1E1E;
-    color: #FFFFFF;
-    padding: 50px;
-    text-align: center;
-}
+
 
 .logo_fin {
     width: 150px; /* Ajusta el tamaño del logo según lo que necesites */
@@ -694,7 +689,7 @@ img.logo_fin {
     font-weight: 300;
     font-weight: bold;
     margin-bottom: 1.5rem;
-    color: #1E1E1E;
+    color: #000000;
 }
 
 /* Descripción debajo del título */
@@ -741,4 +736,78 @@ img.logo_fin {
     font-size: 1.125rem;
     color: #000000; /* Color gris medio para el texto */
     margin-bottom: 0.5rem;
+}
+
+
+/* Estilo del equipo */
+.equipo-title {
+    color: #000000;
+    font-weight: 600;
+}
+
+.equipo-description {
+    color: #555;
+}
+
+.barbero-container {
+    background-color: #f7f7f7;
+    border-radius: 10px;
+    padding: 20px;
+}
+
+.barbero-img {
+    width: 200px;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 3px solid #CFA15D;
+}
+
+.social-icon {
+    width: 40px;
+    height: 40px;
+    transition: transform 0.3s;
+}
+
+.social-icon:hover {
+    transform: scale(1.1);
+}
+
+
+
+.cortes_hector {
+    margin: 40px auto;
+    padding: 20px;
+    max-width: 1200px;
+}
+
+table {
+    width: 100%;
+    border-spacing: 20px;
+}
+
+caption {
+    margin-bottom: 10px;
+    font-family: 'Times New Roman', serif;
+}
+
+.tablafade {
+    width: 200px;
+    height: auto;
+    border-radius: 8px;
+    transition: transform 0.3s ease-in-out;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.tablafade2 {
+    width: 420px;
+    height: auto;
+    border-radius: 8px;
+    transition: transform 0.3s ease-in-out;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.tablafade:hover,
+.tablafade2:hover {
+    transform: scale(1.05);
 }

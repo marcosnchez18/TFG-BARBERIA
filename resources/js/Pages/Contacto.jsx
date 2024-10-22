@@ -15,7 +15,7 @@ export default function Contacto() {
             {/* Sección de contacto */}
             <section className="py-12 bg-white text-center">
                 <div className="container mx-auto">
-                    <h1 className="contact-title">Contáctanos</h1>
+                    <h2 className="contact-title">Contáctanos</h2>
                     <p className="contact-description">
                         Estamos aquí para ayudarte con cualquier consulta o reserva. ¡No dudes en ponerte en contacto con nosotros!
                     </p>
