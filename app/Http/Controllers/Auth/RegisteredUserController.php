@@ -69,13 +69,9 @@ class RegisteredUserController extends Controller
         event(new Registered($user));
 
         // Autenticar automáticamente al usuario
-        Auth::login($user);
+        Auth::login($user);  // Esto inicia sesión automáticamente
 
-        // Redirigir según el rol del usuario
-        if ($user->rol === 'admin') {
-            return redirect()->route('mi-gestion-admin');  // Si es admin, redirigir a /mi-gestion-admin
-        }
-
-        return redirect()->route('mi-cuenta'); // Si es cliente, redirigir a /mi-cuenta
+        // Redirigir al usuario a la página para verificar su correo electrónico
+        return redirect()->route('verification.notice');
     }
 }

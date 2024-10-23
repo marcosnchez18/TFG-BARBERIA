@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisteredUserController;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -28,8 +30,25 @@ Route::post('/login', [LoginController::class, 'store'])->name('login.authentica
 Route::get('/register', [RegisteredUserController::class, 'create'])->name('register');
 Route::post('/register', [RegisteredUserController::class, 'store'])->name('register.store');
 
-// Rutas protegidas para los dashboards
-Route::middleware(['auth'])->group(function () {
+// Rutas para verificación de email
+Route::get('/email/verify', function () {
+    return Inertia::render('Auth/VerifyEmail'); // Página que indica que verifiquen su correo
+})->middleware('auth')->name('verification.notice');
+
+// Ruta para verificar el email al hacer clic en el enlace del correo
+Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+    $request->fulfill(); // Marca el email como verificado
+    return redirect('/mi-cuenta'); // Redirige a la página de la cuenta del usuario
+})->middleware(['auth', 'signed'])->name('verification.verify');
+
+// Ruta para reenviar el enlace de verificación
+Route::post('/email/verification-notification', function (Request $request) {
+    $request->user()->sendEmailVerificationNotification();
+    return back()->with('message', 'El enlace de verificación ha sido reenviado.');
+})->middleware(['auth', 'throttle:6,1'])->name('verification.send');
+
+// Rutas protegidas para los dashboards (solo usuarios autenticados y verificados)
+Route::middleware(['auth', 'verified'])->group(function () {
 
     // Ruta para el dashboard del cliente
     Route::get('/mi-cuenta', function () {
@@ -87,4 +106,3 @@ Route::get('/jose', function () {
 
 // Ruta para cerrar sesión
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
-
