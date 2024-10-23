@@ -8,7 +8,7 @@ export default function AdminDashboard() {
             <NavigationAdmin admin={true} />
 
             <div className="container mx-auto mt-12">
-                <h1 className="text-4xl font-bold">Panel de Control del Admin</h1>
+                <h1 className="text-4xl font-bold">Panel de Control del Administrador</h1>
                 {/* Aquí va el contenido del panel del admin */}
             </div>
         </div>

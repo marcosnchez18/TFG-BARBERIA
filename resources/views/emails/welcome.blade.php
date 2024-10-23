@@ -11,7 +11,7 @@ Estamos encantados de tenerte con nosotros.
 Visita nuestra web
 @endcomponent
 
-Reciba un cordial saludo.
+Reciba un cordial saludo de parte de esta gran familia.
 <br><br>
-Barber's 18 company S.L
+
 @endcomponent
