@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\ResetPasswordController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -49,11 +51,10 @@ Route::post('/email/verification-notification', function (Request $request) {
 
 // Rutas protegidas para los dashboards (solo usuarios autenticados y verificados)
 Route::middleware(['auth', 'verified'])->group(function () {
-
     // Ruta para el dashboard del cliente
     Route::get('/mi-cuenta', function () {
         // Verificar el rol del usuario y redirigir
-        if (auth()->user()->rol === 'admin') {  // Usar 'rol'
+        if (auth()->user()->rol === 'admin') {
             return redirect()->route('mi-gestion-admin'); // Si es admin, redirigir al dashboard del admin
         }
         return Inertia::render('Dashboard'); // Renderiza el dashboard del cliente
@@ -77,6 +78,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return Inertia::render('MisDatosClientes');
     })->name('mis-datos');
 });
+
+// Rutas para restablecimiento de contraseña
+Route::get('/forgot-password', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
+Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
+Route::get('/reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
+Route::post('/reset-password', [ResetPasswordController::class, 'reset'])->name('password.update');
 
 // Otras rutas adicionales (páginas públicas)
 Route::get('/sobre-nosotros', function () {

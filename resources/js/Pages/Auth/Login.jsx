@@ -102,6 +102,11 @@ export default function Login() {
                         Registrarse aquí
                     </Link>
                 </div>
+
+                {/* Enlace para "Olvidé mi contraseña" */}
+                <div className="mt-4 text-center">
+                    <Link href={route('password.request')} className="text-blue-500 hover:underline">¿Olvidaste tu contraseña?</Link>
+                </div>
             </div>
             <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
             <Localizacion />
