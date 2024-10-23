@@ -13,14 +13,15 @@ class AdminUserSeeder extends Seeder
         DB::table('users')->insert([
             [
                 'nombre' => 'José Ángel Sánchez Harana',
-                'email' => 'gerotay@gmail.com',
+                'email' => 'gerotayi@gmail.com',
                 'password' => Hash::make('admin'),
                 'rol' => 'admin',
                 'saldo' => 0,
                 'contador_ausencias' => 0,
                 'estado' => 'activo',
-                'numero_tarjeta_vip' => null,
-                'referido_por' => null,
+                'numero_tarjeta_vip' => DB::raw('null'), // Cambiado a null explícito
+                'referido_por' => DB::raw('null'), // Cambiado a null explícito
+                'email_verified_at' => now(),
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
@@ -32,8 +33,9 @@ class AdminUserSeeder extends Seeder
                 'saldo' => 0,
                 'contador_ausencias' => 0,
                 'estado' => 'activo',
-                'numero_tarjeta_vip' => null,
-                'referido_por' => null,
+                'numero_tarjeta_vip' => DB::raw('null'), // Cambiado a null explícito
+                'referido_por' => DB::raw('null'), // Cambiado a null explícito
+                'email_verified_at' => now(),
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
