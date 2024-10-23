@@ -16,30 +16,53 @@ export default function NavigationCliente() {
         <nav className="bg-neutral-900 p-4">
             <div className="container mx-auto flex flex-wrap justify-between items-center">
                 {/* Logo de la Barbería */}
-                <div>
+                <div className="flex items-center">
                     <Link href={route('mi-cuenta')}>
                         <img
                             src="/images/logo.png"
                             alt="Logo Barbería"
-                            className="w-30 h-30 md:w-40 md:h-30"
+                            className="w-20 h-20 md:w-30 md:h-30"
                         />
                     </Link>
                 </div>
 
                 {/* Menú de navegación */}
-                <div className="bg-neutral-800 p-4 md:p-10 rounded-lg shadow-md font-serif w-full md:w-auto mt-4 md:mt-0">
-                    <ul className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
-                        <li>
-                            {/* Enlace de Home con confirmación de cierre de sesión */}
-                            <button
-                                onClick={() => setShowLogoutModal(true)}
-                                className="text-xl md:text-3xl text-white hover:text-gray-400"
-                            >
-                                Home
-                            </button>
-                        </li>
+                <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-8 mt-4 md:mt-0">
+                    <Link
+                        href={route('reservar-cita')}
+                        className="text-lg md:text-xl text-white hover:text-gray-400"
+                    >
+                        Reservar Cita
+                    </Link>
+                    <Link
+                        href={route('mis-citas')}
+                        className="text-lg md:text-xl text-white hover:text-gray-400"
+                    >
+                        Mis Citas
+                    </Link>
+                    <Link
+                        href={route('mis-datos')}
+                        className="text-lg md:text-xl text-white hover:text-gray-400"
+                    >
+                        Mis Datos
+                    </Link>
+                    <button
+                        onClick={() => setShowLogoutModal(true)}
+                        className="text-lg md:text-xl text-white hover:text-gray-400 flex items-center"
+                    >
+                        <i className="fas fa-sign-out-alt mr-2"></i> {/* Ícono */}
+                        Cerrar Sesión
+                    </button>
+                </div>
 
-                    </ul>
+                {/* Botón de Home con confirmación de cierre de sesión */}
+                <div className="mt-4 md:mt-0">
+                    <button
+                        onClick={() => setShowLogoutModal(true)}
+                        className="text-lg md:text-xl text-white hover:text-gray-400"
+                    >
+                        Home
+                    </button>
                 </div>
             </div>
 
