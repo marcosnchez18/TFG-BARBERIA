@@ -823,3 +823,100 @@ nav {
     color: #CFA15D; /* Ocre */
     transition: color 0.3s ease-in-out; /* Transición suave */
 }
+.foro-barberia {
+    font-family: 'Times New Roman', serif;
+    background-color: #f5f5f5;
+    color: #333;
+}
+
+.foro-container {
+    max-width: 1200px;
+    display: flex;
+    gap: 20px;
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.foro-formulario {
+    flex: 1;
+}
+
+.foro-noticias {
+    flex: 1;
+}
+
+.foro-titulo {
+    color: #2c3e50;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.foro-subtitulo {
+    color: #34495e;
+}
+
+.foro-label {
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.foro-input, .foro-textarea {
+    border: 1px solid #bdc3c7;
+    border-radius: 4px;
+    padding: 10px;
+    margin-top: 8px;
+    font-size: 16px;
+    background-color: #f9f9f9;
+}
+
+.foro-input:focus, .foro-textarea:focus {
+    border-color: #25353f;
+    outline: none;
+}
+
+.foro-boton {
+    background-color: #A87B43;
+    transition: background-color 0.3s ease;
+}
+
+.foro-boton:hover {
+    background-color: #095f23;
+}
+
+.foro-noticia {
+    background-color: #ecf0f1;
+    border-radius: 4px;
+    padding: 15px;
+}
+
+.foro-noticia-titulo {
+    color: #171717;
+    font-weight: 600;
+}
+
+.foro-noticia-contenido {
+    margin-top: 10px;
+    font-size: 16px;
+}
+
+.foro-noticia-autor {
+    display: block;
+    color: #7f8c8d;
+    margin-top: 5px;
+}
+
+.foro-boton-editar {
+    font-size: 14px;
+}
+
+.foro-boton-eliminar {
+    font-size: 14px;
+}
+
+.foro-sin-noticias {
+    text-align: center;
+    font-style: italic;
+    color: #245255;
+}
