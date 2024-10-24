@@ -16,6 +16,9 @@ export default function Login() {
     // Estado para errores del lado del cliente
     const [clientErrors, setClientErrors] = useState({});
 
+    // Estado para mostrar/ocultar contraseña
+    const [showPassword, setShowPassword] = useState(false);
+
     // Función de validación del lado del cliente
     const validateClient = () => {
         const newErrors = {};
@@ -74,14 +77,23 @@ export default function Login() {
                         {errors.email && <div className="text-red-600 text-sm mt-1">{errors.email}</div>}
                     </div>
 
-                    <div>
+                    <div className="relative">
                         <label className="block text-sm font-bold text-gray-600" style={{ fontFamily: 'Times New Roman, serif' }}>Contraseña</label>
                         <input
-                            type="password"
+                            type={showPassword ? 'text' : 'password'}  // Cambia entre 'text' y 'password'
                             className="w-full px-4 py-2 mt-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:border-blue-500"
                             value={data.password}
                             onChange={(e) => setData('password', e.target.value)}
                         />
+
+                        {/* Texto para mostrar/ocultar contraseña */}
+                        <div
+                            className="mt-2 text-sm text-blue-500 cursor-pointer"
+                            onClick={() => setShowPassword(!showPassword)}
+                        >
+                            {showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                        </div>
+
                         {clientErrors.password && <div className="text-red-600 text-sm mt-1">{clientErrors.password}</div>}
                         {errors.password && <div className="text-red-600 text-sm mt-1">{errors.password}</div>}
                     </div>
