@@ -1,0 +1,825 @@
+/* Header.css */
+
+.header-container {
+    background-position: center;
+    background-size: cover;
+    height: 180vh; /* Ajusta el alto del contenedor */
+    width: 100%;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.header-overlay {
+    background-color: rgba(0, 0, 0, 0.5); /* Fondo negro con opacidad */
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 16px;
+}
+
+.header-title {
+    font-size: 2.5rem;
+    font-weight: bold;
+}
+
+.header-subtitle {
+    margin-top: 16px;
+    font-size: 1.25rem;
+}
+
+.header-button {
+    margin-top: 32px;
+    background-color: white;
+    color: black;
+    padding: 10px 16px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    font-family: 'Times New Roman', serif; /* Aplicamos Times New Roman */
+}
+
+h1.rozha_titulo {
+    font-family: 'Rozha One', serif;
+    text-align: center;
+    font-size: 110px;
+    color: white;
+    font-weight: 600;
+    margin-top: -200px; /* Ajustado según lo que mencionaste */
+}
+
+/* Estilos para el bloque de horario debajo del botón */
+.horario-rectangulo {
+    background-color: rgba(217, 217, 217, 0.7);
+    padding: 20px;
+    border-radius: 8px;
+    font-size: 30px;
+    margin-top: 351px; /* Incrementamos el espacio para bajar el rectángulo */
+    max-width: 500px; /* Limitar el ancho del bloque */
+    font-family: 'Times New Roman', serif;
+    color: black;
+    font-weight: 600;
+}
+
+.blanco {
+    color: white;
+}
+
+.naranja {
+    color: orange;
+}
+
+.negro {
+    color: black;
+}
+
+.barber {
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-top: 10px;
+    color: black;
+}
+
+/* Estilo para la imagen de la licencia */
+.licencia {
+
+    width: 88px;
+    height: 31px;
+
+}
+/* Barber.css */
+
+/* Estilos para el footer */
+footer {
+    background-color: #171717;
+    color: white;
+    padding: 20px 0;
+}
+
+footer p {
+    font-family: 'Times New Roman', serif; /* Aplicar Times New Roman */
+    font-size: 16px;
+}
+
+.licencia {
+    margin-top: 10px;
+    width: 88px;
+    height: 31px;
+}
+
+.seccion2_triangulo {
+    height: 300px; /* Ajusta esta altura según el tamaño que quieras para el triángulo */
+
+}
+
+.triangulo_invertido {
+    fill: #1E1E1E;
+    stroke: #1E1E1E;
+    stroke-width: 1;
+    transform-origin: 50% 50%;
+    transform: rotate(180deg);
+
+}
+
+/* Contenedor general con más espacio y ajustes */
+.infobarber-container {
+    background-color: white;
+    padding: 4rem 0;
+}
+
+/* Estilo del bloque de texto */
+.text-block {
+    background-color: #ffffff;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    max-width: 500px;
+}
+
+/* Estilo de la estructura en cubo de las imágenes */
+.image-cube {
+    position: relative;
+    width: 18rem; /* Aumentamos el tamaño a 18rem */
+    height: 18rem; /* Aumentamos el tamaño a 18rem */
+    overflow: hidden;
+}
+
+/* Imagen principal en el frente */
+.main-image {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 0;
+    transition: transform 0.3s ease-in-out;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    z-index: 2;
+}
+
+/* Imagen de atrás */
+.back-image {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    width: 90%; /* Mantiene el tamaño reducido para el efecto 3D */
+    height: 90%;
+    object-fit: cover;
+    border-radius: 0;
+    transition: transform 0.3s ease-in-out;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    z-index: 1;
+}
+
+/* Efecto hover para agrandar ambas imágenes */
+.image-cube:hover .main-image,
+.image-cube:hover .back-image {
+    transform: scale(1.1); /* Efecto hover más marcado */
+}
+
+/* Alineación y distribución de los elementos en forma de X */
+.x-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 3rem;
+    align-items: center;
+    justify-items: center;
+    max-width: 1200px;
+}
+
+/* Responsive */
+@media (min-width: 768px) {
+    .x-layout {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr 1fr;
+    }
+}
+/* Contenedor de los logos */
+.logos-container {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-wrap: wrap;
+    margin: 2rem 0;
+    text-align: center;
+}
+
+/* Estilo de los logos */
+.logo_servicios {
+    width: 90px;
+    height: auto;
+    margin: 0 auto;
+}
+
+/* Estilo para los textos secundarios */
+.logo-text2 {
+    font-size: 30px;
+    font-weight: bold;
+    margin: 1rem 0;
+    font-family: 'Times New Roman', serif;
+}
+
+/* Estilo para los textos principales */
+.logo-text {
+    font-size: 25px;
+    font-family: 'Times New Roman', serif;
+    line-height: 1.5;
+    margin-top: 1rem;
+}
+
+/* Animación del logo moviéndose de un lado a otro */
+@keyframes moveSideToSide {
+    0% {
+        transform: translateX(0);
+    }
+    50% {
+        transform: translateX(20px);
+    }
+    100% {
+        transform: translateX(0);
+    }
+}
+
+/* Aplicar la animación a los logos */
+.animated-logo {
+    animation: moveSideToSide 2s ease-in-out infinite;
+}
+
+/* Responsive: Asegurarse de que los logos se ajusten en dispositivos más pequeños */
+@media (max-width: 768px) {
+    .logos-container {
+        flex-direction: column;
+    }
+
+    .logo_servicios {
+        width: 70px;
+    }
+
+    .logo-text2 {
+        font-size: 1.25rem;
+    }
+
+    .logo-text {
+        font-size: 0.9rem;
+    }
+}
+
+/* Estilo para los precios en color ocre */
+.ocre-text {
+    color: #795e05; /* Color ocre */
+    font-weight: bold; /* Opcional: puedes hacer el texto más grueso si lo prefieres */
+
+}
+
+/* Estilo para el fondo marrón oscuro casi negro */
+.bg-dark-brown {
+    background-color: #171717; /* Marrón oscuro casi negro */
+    color: #171717; /* Para asegurarnos de que el texto sea legible */
+}
+
+/* Aplicar Times New Roman a todo el cuerpo del componente */
+body, h1, h2, h3,h4, p {
+    font-family: 'Times New Roman', Times, serif;
+}
+
+.texto-blanco {
+    color: white;
+}
+
+/* Fondo marrón oscuro casi negro */
+.bg-dark-brown {
+    background-color: #171717;
+}
+
+/* Color ocre para los precios */
+.ocre-text {
+    color: #cfa15d;
+}
+
+/* Animación para ampliar el servicio cuando se pasa el cursor */
+.servicio-container {
+    transition: transform 0.3s ease-in-out;
+    transform: scale(1);
+}
+
+.servicio-container:hover {
+    transform: scale(1.05); /* Aumenta un 5% al pasar el cursor */
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); /* Añade sombra para resaltar */
+}
+
+/* Estilo de la sección fin_home */
+.fin_home {
+    background-color: #171717;
+    color: #FFFFFF;
+    padding: 50px;
+    text-align: center;
+}
+
+/* Estilo de las imágenes */
+img.fotos_fades {
+    width: 410px;
+    height: 487px;
+    margin-right: 4%;
+}
+
+/* Estilo para los textos y botones */
+.precios {
+    font-size: 36px;
+    margin-top: 40px;
+    font-family: 'Times New Roman', serif;
+}
+
+.reser {
+    font-size: 30px;
+    font-family: 'Times New Roman', serif;
+    margin-top: 10px;
+}
+
+.reser_desc {
+    font-size: 18px;
+    font-family: 'Times New Roman', serif;
+    margin-top: 10px;
+}
+
+.boton_lugar {
+    background-color: #CFA15D;
+    color: #1E1E1E;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    font-family: 'Times New Roman', serif;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+.boton_lugar:hover {
+    background-color: #A87B43;
+}
+
+/* Estilo de la sección fin_home */
+.fin_home {
+    background-color: #171717;
+    color: #FFFFFF;
+    padding: 50px;
+    text-align: center;
+}
+
+/* Contenedor general para las imágenes */
+.imagenes-contenedor {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Estilo de cada fila de imágenes */
+.fila {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 30px;
+}
+
+/* Estilo para la fila centrada */
+.fila-centro {
+    display: flex;
+    justify-content: center;
+    margin-top: 40px;
+}
+
+/* Estilo de las imágenes */
+img.fotos_fades {
+    width: 300px;
+    height: 400px;
+    margin-right: 20px;
+    transition: transform 0.3s ease; /* Transición suave */
+}
+
+/* La última imagen más grande */
+img.fotos_fades.grande {
+    width: 350px;
+    height: 450px;
+}
+
+/* Efecto de zoom al pasar el cursor por encima de la imagen */
+img.fotos_fades:hover {
+    transform: scale(1.1); /* Agranda la imagen un 10% */
+}
+
+/* Estilo para los textos y botones */
+.precios {
+    font-size: 36px;
+    margin-top: 40px;
+    font-family: 'Times New Roman', serif;
+}
+
+.reser {
+    font-size: 30px;
+    font-family: 'Times New Roman', serif;
+    margin-top: 10px;
+}
+
+.reser_desc {
+    font-size: 18px;
+    font-family: 'Times New Roman', serif;
+    margin-top: 10px;
+}
+
+.boton_lugar {
+    background-color: #CFA15D;
+    color: #1E1E1E;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    font-family: 'Times New Roman', serif;
+    cursor: pointer;
+    margin-top: 20px;
+    font-weight: 600;
+}
+
+.boton_lugar:hover {
+    background-color: #A87B43;
+}
+
+.maps-fullscreen {
+    width: 100vw; /* Ocupa el 100% del ancho de la pantalla */
+    height: 100vh; /* Ocupa el 100% de la altura de la pantalla */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative; /* Asegura que el contenedor esté posicionado correctamente */
+    margin: 0;
+    padding: 0;
+}
+
+iframe {
+    width: 100%; /* Asegura que el iframe ocupe todo el ancho del contenedor */
+    height: 100%; /* Asegura que el iframe ocupe toda la altura del contenedor */
+    border: none; /* Elimina los bordes */
+}
+
+
+
+
+.logo_fin {
+    width: 150px; /* Ajusta el tamaño del logo según lo que necesites */
+    margin-bottom: 20px;
+}
+
+.dir {
+    font-size: 18px;
+    line-height: 1.6;
+}
+
+hr {
+    border: 1px solid #FFFFFF;
+    width: 80%;
+    margin: 0 auto;
+}
+
+.rrss {
+    width: 100px; /* Ajusta el tamaño del logo de redes sociales */
+    margin-top: 20px;
+}
+
+.fin-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+img.logo_fin {
+    height: 200px;
+    width: 200px;
+    align-content: center;
+}
+
+
+/* Footer Container */
+.footer-container {
+
+    padding: 20px 0;
+    color: #FFFFFF;
+    text-align: center;
+    font-family: 'Times New Roman', serif;
+}
+
+.footer-container p {
+    margin-bottom: 10px;
+    font-size: 18px;
+}
+
+.licencia {
+    width: 88px;
+    height: auto;
+    margin-top: 10px;
+}
+
+
+
+.whatsapp-button {
+    z-index: 1000; /* Para asegurar que se mantenga por encima de otros elementos */
+}
+
+.whatsapp-button img {
+    margin-right: 8px;
+}
+
+.whatsapp-button:hover {
+    background-color: #128C7E; /* Color más oscuro al pasar el mouse */
+}
+
+
+
+
+
+
+
+.historia-barber-container {
+    background-color: #f5f5f5;
+    padding: 4rem 0;
+    margin: 3%; /* Margen uniforme en todo */
+}
+
+/* Estilo para los bloques de información */
+.info-peluqueria, .info-historia {
+    background-color: #e0ce9c;;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 12px 18px rgba(0, 0, 0, 0.1);
+    font-family: 'Times New Roman', serif;
+    margin: 2rem; /* Añadido margen a los bloques de texto */
+}
+
+/* Título principal de cada bloque */
+.titulo-principal {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+/* Descripción de texto */
+.texto-descripcion {
+    font-size: 1.125rem;
+    line-height: 1.8;
+
+}
+
+/* Estilo de las imágenes normales */
+.imagen-container {
+    margin: 2rem;
+}
+
+.img-normal {
+    width: 80%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease-in-out;
+}
+
+/* Efecto hover para agrandar la imagen */
+.img-normal:hover {
+    transform: scale(1.05);
+}
+
+/* Ajuste responsive */
+@media (max-width: 768px) {
+    .historia-barber-container {
+        padding: 2rem 0;
+        margin: 1rem; /* Margen más pequeño en móviles */
+    }
+
+    .imagen-container {
+        margin: 1rem;
+    }
+}
+
+
+
+
+
+
+
+
+/* Estilo de la sección con el fondo */
+.cabildo {
+    background-image: url('/images/sanlucar.png'); /* Cambia a la ruta correcta de la imagen */
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    padding: 100px 0; /* Asegura espacio interno para el vídeo */
+    height: 100vh; /* La sección ocupa toda la altura de la pantalla */
+}
+
+/* Estilo del vídeo */
+.local {
+    width: 398px;
+    height: 708px;
+    position: relative;
+    z-index: 1;
+    margin-top: 30px;
+    margin-left: 750px;
+    border-radius: 12px; /* Borde redondeado opcional */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Sombra para el vídeo */
+}
+
+/* Ajuste responsive para pantallas más pequeñas */
+@media (max-width: 768px) {
+    .local {
+        width: 90%;
+        height: auto;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: 50px;
+    }
+}
+
+
+
+/* Acordeón Preguntas Frecuentes */
+.faq-item {
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.faq-question {
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.faq-question:hover {
+    color: #CFA15D;
+}
+
+.faq-answer {
+    padding-top: 0.5rem;
+    padding-left: 1rem;
+    color: #4a5568;
+}
+
+.faq-button {
+    background-color: white;
+    border: none;
+    text-align: left;
+    padding: 1rem;
+    width: 100%;
+    cursor: pointer;
+}
+
+.faq-button:focus {
+    outline: none;
+}
+
+
+
+
+/* Estilo para la página de contacto */
+
+/* Título principal */
+.contact-title {
+    font-family: 'Times New Roman', serif;
+    font-size: 4rem;
+    font-weight: 300;
+    font-weight: bold;
+    margin-bottom: 1.5rem;
+    color: #000000;
+}
+
+/* Descripción debajo del título */
+.contact-description {
+    font-size: 1.25rem;
+    margin-bottom: 3rem;
+    color: #4A4A4A;
+}
+
+/* Grid para la disposición de los cuadros */
+.contact-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+@media (min-width: 768px) {
+    .contact-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+/* Estilo para cada cuadro de información */
+.contact-box {
+    background-color: #e0ce9c; /* Fondo gris claro */
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Subtítulo dentro de cada cuadro */
+.contact-subtitle {
+    font-size: 2rem;
+    font-weight: 600;
+    font-family: 'Times New Roman', serif;
+    margin-bottom: 1rem;
+    color: #000000; /* Color oscuro para el subtítulo */
+}
+
+/* Texto dentro de cada cuadro */
+.contact-text {
+    font-size: 1.125rem;
+    color: #000000; /* Color gris medio para el texto */
+    margin-bottom: 0.5rem;
+}
+
+
+/* Estilo del equipo */
+.equipo-title {
+    color: #000000;
+    font-weight: 600;
+}
+
+.equipo-description {
+    color: #555;
+}
+
+.barbero-container {
+    background-color: #f7f7f7;
+    border-radius: 10px;
+    padding: 20px;
+}
+
+.barbero-img {
+    width: 200px;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 3px solid #CFA15D;
+}
+
+.social-icon {
+    width: 40px;
+    height: 40px;
+    transition: transform 0.3s;
+}
+
+.social-icon:hover {
+    transform: scale(1.1);
+}
+
+
+
+.cortes_hector {
+    margin: 40px auto;
+    padding: 20px;
+    max-width: 1200px;
+}
+
+table {
+    width: 100%;
+    border-spacing: 20px;
+}
+
+caption {
+    margin-bottom: 10px;
+    font-family: 'Times New Roman', serif;
+}
+
+.tablafade {
+    width: 200px;
+    height: auto;
+    border-radius: 8px;
+    transition: transform 0.3s ease-in-out;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.tablafade2 {
+    width: 420px;
+    height: auto;
+    border-radius: 8px;
+    transition: transform 0.3s ease-in-out;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.tablafade:hover,
+.tablafade2:hover {
+    transform: scale(1.05);
+}
+
+
+
+
+nav {
+    font-family: 'Times New Roman', serif;
+}
+
+.nav-item-hover:hover {
+    color: #CFA15D; /* Ocre */
+    transition: color 0.3s ease-in-out; /* Transición suave */
+}

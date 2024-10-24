@@ -2,15 +2,21 @@
 
 namespace App\Models;
 
+use Illuminate\Contracts\Auth\MustVerifyEmail;  // Importar MustVerifyEmail para la verificación de email
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail  // Implementar MustVerifyEmail
 {
     use HasApiTokens, HasFactory, Notifiable;
 
+    /**
+     * Los atributos que se pueden asignar en masa.
+     *
+     * @var array
+     */
     protected $fillable = [
         'nombre',
         'email',
@@ -20,63 +26,90 @@ class User extends Authenticatable
         'contador_ausencias',
         'estado',
         'numero_tarjeta_vip',
-        'referido_por'
+        'referido_por',
     ];
 
+    /**
+     * Los atributos que deben permanecer ocultos.
+     *
+     * @var array
+     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
+    /**
+     * Los atributos que deben ser convertidos a tipos nativos.
+     *
+     * @var array
+     */
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
 
-    // Generar número de tarjeta VIP antes de crear el usuario
+    /**
+     * Boot method para ejecutar acciones antes de que un usuario sea creado.
+     */
     protected static function boot()
     {
         parent::boot();
 
+        // Al crear un cliente, generamos automáticamente su número de tarjeta VIP
         static::creating(function ($user) {
-            if ($user->rol === 'cliente') { // Solo generar si es cliente
+            if ($user->rol === 'cliente') {  // Solo para los clientes
                 $user->numero_tarjeta_vip = self::generateNumeroTarjetaVIP();
             }
         });
     }
 
-    // Función para generar número de tarjeta VIP
+    /**
+     * Generar un número de tarjeta VIP único.
+     *
+     * @return string
+     */
     public static function generateNumeroTarjetaVIP()
     {
-        // Genera un número aleatorio único para la tarjeta VIP, 16 caracteres en hexadecimal
+        // Generar un número de tarjeta VIP único con 16 caracteres en hexadecimal
         return strtoupper(bin2hex(random_bytes(8)));
     }
 
-    // Relación con las citas (un usuario tiene muchas citas)
+    /**
+     * Relación con las citas: un usuario (cliente) puede tener muchas citas.
+     */
     public function citas()
     {
         return $this->hasMany(Cita::class, 'usuario_id');
     }
 
-    // Relación con las citas como barbero (un barbero tiene muchas citas)
+    /**
+     * Relación con las citas como barbero: un barbero puede tener muchas citas.
+     */
     public function citasBarbero()
     {
         return $this->hasMany(Cita::class, 'barbero_id');
     }
 
-    // Relación con las noticias (un barbero puede escribir muchas noticias)
+    /**
+     * Relación con las noticias: un barbero puede escribir muchas noticias.
+     */
     public function noticias()
     {
         return $this->hasMany(Noticia::class, 'usuario_id');
     }
 
-    // Relación con las recompensas como cliente referido
+    /**
+     * Relación con las recompensas como cliente referido: un cliente puede recibir recompensas por ser referido.
+     */
     public function recompensasReferido()
     {
         return $this->hasMany(Recompensa::class, 'cliente_referido_id', 'numero_tarjeta_vip');
     }
 
-    // Relación con las recompensas como cliente referente
+    /**
+     * Relación con las recompensas como cliente referente: un cliente puede recibir recompensas por referir a otros clientes.
+     */
     public function recompensasReferente()
     {
         return $this->hasMany(Recompensa::class, 'cliente_referente_id', 'numero_tarjeta_vip');
