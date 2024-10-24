@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useForm } from '@inertiajs/react';
 import NavigationAdmin from '../Components/NavigationAdmin';
 import { Inertia } from '@inertiajs/inertia';
+import SobreNosotros from '@/Components/Sobrenosotros';
+import Footer from '../Components/Footer';
 
 export default function ForoAdmin({ noticias }) {
     const { data, setData, post, put, reset, errors } = useForm({
@@ -48,6 +50,7 @@ export default function ForoAdmin({ noticias }) {
     return (
         <div className="foro-barberia">
             <NavigationAdmin />
+            <br /><br /><br /><br /><br />
             <div className="foro-container mx-auto p-8 flex flex-row gap-8">
                 {/* Columna izquierda: Formulario */}
                 <div className="foro-formulario flex-1">
@@ -89,26 +92,19 @@ export default function ForoAdmin({ noticias }) {
                                 <h3 className="foro-noticia-titulo text-xl font-semibold">{noticia.titulo}</h3>
                                 <p className="foro-noticia-contenido">{noticia.contenido}</p>
                                 <small className="foro-noticia-autor">Publicado por: {noticia.usuario.nombre}</small>
-                                <div className="foro-noticia-acciones mt-2">
+                                <div className="foro-noticia-acciones mt-2 flex justify-end gap-2">
                                     <button
                                         onClick={() => handleEdit(noticia)}
-                                        className="foro-boton-editar text-blue-500 hover:underline"
+                                        className="foro-boton-editar "
                                     >
-                                        Editar
+                                        ✏️
                                     </button>
-                                    <form
-                                        onSubmit={(e) => {
-                                            e.preventDefault();
-                                            handleDelete(noticia.id);
-                                        }}
+                                    <button
+                                        onClick={() => handleDelete(noticia.id)}
+                                        className="foro-boton-eliminar"
                                     >
-                                        <button
-                                            type="submit"
-                                            className="foro-boton-eliminar text-red-500 hover:underline ml-4"
-                                        >
-                                            Eliminar
-                                        </button>
-                                    </form>
+                                        🗑️
+                                    </button>
                                 </div>
                             </div>
                         ))
@@ -117,6 +113,9 @@ export default function ForoAdmin({ noticias }) {
                     )}
                 </div>
             </div>
+            <br /><br /><br /><br />
+                <SobreNosotros />
+            <Footer />
         </div>
     );
 }
