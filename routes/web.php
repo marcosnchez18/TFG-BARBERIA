@@ -51,18 +51,22 @@ Route::post('/email/verification-notification', function (Request $request) {
 
 // Rutas protegidas para los dashboards (solo usuarios autenticados y verificados)
 Route::middleware(['auth', 'verified'])->group(function () {
-    // Ruta para el dashboard del cliente
+    // Ruta para el dashboard del cliente, pasando el nombre del usuario actual
     Route::get('/mi-cuenta', function () {
         // Verificar el rol del usuario y redirigir
         if (auth()->user()->rol === 'admin') {
             return redirect()->route('mi-gestion-admin'); // Si es admin, redirigir al dashboard del admin
         }
-        return Inertia::render('Dashboard'); // Renderiza el dashboard del cliente
+        return Inertia::render('Dashboard', [
+            'user' => auth()->user() // Pasar el usuario autenticado al Dashboard
+        ]);
     })->name('mi-cuenta');
 
-    // Ruta para el dashboard del admin
+    // Ruta para el dashboard del admin, pasando el nombre del usuario actual
     Route::get('/mi-gestion-admin', function () {
-        return Inertia::render('AdminDashboard');
+        return Inertia::render('AdminDashboard', [
+            'user' => auth()->user() // Pasar el usuario autenticado
+        ]);
     })->name('mi-gestion-admin');
 
     // Otras rutas protegidas que solo pueden ser accedidas tras autenticar
