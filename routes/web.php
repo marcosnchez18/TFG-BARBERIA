@@ -69,6 +69,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/admin/foro', [NoticiaController::class, 'index'])->name('admin-foro');
     Route::post('/admin/foro', [NoticiaController::class, 'store'])->name('noticias.store');
+    // Rutas para actualizar y eliminar noticias
+Route::put('/admin/foro/{noticia}', [NoticiaController::class, 'update'])->name('noticias.update');
+Route::delete('/admin/foro/{noticia}', [NoticiaController::class, 'destroy'])->name('noticias.destroy');
+
+
 
     Route::get('/admin/clientes', function () {
         return Inertia::render('ClientesAdmin');
