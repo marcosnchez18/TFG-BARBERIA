@@ -1,3 +1,4 @@
+import '../../css/Barber.css';
 import React, { useState } from 'react';
 import { Link, useForm } from '@inertiajs/react';
 
@@ -16,30 +17,54 @@ export default function NavigationAdmin() {
         <nav className="bg-neutral-900 p-4">
             <div className="container mx-auto flex flex-wrap justify-between items-center">
                 {/* Logo de la Barbería */}
-                <div>
-                    <Link href={route('home')}>
+                <div className="flex items-center">
+                    <Link href={route('mi-gestion-admin')}>
                         <img
                             src="/images/logo.png"
                             alt="Logo Barbería"
-                            className="w-30 h-30 md:w-40 md:h-30"
+                            className="w-20 h-20 md:w-30 md:h-30"
                         />
                     </Link>
                 </div>
 
                 {/* Menú de navegación */}
-                <div className="bg-neutral-800 p-4 md:p-10 rounded-lg shadow-md font-serif w-full md:w-auto mt-4 md:mt-0">
-                    <ul className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
-                        <li>
-                            {/* Enlace de Home con confirmación de cierre de sesión */}
-                            <button
-                                onClick={() => setShowLogoutModal(true)}
-                                className="text-xl md:text-3xl text-white hover:text-gray-400"
-                            >
-                                Home
-                            </button>
-                        </li>
+                <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-8 mt-4 md:mt-0" style={{ fontFamily: 'Times New Roman, serif' }}>
+                <button
+                        onClick={() => setShowLogoutModal(true)}
+                        className="text-lg md:text-xl text-white hover:text-gray-400 nav-item-hover"
+                    >
+                        Home
+                    </button>
+                    <Link
+                        href={route('admin-citas')}
+                        className="text-lg md:text-xl text-white hover:text-gray-400 nav-item-hover"
+                    >
+                        Próximas Citas
+                    </Link>
+                    <Link
+                        href={route('admin-foro')}
+                        className="text-lg md:text-xl text-white hover:text-gray-400 nav-item-hover"
+                    >
+                        Foro
+                    </Link>
+                    <Link
+                        href={route('admin-clientes')}
+                        className="text-lg md:text-xl text-white hover:text-gray-400 nav-item-hover"
+                    >
+                        Clientes
+                    </Link>
+                </div>
 
-                    </ul>
+                {/* Botón de Cerrar Sesión */}
+                <div className="mt-4 md:mt-0">
+                    <button
+                        onClick={() => setShowLogoutModal(true)}
+                        className="text-lg md:text-xl text-white hover:text-gray-400 flex items-center nav-item-hover"
+                        style={{ fontFamily: 'Times New Roman, serif' }}
+                    >
+                        <i className="fas fa-sign-out-alt mr-2"></i> {/* Ícono */}
+                        Cerrar Sesión
+                    </button>
                 </div>
             </div>
 
@@ -47,7 +72,7 @@ export default function NavigationAdmin() {
             {showLogoutModal && (
                 <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-75">
                     <div className="bg-white p-8 rounded-lg shadow-lg text-center">
-                        <p className="text-xl font-semibold mb-6">¿Estás seguro que quieres cerrar sesión?</p>
+                        <p className="text-xl font-semibold mb-6" style={{ fontFamily: 'Times New Roman, serif' }}>¿Estás seguro que quieres cerrar sesión?</p>
                         <button
                             onClick={handleLogout}
                             className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 mr-4"

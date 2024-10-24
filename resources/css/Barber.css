@@ -811,3 +811,15 @@ caption {
 .tablafade2:hover {
     transform: scale(1.05);
 }
+
+
+
+
+nav {
+    font-family: 'Times New Roman', serif;
+}
+
+.nav-item-hover:hover {
+    color: #CFA15D; /* Ocre */
+    transition: color 0.3s ease-in-out; /* Transición suave */
+}

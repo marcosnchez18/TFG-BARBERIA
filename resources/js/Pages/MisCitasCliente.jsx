@@ -1,11 +1,13 @@
 import React from 'react';
+import NavigationCliente from '../Components/NavigationCliente';
 
-export default function MisCitasClientes() {
+export default function MisCitasCliente() {
     return (
-        <div className="container mx-auto p-8">
-            <h1 className="text-4xl font-bold">Mis Citas</h1>
-            <p>Consulta tus citas programadas con nosotros.</p>
-            {/* Listado de citas programadas */}
+        <div>
+            <NavigationCliente />
+            <div className="container mx-auto p-8">
+                <h1 className="text-4xl font-bold">Bienvenido a la página de mis citas de de Clientes</h1>
+            </div>
         </div>
     );
 }

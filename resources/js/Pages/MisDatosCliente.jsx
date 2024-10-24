@@ -1,11 +1,13 @@
 import React from 'react';
+import NavigationCliente from '../Components/NavigationCliente';
 
-export default function MisDatosClientes() {
+export default function MisDatosCliente() {
     return (
-        <div className="container mx-auto p-8">
-            <h1 className="text-4xl font-bold">Mis Datos</h1>
-            <p>Aquí puedes actualizar tus datos personales.</p>
-            {/* Formulario para actualizar los datos del cliente */}
+        <div>
+            <NavigationCliente />
+            <div className="container mx-auto p-8">
+                <h1 className="text-4xl font-bold">Bienvenido a la página de mis datos de Clientes</h1>
+            </div>
         </div>
     );
 }

@@ -1,3 +1,5 @@
+import '../../css/Barber.css';
+
 import React, { useState } from 'react';
 import { Link, useForm } from '@inertiajs/react';
 
@@ -27,41 +29,42 @@ export default function NavigationCliente() {
                 </div>
 
                 {/* Menú de navegación */}
-                <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-8 mt-4 md:mt-0">
+                <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-8 mt-4 md:mt-0" style={{ fontFamily: 'Times New Roman, serif' }}>
+                    <button
+                        onClick={() => setShowLogoutModal(true)}
+                        className="text-lg md:text-xl text-white hover:text-gray-400 nav-item-hover"
+                    >
+                        Home
+                    </button>
                     <Link
                         href={route('reservar-cita')}
-                        className="text-lg md:text-xl text-white hover:text-gray-400"
+                        className="text-lg md:text-xl text-white hover:text-gray-400 nav-item-hover"
                     >
                         Reservar Cita
                     </Link>
                     <Link
                         href={route('mis-citas')}
-                        className="text-lg md:text-xl text-white hover:text-gray-400"
+                        className="text-lg md:text-xl text-white hover:text-gray-400 nav-item-hover"
                     >
                         Mis Citas
                     </Link>
                     <Link
                         href={route('mis-datos')}
-                        className="text-lg md:text-xl text-white hover:text-gray-400"
+                        className="text-lg md:text-xl text-white hover:text-gray-400 nav-item-hover"
                     >
                         Mis Datos
                     </Link>
-                    <button
-                        onClick={() => setShowLogoutModal(true)}
-                        className="text-lg md:text-xl text-white hover:text-gray-400 flex items-center"
-                    >
-                        <i className="fas fa-sign-out-alt mr-2"></i> {/* Ícono */}
-                        Cerrar Sesión
-                    </button>
                 </div>
 
                 {/* Botón de Home con confirmación de cierre de sesión */}
                 <div className="mt-4 md:mt-0">
                     <button
                         onClick={() => setShowLogoutModal(true)}
-                        className="text-lg md:text-xl text-white hover:text-gray-400"
+                        className="text-lg md:text-xl text-white hover:text-gray-400 flex items-center nav-item-hover"
+                        style={{ fontFamily: 'Times New Roman, serif' }}
                     >
-                        Home
+                        <i className="fas fa-sign-out-alt mr-2"></i> {/* Ícono */}
+                        Cerrar Sesión
                     </button>
                 </div>
             </div>
@@ -70,7 +73,7 @@ export default function NavigationCliente() {
             {showLogoutModal && (
                 <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-75">
                     <div className="bg-white p-8 rounded-lg shadow-lg text-center">
-                        <p className="text-xl font-semibold mb-6">¿Estás seguro que quieres cerrar sesión?</p>
+                        <p className="text-xl font-semibold mb-6" style={{ fontFamily: 'Times New Roman, serif' }}>¿Estás seguro que quieres cerrar sesión?</p>
                         <button
                             onClick={handleLogout}
                             className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 mr-4"

@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\NoticiaController; // Controlador para manejar las noticias
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -13,7 +14,6 @@ use Inertia\Inertia;
 |--------------------------------------------------------------------------
 | Web Routes
 |--------------------------------------------------------------------------
-|
 */
 
 // Ruta para la página principal de bienvenida
@@ -34,16 +34,14 @@ Route::post('/register', [RegisteredUserController::class, 'store'])->name('regi
 
 // Rutas para verificación de email
 Route::get('/email/verify', function () {
-    return Inertia::render('Auth/VerifyEmail'); // Página que indica que verifiquen su correo
+    return Inertia::render('Auth/VerifyEmail');
 })->middleware('auth')->name('verification.notice');
 
-// Ruta para verificar el email al hacer clic en el enlace del correo
 Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
-    $request->fulfill(); // Marca el email como verificado
-    return redirect('/mi-cuenta'); // Redirige a la página de la cuenta del usuario
+    $request->fulfill();
+    return redirect('/mi-cuenta');
 })->middleware(['auth', 'signed'])->name('verification.verify');
 
-// Ruta para reenviar el enlace de verificación
 Route::post('/email/verification-notification', function (Request $request) {
     $request->user()->sendEmailVerificationNotification();
     return back()->with('message', 'El enlace de verificación ha sido reenviado.');
@@ -51,35 +49,40 @@ Route::post('/email/verification-notification', function (Request $request) {
 
 // Rutas protegidas para los dashboards (solo usuarios autenticados y verificados)
 Route::middleware(['auth', 'verified'])->group(function () {
-    // Ruta para el dashboard del cliente, pasando el nombre del usuario actual
+    // Dashboard del cliente
     Route::get('/mi-cuenta', function () {
-        // Verificar el rol del usuario y redirigir
         if (auth()->user()->rol === 'admin') {
-            return redirect()->route('mi-gestion-admin'); // Si es admin, redirigir al dashboard del admin
+            return redirect()->route('mi-gestion-admin');
         }
-        return Inertia::render('Dashboard', [
-            'user' => auth()->user() // Pasar el usuario autenticado al Dashboard
-        ]);
+        return Inertia::render('Dashboard', ['user' => auth()->user()]);
     })->name('mi-cuenta');
 
-    // Ruta para el dashboard del admin, pasando el nombre del usuario actual
+    // Dashboard del admin
     Route::get('/mi-gestion-admin', function () {
-        return Inertia::render('AdminDashboard', [
-            'user' => auth()->user() // Pasar el usuario autenticado
-        ]);
+        return Inertia::render('AdminDashboard', ['user' => auth()->user()]);
     })->name('mi-gestion-admin');
 
-    // Otras rutas protegidas que solo pueden ser accedidas tras autenticar
-    Route::get('/reservar-cita', function () {
-        return Inertia::render('ReservarCitaCliente');
-    })->name('reservar-cita');
+    // Rutas para el admin: Citas, Foro y Clientes
+    Route::get('/admin/citas', function () {
+        return Inertia::render('CitasAdmin');
+    })->name('admin-citas');
+
+    Route::get('/admin/foro', [NoticiaController::class, 'index'])->name('admin-foro');
+    Route::post('/admin/foro', [NoticiaController::class, 'store'])->name('noticias.store');
+
+    Route::get('/admin/clientes', function () {
+        return Inertia::render('ClientesAdmin');
+    })->name('admin-clientes');
+
+    // Otras rutas para el cliente
+    Route::get('/reservar-cita', [NoticiaController::class, 'showNoticias'])->name('reservar-cita');
 
     Route::get('/mis-citas', function () {
-        return Inertia::render('MisCitasClientes');
+        return Inertia::render('MisCitasCliente');
     })->name('mis-citas');
 
     Route::get('/mis-datos', function () {
-        return Inertia::render('MisDatosClientes');
+        return Inertia::render('MisDatosCliente');
     })->name('mis-datos');
 });
 
