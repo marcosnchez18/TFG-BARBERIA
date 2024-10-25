@@ -24,7 +24,6 @@ export default function ClientesAdmin({ clientes }) {
                                 <th className="py-3 px-6">Nombre</th>
                                 <th className="py-3 px-6">Correo</th>
                                 <th className="py-3 px-6">Número de Tarjeta</th>
-                                <th className="py-3 px-6">Saldo</th>
                                 <th className="py-3 px-6">Ausencias</th>
                                 <th className="py-3 px-6 text-center">Acciones</th>
                             </tr>
@@ -35,7 +34,6 @@ export default function ClientesAdmin({ clientes }) {
                                     <td className="py-4 px-6">{cliente.nombre}</td>
                                     <td className="py-4 px-6">{cliente.email}</td>
                                     <td className="py-4 px-6">{cliente.numero_tarjeta_vip}</td>
-                                    <td className="py-4 px-6">{cliente.saldo?.toFixed(2) || '0.00' } €</td>
                                     <td className="py-4 px-6 text-center">{cliente.contador_ausencias}</td>
                                     <td className="py-4 px-6 text-center">
                                         <button
