@@ -12,6 +12,22 @@ export default function ClientesAdmin({ clientes }) {
         }
     };
 
+    const deshabilitarCliente = (id) => {
+        if (confirm('¿Deseas deshabilitar este cliente?')) {
+            Inertia.patch(route('clientes.deshabilitar', id), {
+                onSuccess: () => alert('Cliente deshabilitado con éxito'),
+            });
+        }
+    };
+
+    const habilitarCliente = (id) => {
+        if (confirm('¿Deseas habilitar este cliente?')) {
+            Inertia.patch(route('clientes.habilitar', id), {
+                onSuccess: () => alert('Cliente habilitado con éxito'),
+            });
+        }
+    };
+
     return (
         <div>
             <NavigationAdmin />
@@ -37,13 +53,28 @@ export default function ClientesAdmin({ clientes }) {
                                     <td className="py-4 px-6">{cliente.numero_tarjeta_vip}</td>
                                     <td className="py-4 px-6">{cliente.saldo} €</td>
                                     <td className="py-4 px-6 text-center">{cliente.contador_ausencias}</td>
-                                    <td className="py-4 px-6 text-center">
+                                    <td className="py-4 px-6 text-center space-x-2">
                                         <button
                                             onClick={() => eliminarCliente(cliente.id)}
                                             className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full"
                                         >
                                             🗑️
                                         </button>
+                                        {cliente.estado === 'activo' ? (
+                                            <button
+                                                onClick={() => deshabilitarCliente(cliente.id)}
+                                                className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded-full"
+                                            >
+                                                Deshabilitar
+                                            </button>
+                                        ) : (
+                                            <button
+                                                onClick={() => habilitarCliente(cliente.id)}
+                                                className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full"
+                                            >
+                                                Habilitar
+                                            </button>
+                                        )}
                                     </td>
                                 </tr>
                             ))}
