@@ -920,3 +920,57 @@ nav {
     font-style: italic;
     color: #245255;
 }
+
+
+
+
+
+.epic-noticias-container {
+    margin-top: 2rem;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.6);
+    border-radius: 10px;
+    color: #000000;
+    background-color: #f7f6f6;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.epic-noticias-title {
+    color: #000000;
+    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
+    margin-bottom: 1rem;
+}
+
+.epic-noticia-card {
+    background: rgba(148, 146, 146, 0.1);
+    border: 1px solid #f1f0e6;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    transition: transform 0.3s;
+}
+
+.epic-noticia-card:hover {
+    transform: translateY(-5px);
+}
+
+.epic-noticia-title {
+    color: #000000;
+
+}
+
+.epic-noticia-content {
+    font-size: 1rem;
+    color: #000000;
+    margin: 0.5rem 0;
+}
+
+.epic-noticia-author {
+    font-size: 0.875rem;
+    color: #d4af37;
+}
+
+.epic-noticia-empty {
+    color: #ffdd44;
+    font-weight: bold;
+}
