@@ -45,7 +45,9 @@ export default function NavigationAdmin() {
                 >
                     {/* Opciones en vertical cuando está el menú hamburguesa */}
                     <div className="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-8">
-                        <Link href={route('mi-gestion-admin')} className="text-lg md:text-xl text-white hover:text-gray-400 nav-item-hover">Home</Link>
+                    <button onClick={() => setShowLogoutModal(true)} className="text-lg md:text-xl text-white hover:text-gray-400 flex items-center nav-item-hover">
+                             Home
+                        </button>
                         <Link href={route('admin-citas')} className="text-lg md:text-xl text-white hover:text-gray-400 nav-item-hover">Próximas Citas</Link>
                         <Link href={route('admin-foro')} className="text-lg md:text-xl text-white hover:text-gray-400 nav-item-hover">Foro</Link>
                         <Link href={route('admin-clientes')} className="text-lg md:text-xl text-white hover:text-gray-400 nav-item-hover">Clientes</Link>

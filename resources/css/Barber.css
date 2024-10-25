@@ -1010,3 +1010,77 @@ nav {
         transform: translateY(-10px);
     }
 }
+
+
+
+/* Contenedor general de la página */
+.clientes-admin-container {
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+/* Contenedor de la tabla con scroll horizontal */
+.clientes-admin-table-container {
+    overflow-x: auto;
+}
+
+/* Estilos de la tabla */
+.clientes-admin-table {
+    min-width: 100%;
+    background-color: #f5f2f0; /* Fondo gris oscuro */
+    color: #000000;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Encabezados de la tabla */
+.clientes-admin-table-header {
+    padding: 0.75rem 1.5rem;
+    background-color: #756951; /* Azul oscuro */
+    text-transform: uppercase;
+    font-weight: bold;
+    font-size: 0.875rem;
+    text-align: left;
+}
+
+/* Celdas de la tabla */
+.clientes-admin-table-cell {
+    padding: 1rem 1.5rem;
+}
+
+/* Fila de la tabla en hover */
+.clientes-admin-table-row:hover {
+    background-color: #e1ebff; /* Gris oscuro */
+}
+
+/* Botones de acción */
+.clientes-admin-btn-delete, .clientes-admin-btn-disable, .clientes-admin-btn-enable {
+    font-weight: bold;
+    padding: 0.5rem 1rem;
+    border-radius: 9999px; /* Bordes redondeados */
+    color: #ffffff;
+}
+
+.clientes-admin-btn-delete {
+    background-color: #ef4444; /* Rojo */
+}
+
+.clientes-admin-btn-delete:hover {
+    background-color: #b91c1c; /* Rojo oscuro */
+}
+
+.clientes-admin-btn-disable {
+    background-color: #f59e0b; /* Amarillo */
+}
+
+.clientes-admin-btn-disable:hover {
+    background-color: #d97706; /* Amarillo oscuro */
+}
+
+.clientes-admin-btn-enable {
+    background-color: #10b981; /* Verde */
+}
+
+.clientes-admin-btn-enable:hover {
+    background-color: #059669; /* Verde oscuro */
+}
