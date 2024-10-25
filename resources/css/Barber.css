@@ -974,3 +974,39 @@ nav {
     color: #ffdd44;
     font-weight: bold;
 }
+
+
+.account-inactive-container {
+    background: linear-gradient(135deg, #1a1a1a 30%, #333 100%);
+    font-family: 'Times New Roman', serif;
+}
+
+.account-inactive-title {
+    font-size: 3rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+    color: #f87171;
+}
+
+.account-inactive-message {
+    color: #f3f4f6;
+    font-size: 1.5rem;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.account-inactive-contact a {
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+.account-inactive-decorative img {
+    animation: float 4s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
