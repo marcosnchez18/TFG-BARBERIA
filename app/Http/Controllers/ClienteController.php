@@ -1,6 +1,6 @@
 <?php
 
-// ClienteController.php
+
 
 namespace App\Http\Controllers;
 
@@ -13,10 +13,8 @@ class ClienteController extends Controller
     // Método para mostrar todos los clientes
     public function index()
     {
-        // Solo clientes con rol 'cliente' y seleccionando campos relevantes
         $clientes = User::where('rol', 'cliente')
-            ->select('id', 'nombre', 'email', 'numero_tarjeta_vip', 'saldo', 'contador_ausencias')
-            ->get();
+            ->get(['id', 'nombre', 'email', 'numero_tarjeta_vip', 'contador_ausencias']);
 
         return Inertia::render('ClientesAdmin', [
             'clientes' => $clientes
