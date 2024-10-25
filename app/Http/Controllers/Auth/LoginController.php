@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
@@ -22,16 +21,19 @@ class LoginController extends Controller
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
 
-            // Redirigir según el rol del usuario
-            if ($user->rol === 'admin') {  // Usar 'rol' en lugar de 'role'
-                return redirect()->route('mi-gestion-admin'); // Redirigir al dashboard del admin
+            // Verificar si el usuario está inactivo
+            if ($user->estado === 'inactivo') {
+                Auth::logout(); // Cerrar la sesión inmediatamente
+                return redirect()->route('account.inactive'); // Redirigir a la página de cuenta inactiva
             }
 
-            return redirect()->route('mi-cuenta'); // Redirigir al dashboard del cliente
+            // Redirigir según el rol del usuario
+            return redirect()->route($user->rol === 'admin' ? 'mi-gestion-admin' : 'mi-cuenta');
         }
 
+        // Si las credenciales no son válidas, devolver un error
         return back()->withErrors([
-            'email' => 'Las credenciales no coinciden con nuestros registros.',
+            'email' => 'Las credenciales proporcionadas no coinciden con nuestros registros.',
         ]);
     }
 

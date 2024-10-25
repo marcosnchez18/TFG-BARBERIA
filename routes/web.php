@@ -29,6 +29,13 @@ Route::get('/', function () {
 Route::get('/login', [LoginController::class, 'create'])->name('login');
 Route::post('/login', [LoginController::class, 'store'])->name('login.authenticate');
 
+Route::get('/account-inactive', function () {
+    return Inertia::render('AccountInactive', [
+        'message' => 'UPS !! Tu cuenta está desactivada por conductas inapropiadas. Si desea recuperarla, contacte con nosotros.',
+    ]);
+})->name('account.inactive');
+
+
 Route::get('/register', [RegisteredUserController::class, 'create'])->name('register');
 Route::post('/register', [RegisteredUserController::class, 'store'])->name('register.store');
 
@@ -76,6 +83,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Gestión de clientes
     Route::get('/admin/clientes', [ClienteController::class, 'index'])->name('admin-clientes'); // Listar clientes
     Route::delete('/admin/clientes/{id}', [ClienteController::class, 'destroy'])->name('clientes.destroy'); // Eliminar cliente
+    
+    Route::patch('/admin/clientes/{id}/deshabilitar', [ClienteController::class, 'deshabilitar'])->name('clientes.deshabilitar');
+    Route::patch('/admin/clientes/{id}/habilitar', [ClienteController::class, 'habilitar'])->name('clientes.habilitar');
+
+
 
     // Rutas adicionales para el cliente
     Route::get('/reservar-cita', [NoticiaController::class, 'showNoticias'])->name('reservar-cita');

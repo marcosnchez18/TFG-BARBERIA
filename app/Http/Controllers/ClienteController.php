@@ -1,6 +1,6 @@
 <?php
 
-// ClienteController.php
+
 
 namespace App\Http\Controllers;
 
@@ -12,16 +12,15 @@ class ClienteController extends Controller
 {
     // Método para mostrar todos los clientes
     public function index()
-    {
-        // Solo clientes con rol 'cliente' y seleccionando campos relevantes
-        $clientes = User::where('rol', 'cliente')
-            ->select('id', 'nombre', 'email', 'numero_tarjeta_vip', 'saldo', 'contador_ausencias')
-            ->get();
+{
+    $clientes = User::where('rol', 'cliente')
+        ->get(['id', 'nombre', 'email', 'numero_tarjeta_vip', 'saldo', 'contador_ausencias', 'estado']);
 
-        return Inertia::render('ClientesAdmin', [
-            'clientes' => $clientes
-        ]);
-    }
+    return Inertia::render('ClientesAdmin', [
+        'clientes' => $clientes
+    ]);
+}
+
 
     // Método para eliminar un cliente
     public function destroy($id)
@@ -31,4 +30,20 @@ class ClienteController extends Controller
 
         return redirect()->route('admin-clientes')->with('message', 'Cliente eliminado con éxito.');
     }
+
+    public function deshabilitar($id)
+{
+    $cliente = User::findOrFail($id);
+    $cliente->update(['estado' => 'inactivo']);
+    return redirect()->route('admin-clientes')->with('message', 'Cliente deshabilitado con éxito.');
+}
+
+public function habilitar($id)
+{
+    $cliente = User::findOrFail($id);
+    $cliente->update(['estado' => 'activo']);
+    return redirect()->route('admin-clientes')->with('message', 'Cliente habilitado con éxito.');
+}
+
+
 }
