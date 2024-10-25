@@ -4,7 +4,7 @@ export default function AccountInactive({ message }) {
     return (
         <div className="account-inactive-container mx-auto text-center p-12 min-h-screen flex flex-col justify-center items-center bg-gradient-to-b from-gray-800 to-black">
             <h2 className="account-inactive-title text-4xl md:text-6xl font-extrabold text-red-500 mb-6">
-                ⚔️ Cuenta Deshabilitada ⚔️
+                💈​Cuenta Deshabilitada💈​
             </h2>
             <p className="account-inactive-message text-2xl md:text-3xl text-white mb-4 px-4 md:px-8 max-w-3xl leading-relaxed">
                 {message}

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useForm } from '@inertiajs/react';
+import Swal from 'sweetalert2';
 import NavigationAdmin from '../Components/NavigationAdmin';
 import SobreNosotros from '@/Components/Sobrenosotros';
 import Footer from '../Components/Footer';
@@ -21,11 +22,15 @@ export default function ForoAdmin({ noticias }) {
                 onSuccess: () => {
                     reset();
                     setIsEditing(false);
+                    Swal.fire('Actualizado', 'La noticia se actualizó con éxito.', 'success');
                 },
             });
         } else {
             post(route('noticias.store'), {
-                onSuccess: () => reset(),
+                onSuccess: () => {
+                    reset();
+                    Swal.fire('Publicada', 'La noticia se publicó con éxito.', 'success');
+                },
             });
         }
     };
@@ -38,24 +43,35 @@ export default function ForoAdmin({ noticias }) {
     };
 
     const handleDelete = (id) => {
-        if (confirm('¿Estás seguro de que deseas eliminar esta noticia?')) {
-            Inertia.delete(route('noticias.destroy', id), {
-                onSuccess: () => {
-                    alert('Noticia eliminada con éxito');
-                },
-            });
-        }
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: '¡Esta acción no se puede deshacer!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Inertia.delete(route('noticias.destroy', id), {
+                    onSuccess: () => {
+                        Swal.fire('Eliminada', 'La noticia fue eliminada con éxito.', 'success');
+                    },
+                });
+            }
+        });
     };
 
     return (
         <div
             className="foro-barberia"
             style={{
-                backgroundImage: `url('/images/barberia.jpg')`, // Aquí especifica la ruta de tu imagen
-                backgroundSize: 'cover', // Que la imagen cubra toda la pantalla
-                backgroundPosition: 'center', // Centrar la imagen
-                backgroundRepeat: 'no-repeat', // No repetir la imagen
-                minHeight: '100vh', // Asegurarse de que cubra toda la altura de la pantalla
+                backgroundImage: `url('/images/barberia.jpg')`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                backgroundRepeat: 'no-repeat',
+                minHeight: '100vh',
             }}
         >
             <NavigationAdmin />
