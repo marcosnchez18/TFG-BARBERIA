@@ -14,7 +14,7 @@ class ClienteController extends Controller
     public function index()
     {
         $clientes = User::where('rol', 'cliente')
-            ->get(['id', 'nombre', 'email', 'numero_tarjeta_vip', 'contador_ausencias']);
+            ->get(['id', 'nombre', 'email', 'numero_tarjeta_vip', 'saldo', 'contador_ausencias']);
 
         return Inertia::render('ClientesAdmin', [
             'clientes' => $clientes
