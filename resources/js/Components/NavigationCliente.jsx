@@ -5,19 +5,20 @@ import { Link, useForm } from '@inertiajs/react';
 
 export default function NavigationCliente() {
     const [showLogoutModal, setShowLogoutModal] = useState(false);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
     const { post } = useForm();
 
     // Función para manejar la confirmación de cierre de sesión
     const handleLogout = () => {
         post(route('logout'), {
-            onSuccess: () => window.location.href = route('home'), // Redirige a /home después de cerrar sesión
+            onSuccess: () => window.location.href = route('home'),
         });
     };
 
     return (
         <nav className="bg-neutral-900 p-4">
-            <div className="container mx-auto flex flex-wrap justify-between items-center">
-                {/* Logo de la Barbería */}
+            <div className="container mx-auto flex items-center justify-between">
+                {/* Logo de la Barbería (Izquierda) */}
                 <div className="flex items-center">
                     <Link href={route('mi-cuenta')}>
                         <img
@@ -28,43 +29,27 @@ export default function NavigationCliente() {
                     </Link>
                 </div>
 
-                {/* Menú de navegación */}
-                <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-8 mt-4 md:mt-0" style={{ fontFamily: 'Times New Roman, serif' }}>
-                    <button
-                        onClick={() => setShowLogoutModal(true)}
-                        className="text-lg md:text-xl text-white hover:text-gray-400 nav-item-hover"
-                    >
-                        Home
-                    </button>
-                    <Link
-                        href={route('reservar-cita')}
-                        className="text-lg md:text-xl text-white hover:text-gray-400 nav-item-hover"
-                    >
-                        Reservar Cita
-                    </Link>
-                    <Link
-                        href={route('mis-citas')}
-                        className="text-lg md:text-xl text-white hover:text-gray-400 nav-item-hover"
-                    >
-                        Mis Citas
-                    </Link>
-                    <Link
-                        href={route('mis-datos')}
-                        className="text-lg md:text-xl text-white hover:text-gray-400 nav-item-hover"
-                    >
-                        Mis Datos
-                    </Link>
-                </div>
+                {/* Icono de menú hamburguesa (Visible en pantallas pequeñas) */}
+                <button
+                    className="text-white text-3xl md:hidden"
+                    onClick={() => setIsMenuOpen(!isMenuOpen)}
+                >
+                    {isMenuOpen ? '✕' : '☰'}
+                </button>
 
-                {/* Botón de Home con confirmación de cierre de sesión */}
-                <div className="mt-4 md:mt-0">
-                    <button
-                        onClick={() => setShowLogoutModal(true)}
-                        className="text-lg md:text-xl text-white hover:text-gray-400 flex items-center nav-item-hover"
-                        style={{ fontFamily: 'Times New Roman, serif' }}
-                    >
-                        <i className="fas fa-sign-out-alt mr-2"></i> {/* Ícono */}
-                        Cerrar Sesión
+                {/* Menú de navegación centrado en escritorio y vertical en móvil */}
+                <div
+                    className={`${
+                        isMenuOpen ? 'flex' : 'hidden'
+                    } flex-col md:flex md:flex-row space-y-4 md:space-y-0 md:space-x-8 mt-4 md:mt-0 mx-auto items-center`}
+                    style={{ fontFamily: 'Times New Roman, serif' }}
+                >
+                    <Link href={route('mi-cuenta')} className="text-lg md:text-xl text-white hover:text-gray-400 nav-item-hover">Home</Link>
+                    <Link href={route('reservar-cita')} className="text-lg md:text-xl text-white hover:text-gray-400 nav-item-hover">Reservar Cita</Link>
+                    <Link href={route('mis-citas')} className="text-lg md:text-xl text-white hover:text-gray-400 nav-item-hover">Mis Citas</Link>
+                    <Link href={route('mis-datos')} className="text-lg md:text-xl text-white hover:text-gray-400 nav-item-hover">Mis Datos</Link>
+                    <button onClick={() => setShowLogoutModal(true)} className="text-lg md:text-xl text-white hover:text-gray-400 flex items-center nav-item-hover">
+                        <i className="fas fa-sign-out-alt mr-2"></i> Cerrar Sesión
                     </button>
                 </div>
             </div>

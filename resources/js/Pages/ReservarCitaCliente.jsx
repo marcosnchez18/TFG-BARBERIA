@@ -1,29 +1,54 @@
 import React from 'react';
 import NavigationCliente from '../Components/NavigationCliente';
+import WhatsAppButton from '@/Components/Wasa';
+import SobreNosotros from '@/Components/Sobrenosotros';
+import Footer from '../Components/Footer';
+import '../../css/Barber.css';
 
 export default function ReservarCitaCliente({ noticias }) {
     return (
-        <div>
+        <div style={{
+            backgroundImage: "url('/images/barberia.jpg')",
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            minHeight: '100vh',
+        }}>
             <NavigationCliente />
-            <div className="container mx-auto p-8">
-                <h1 className="text-4xl font-bold">Reservar Cita</h1>
+            <br />
+            <div className="container mx-auto p-8 bg-white bg-opacity-80 rounded-lg mt-10">
+                <h2 className="text-4xl font-bold text-center mb-6">Noticias</h2>
 
-                {/* Mostrar noticias disponibles */}
-                <div className="mt-8">
-                    <h2 className="text-2xl font-bold">Últimas Noticias</h2>
+                {/* Mostrar noticias con estilo épico */}
+                <div className="epic-noticias-container">
+
                     {noticias && noticias.length > 0 ? (
                         noticias.map((noticia) => (
-                            <div key={noticia.id} className="mt-4 p-4 border-b">
-                                <h3 className="text-xl font-semibold">{noticia.titulo}</h3>
-                                <p>{noticia.contenido}</p>
-                                <small>Publicado por: {noticia.usuario.nombre}</small>
+                            <div key={noticia.id} className="epic-noticia-card">
+                                <h3 className="epic-noticia-title text-xl font-semibold">{noticia.titulo}</h3>
+                                <p className="epic-noticia-content">{noticia.contenido}</p>
+                                <small className="epic-noticia-author">Publicado por: {noticia.usuario.nombre}</small>
                             </div>
                         ))
                     ) : (
-                        <p>No hay noticias disponibles en este momento.</p>
+                        <p className="epic-noticia-empty">No hay noticias disponibles en este momento.</p>
                     )}
                 </div>
+
+                {/* Botón para pedir cita */}
+                <div className="text-center mt-10">
+                    <button
+                        onClick={() => window.location.href = route('elegir')}
+                        className="boton_lugar"
+                    >
+                        Pedir Cita
+                    </button>
+                </div>
             </div>
+            <br /><br />
+            <SobreNosotros />
+            <Footer />
+            <WhatsAppButton />
         </div>
     );
 }
+

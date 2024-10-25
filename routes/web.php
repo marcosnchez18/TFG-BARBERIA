@@ -4,7 +4,8 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
-use App\Http\Controllers\NoticiaController; // Controlador para manejar las noticias
+use App\Http\Controllers\NoticiaController;
+use App\Http\Controllers\ClienteController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -24,11 +25,10 @@ Route::get('/', function () {
     ]);
 })->name('home');
 
-// Ruta para mostrar el formulario de login
+// Rutas de autenticación
 Route::get('/login', [LoginController::class, 'create'])->name('login');
 Route::post('/login', [LoginController::class, 'store'])->name('login.authenticate');
 
-// Ruta para mostrar el formulario de registro
 Route::get('/register', [RegisteredUserController::class, 'create'])->name('register');
 Route::post('/register', [RegisteredUserController::class, 'store'])->name('register.store');
 
@@ -47,7 +47,7 @@ Route::post('/email/verification-notification', function (Request $request) {
     return back()->with('message', 'El enlace de verificación ha sido reenviado.');
 })->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 
-// Rutas protegidas para los dashboards (solo usuarios autenticados y verificados)
+// Rutas protegidas para dashboards
 Route::middleware(['auth', 'verified'])->group(function () {
     // Dashboard del cliente
     Route::get('/mi-cuenta', function () {
@@ -57,30 +57,31 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return Inertia::render('Dashboard', ['user' => auth()->user()]);
     })->name('mi-cuenta');
 
-    // Dashboard del admin
+    // Dashboard del administrador
     Route::get('/mi-gestion-admin', function () {
         return Inertia::render('AdminDashboard', ['user' => auth()->user()]);
     })->name('mi-gestion-admin');
 
-    // Rutas para el admin: Citas, Foro y Clientes
+    // Rutas de gestión de citas, foro y clientes para el administrador
     Route::get('/admin/citas', function () {
         return Inertia::render('CitasAdmin');
     })->name('admin-citas');
 
+    // Foro de noticias del administrador
     Route::get('/admin/foro', [NoticiaController::class, 'index'])->name('admin-foro');
     Route::post('/admin/foro', [NoticiaController::class, 'store'])->name('noticias.store');
+    Route::put('/admin/foro/{noticia}', [NoticiaController::class, 'update'])->name('noticias.update');
+    Route::delete('/admin/foro/{noticia}', [NoticiaController::class, 'destroy'])->name('noticias.destroy');
 
-    Route::get('/admin/clientes', function () {
-        return Inertia::render('ClientesAdmin');
-    })->name('admin-clientes');
+    // Gestión de clientes
+    Route::get('/admin/clientes', [ClienteController::class, 'index'])->name('admin-clientes'); // Listar clientes
+    Route::delete('/admin/clientes/{id}', [ClienteController::class, 'destroy'])->name('clientes.destroy'); // Eliminar cliente
 
-    // Otras rutas para el cliente
+    // Rutas adicionales para el cliente
     Route::get('/reservar-cita', [NoticiaController::class, 'showNoticias'])->name('reservar-cita');
-
     Route::get('/mis-citas', function () {
         return Inertia::render('MisCitasCliente');
     })->name('mis-citas');
-
     Route::get('/mis-datos', function () {
         return Inertia::render('MisDatosCliente');
     })->name('mis-datos');
@@ -92,7 +93,7 @@ Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLink
 Route::get('/reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
 Route::post('/reset-password', [ResetPasswordController::class, 'reset'])->name('password.update');
 
-// Otras rutas adicionales (páginas públicas)
+// Rutas adicionales (públicas)
 Route::get('/sobre-nosotros', function () {
     return Inertia::render('PaginaSobreNos');
 })->name('sobre-nosotros');
@@ -109,7 +110,7 @@ Route::get('/equipo', function () {
     return Inertia::render('Equipo');
 })->name('equipo');
 
-// Páginas de Daniel y José
+// Páginas personales de Daniel y José
 Route::get('/daniel', function () {
     return Inertia::render('Daniel');
 })->name('daniel');

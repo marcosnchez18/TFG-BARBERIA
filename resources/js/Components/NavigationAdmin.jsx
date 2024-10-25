@@ -4,19 +4,20 @@ import { Link, useForm } from '@inertiajs/react';
 
 export default function NavigationAdmin() {
     const [showLogoutModal, setShowLogoutModal] = useState(false);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
     const { post } = useForm();
 
     // Función para manejar la confirmación de cierre de sesión
     const handleLogout = () => {
         post(route('logout'), {
-            onSuccess: () => window.location.href = route('home'), // Redirige a /home después de cerrar sesión
+            onSuccess: () => window.location.href = route('home'),
         });
     };
 
     return (
         <nav className="bg-neutral-900 p-4">
-            <div className="container mx-auto flex flex-wrap justify-between items-center">
-                {/* Logo de la Barbería */}
+            <div className="container mx-auto flex items-center justify-between">
+                {/* Logo de la Barbería (Izquierda) */}
                 <div className="flex items-center">
                     <Link href={route('mi-gestion-admin')}>
                         <img
@@ -27,44 +28,31 @@ export default function NavigationAdmin() {
                     </Link>
                 </div>
 
-                {/* Menú de navegación */}
-                <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-8 mt-4 md:mt-0" style={{ fontFamily: 'Times New Roman, serif' }}>
+                {/* Icono de menú hamburguesa (Visible en pantallas pequeñas) */}
                 <button
-                        onClick={() => setShowLogoutModal(true)}
-                        className="text-lg md:text-xl text-white hover:text-gray-400 nav-item-hover"
-                    >
-                        Home
-                    </button>
-                    <Link
-                        href={route('admin-citas')}
-                        className="text-lg md:text-xl text-white hover:text-gray-400 nav-item-hover"
-                    >
-                        Próximas Citas
-                    </Link>
-                    <Link
-                        href={route('admin-foro')}
-                        className="text-lg md:text-xl text-white hover:text-gray-400 nav-item-hover"
-                    >
-                        Foro
-                    </Link>
-                    <Link
-                        href={route('admin-clientes')}
-                        className="text-lg md:text-xl text-white hover:text-gray-400 nav-item-hover"
-                    >
-                        Clientes
-                    </Link>
-                </div>
+                    className="text-white text-3xl md:hidden"
+                    onClick={() => setIsMenuOpen(!isMenuOpen)}
+                >
+                    {isMenuOpen ? '✕' : '☰'}
+                </button>
 
-                {/* Botón de Cerrar Sesión */}
-                <div className="mt-4 md:mt-0">
-                    <button
-                        onClick={() => setShowLogoutModal(true)}
-                        className="text-lg md:text-xl text-white hover:text-gray-400 flex items-center nav-item-hover"
-                        style={{ fontFamily: 'Times New Roman, serif' }}
-                    >
-                        <i className="fas fa-sign-out-alt mr-2"></i> {/* Ícono */}
-                        Cerrar Sesión
-                    </button>
+                {/* Menú de navegación */}
+                <div
+                    className={`${
+                        isMenuOpen ? 'block' : 'hidden'
+                    } md:flex md:flex-row space-y-4 md:space-y-0 md:space-x-8 mt-4 md:mt-0 mx-auto`}
+                    style={{ fontFamily: 'Times New Roman, serif' }}
+                >
+                    {/* Opciones en vertical cuando está el menú hamburguesa */}
+                    <div className="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-8">
+                        <Link href={route('mi-gestion-admin')} className="text-lg md:text-xl text-white hover:text-gray-400 nav-item-hover">Home</Link>
+                        <Link href={route('admin-citas')} className="text-lg md:text-xl text-white hover:text-gray-400 nav-item-hover">Próximas Citas</Link>
+                        <Link href={route('admin-foro')} className="text-lg md:text-xl text-white hover:text-gray-400 nav-item-hover">Foro</Link>
+                        <Link href={route('admin-clientes')} className="text-lg md:text-xl text-white hover:text-gray-400 nav-item-hover">Clientes</Link>
+                        <button onClick={() => setShowLogoutModal(true)} className="text-lg md:text-xl text-white hover:text-gray-400 flex items-center nav-item-hover">
+                            <i className="fas fa-sign-out-alt mr-2"></i> Cerrar Sesión
+                        </button>
+                    </div>
                 </div>
             </div>
 
