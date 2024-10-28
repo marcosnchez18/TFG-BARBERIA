@@ -1084,3 +1084,103 @@ nav {
 .clientes-admin-btn-enable:hover {
     background-color: #059669; /* Verde oscuro */
 }
+
+
+/* Estilos exclusivos para el formulario de MisDatosCliente */
+
+#mis-datos-cliente-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+    background-color: rgba(249, 249, 249, 0.85); /* Fondo con transparencia */
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease-in-out;
+    font-family: 'Times New Roman', Times, serif; /* Fuente aplicada */
+}
+
+#mis-datos-cliente-container:hover {
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+}
+
+/* Títulos y etiquetas */
+.mis-datos-cliente-title {
+    color: #000000;
+    font-size: 2.5rem;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.mis-datos-cliente-label {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #6d570f;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+/* Inputs */
+.mis-datos-cliente-input {
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 1rem;
+    font-family: 'Times New Roman', Times, serif; /* Fuente aplicada */
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    transition: border-color 0.3s ease;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.mis-datos-cliente-input:focus {
+    border-color: #5a67d8;
+    outline: none;
+}
+
+/* Botones */
+.mis-datos-cliente-button {
+    padding: 0.5rem 1.25rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    font-family: 'Times New Roman', Times, serif; /* Fuente aplicada */
+}
+
+.mis-datos-cliente-button-edit {
+    background-color: #3182ce;
+}
+
+.mis-datos-cliente-button-edit:hover {
+    background-color: #2b6cb0;
+    transform: scale(1.05);
+}
+
+.mis-datos-cliente-button-save {
+    background-color: #38a169;
+}
+
+.mis-datos-cliente-button-save:hover {
+    background-color: #2f855a;
+    transform: scale(1.05);
+}
+
+/* Deshabilitado */
+.mis-datos-cliente-disabled {
+    background-color: #e2e8f0;
+    cursor: not-allowed;
+}
+
+/* Espaciado entre campos */
+.mis-datos-cliente-field-container {
+    margin-bottom: 1.25rem;
+}
+
+.mis-datos-cliente-error {
+    color: #e53e3e;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
