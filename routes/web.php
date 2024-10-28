@@ -28,14 +28,16 @@ Route::get('/', function () {
 // Rutas de autenticación
 Route::get('/login', [LoginController::class, 'create'])->name('login');
 Route::post('/login', [LoginController::class, 'store'])->name('login.authenticate');
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
+// Página para cuentas inactivas
 Route::get('/account-inactive', function () {
     return Inertia::render('AccountInactive', [
         'message' => 'UPS !! Tu cuenta está desactivada por conductas inapropiadas. Si desea recuperarla, contacte con nosotros.',
     ]);
 })->name('account.inactive');
 
-
+// Registro de usuario
 Route::get('/register', [RegisteredUserController::class, 'create'])->name('register');
 Route::post('/register', [RegisteredUserController::class, 'store'])->name('register.store');
 
@@ -46,7 +48,7 @@ Route::get('/email/verify', function () {
 
 Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
     $request->fulfill();
-    return redirect('/mi-cuenta');
+    return redirect()->route('mi-cuenta');
 })->middleware(['auth', 'signed'])->name('verification.verify');
 
 Route::post('/email/verification-notification', function (Request $request) {
@@ -54,7 +56,7 @@ Route::post('/email/verification-notification', function (Request $request) {
     return back()->with('message', 'El enlace de verificación ha sido reenviado.');
 })->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 
-// Rutas protegidas para dashboards
+// Rutas protegidas para dashboards y datos de clientes
 Route::middleware(['auth', 'verified'])->group(function () {
     // Dashboard del cliente
     Route::get('/mi-cuenta', function () {
@@ -80,24 +82,24 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::put('/admin/foro/{noticia}', [NoticiaController::class, 'update'])->name('noticias.update');
     Route::delete('/admin/foro/{noticia}', [NoticiaController::class, 'destroy'])->name('noticias.destroy');
 
-    // Gestión de clientes
-    Route::get('/admin/clientes', [ClienteController::class, 'index'])->name('admin-clientes'); // Listar clientes
-    Route::delete('/admin/clientes/{id}', [ClienteController::class, 'destroy'])->name('clientes.destroy'); // Eliminar cliente
-    
+    // Gestión de clientes para el administrador
+    Route::get('/admin/clientes', [ClienteController::class, 'index'])->name('admin-clientes');
+    Route::delete('/admin/clientes/{id}', [ClienteController::class, 'destroy'])->name('clientes.destroy');
     Route::patch('/admin/clientes/{id}/deshabilitar', [ClienteController::class, 'deshabilitar'])->name('clientes.deshabilitar');
     Route::patch('/admin/clientes/{id}/habilitar', [ClienteController::class, 'habilitar'])->name('clientes.habilitar');
 
-
-
-    // Rutas adicionales para el cliente
+    // Rutas para el cliente (incluyendo edición de datos)
     Route::get('/reservar-cita', [NoticiaController::class, 'showNoticias'])->name('reservar-cita');
     Route::get('/mis-citas', function () {
         return Inertia::render('MisCitasCliente');
     })->name('mis-citas');
-    Route::get('/mis-datos', function () {
-        return Inertia::render('MisDatosCliente');
-    })->name('mis-datos');
+
+    // Mostrar y actualizar datos del cliente en la ruta /mis-datos
+    Route::get('/mis-datos', [ClienteController::class, 'edit'])->name('mis-datos');
+    Route::patch('/mis-datos', [ClienteController::class, 'update'])->name('cliente.update');
 });
+
+
 
 // Rutas para restablecimiento de contraseña
 Route::get('/forgot-password', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
@@ -130,6 +132,3 @@ Route::get('/daniel', function () {
 Route::get('/jose', function () {
     return Inertia::render('Jose');
 })->name('jose');
-
-// Ruta para cerrar sesión
-Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
