@@ -20,13 +20,13 @@ export default function NavigationCliente() {
             <div className="container mx-auto flex items-center justify-between">
                 {/* Logo de la Barbería (Izquierda) */}
                 <div className="flex items-center">
-                    <Link href={route('mi-cuenta')}>
+                <button onClick={() => setShowLogoutModal(true)}>
                         <img
                             src="/images/logo.png"
                             alt="Logo Barbería"
                             className="w-20 h-20 md:w-30 md:h-30"
                         />
-                    </Link>
+                    </button>
                 </div>
 
                 {/* Icono de menú hamburguesa (Visible en pantallas pequeñas) */}
