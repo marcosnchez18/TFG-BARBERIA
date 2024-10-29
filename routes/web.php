@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\NoticiaController;
 use App\Http\Controllers\ClienteController;
+use App\Http\Controllers\CitaController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -93,13 +94,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/mis-citas', function () {
         return Inertia::render('MisCitasCliente');
     })->name('mis-citas');
+    Route::get('/mis-citas/elegir', function () {
+        return Inertia::render('ElegirCita');
+    })->name('mis-citas-elegir');
+
+    // Rutas para disponibilidad y reserva de citas
+    Route::get('/api/citas/disponibilidad', [CitaController::class, 'disponibilidad'])->name('citas.disponibilidad');
+    Route::post('/citas/reservar', [CitaController::class, 'reservar'])->name('citas.reservar');
 
     // Mostrar y actualizar datos del cliente en la ruta /mis-datos
     Route::get('/mis-datos', [ClienteController::class, 'edit'])->name('mis-datos');
     Route::patch('/mis-datos', [ClienteController::class, 'update'])->name('cliente.update');
 });
-
-
 
 // Rutas para restablecimiento de contraseña
 Route::get('/forgot-password', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');

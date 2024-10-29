@@ -46,7 +46,8 @@ export default function Contacto() {
                         {/* Horarios */}
                         <div className="contact-box">
                             <h2 className="contact-subtitle">Horario de Atención</h2>
-                            <p className="contact-text">Lunes a Sábado: 10:00 AM - 8:00 PM</p>
+                            <p className="contact-text">Lunes a Viernes: 10:00 - 14:00  y de  16:00 - 20:00</p>
+                            <p className="contact-text">Sábados: 10:00 - 14:00 </p>
                             <p className="contact-text">Domingos: Cerrado</p>
                         </div>
                     </div>

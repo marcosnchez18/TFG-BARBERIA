@@ -22,6 +22,9 @@
     },
     "dependencies": {
         "@inertiajs/inertia": "^0.11.1",
+        "date-holidays": "^3.23.12",
+        "dayjs": "^1.11.13",
+        "react-calendar": "^5.1.0",
         "sweetalert2": "^11.14.4",
         "ziggy-js": "^2.3.1"
     }

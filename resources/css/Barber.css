@@ -1291,3 +1291,49 @@ nav {
     background-color: #2b6cb0;
     transform: scale(1.05);
 }
+
+
+.back-button {
+    transition: background-color 0.3s ease;
+    font-weight: bold;
+}
+
+.back-button:hover {
+    background-color: #4a5568;
+}
+
+.elegir-cita-background {
+    background-image: url('/images/barberia.jpg');
+    background-size: cover;
+    background-position: center;
+    min-height: 100vh;
+   
+}
+
+.barbero-card, .servicio-card {
+    border-radius: 12px;
+    padding: 20px;
+    transition: transform 0.2s, box-shadow 0.2s;
+    background-color: #f9f9f9;
+}
+
+.barbero-card:hover, .servicio-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
+}
+
+.calendar-container .react-calendar {
+    border: none;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.horario-button {
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.horario-button:hover {
+    background-color: #2563eb;
+}
