@@ -1155,7 +1155,7 @@ nav {
 }
 
 .mis-datos-cliente-button-edit:hover {
-    background-color: #2b6cb0;
+    background-color: #2bb04c;
     transform: scale(1.05);
 }
 
@@ -1183,4 +1183,111 @@ nav {
     color: #e53e3e;
     font-size: 0.875rem;
     margin-top: 0.25rem;
+}
+
+
+
+/* Opciones de la sección principal */
+.inicio-cliente-seccion {
+    margin-top: 2rem;
+    padding: 2rem;
+    background-color: rgba(255, 248, 240, 0.85);
+    border-radius: 8px;
+}
+
+.inicio-cliente-opciones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: space-between;
+}
+
+.inicio-cliente-carta {
+    flex: 1 1 calc(33.333% - 1rem); /* Para distribuir 3 cartas en una fila con espacio entre ellas */
+    min-width: 250px; /* Para un ancho mínimo en dispositivos más pequeños */
+}
+
+.inicio-cliente-carta-contenedor {
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.inicio-cliente-carta-contenedor:hover {
+    transform: scale(1.05);
+}
+
+.inicio-cliente-carta-titulo {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #2d3748;
+}
+
+.inicio-cliente-carta-descripcion {
+    font-size: 1rem;
+    color: #4a5568;
+    margin-top: 0.5rem;
+}
+
+.inicio-cliente-carta-boton {
+    display: inline-block;
+    margin-top: 1rem;
+    padding: 0.75rem 1.5rem;
+    background-color: #A87B43;
+    color: #fff;
+    border-radius: 4px;
+    text-align: center;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+    font-family: 'Times New Roman', serif; /* Fuente actualizada */
+}
+
+.inicio-cliente-carta-boton:hover {
+    background-color: #8f6918;
+}
+
+
+
+
+
+.inicio-cliente-seccion-promocion {
+    background-color: rgba(250, 247, 240, 0.8); /* El último valor (0.8) define la opacidad: 1 es opaco y 0 es totalmente transparente */
+    padding: 3rem 0;
+    text-align: center;
+}
+
+
+.inicio-cliente-promocion-titulo {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #383329;
+    font-family: 'Times New Roman', serif;
+    margin-bottom: 1rem;
+}
+
+.inicio-cliente-promocion-descripcion {
+    font-size: 1.125rem;
+    color: #22262c;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.inicio-cliente-promocion-boton {
+    margin-top: 1.5rem;
+    padding: 0.75rem 2rem;
+    background-color: #A87B43;
+    color: #fff;
+    font-size: 1rem;
+    font-family: 'Times New Roman', serif;
+    font-weight: bold;
+    border-radius: 8px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.inicio-cliente-promocion-boton:hover {
+    background-color: #2b6cb0;
+    transform: scale(1.05);
 }

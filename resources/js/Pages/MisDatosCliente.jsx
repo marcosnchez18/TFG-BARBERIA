@@ -18,6 +18,7 @@ export default function MisDatosCliente() {
         nombre: false,
         email: false,
     });
+    const [copied, setCopied] = useState(false);
 
     const validateFields = (field) => {
         let error = null;
@@ -67,6 +68,14 @@ export default function MisDatosCliente() {
         });
     };
 
+    const copyToClipboard = (e) => {
+        e.preventDefault();
+        navigator.clipboard.writeText(cliente.numero_tarjeta_vip || 'N/A').then(() => {
+            setCopied(true);
+            setTimeout(() => setCopied(false), 1500);
+        });
+    };
+
     return (
         <div>
             <NavigationCliente />
@@ -78,7 +87,6 @@ export default function MisDatosCliente() {
                     minHeight: '100vh',
                     alignItems: 'center',
                     justifyContent: 'center',
-
                 }}
             >
                 <br /><br /><br /><br /><br /><br /><br />
@@ -136,31 +144,43 @@ export default function MisDatosCliente() {
                         </div>
 
                         <div className="mis-datos-cliente-field-container">
-    <label className="mis-datos-cliente-label">Saldo:</label>
-    <div className="relative">
-        <input
-            type="text" // Cambiado de "number" a "text" para compatibilidad con el símbolo
-            value={`${cliente.saldo || 'N/A'} €`}
-            disabled
-            className="mis-datos-cliente-input mis-datos-cliente-disabled mis-datos-cliente-currency"
-        />
-    </div>
-</div>
-
+                            <label className="mis-datos-cliente-label">Saldo:</label>
+                            <div className="relative">
+                                <input
+                                    type="text"
+                                    value={`${cliente.saldo || 'N/A'} €`}
+                                    disabled
+                                    className="mis-datos-cliente-input mis-datos-cliente-disabled mis-datos-cliente-currency"
+                                />
+                            </div>
+                        </div>
 
                         <div className="mis-datos-cliente-field-container">
                             <label className="mis-datos-cliente-label">Número de Tarjeta VIP:</label>
-                            <input
-                                type="text"
-                                value={cliente.numero_tarjeta_vip || 'N/A'}
-                                disabled
-                                className="mis-datos-cliente-input mis-datos-cliente-disabled"
-                            />
+                            <div className="relative">
+                                <input
+                                    type="text"
+                                    value={cliente.numero_tarjeta_vip || 'N/A'}
+                                    disabled
+                                    className="mis-datos-cliente-input mis-datos-cliente-disabled"
+                                />
+                                <button
+                                    onClick={copyToClipboard}
+                                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-blue-600"
+                                    title="Copiar al portapapeles"
+                                >
+                                    {copied ? (
+                                        <span className="text-green-500">✔ ¡Copiado!</span>
+                                    ) : (
+                                        <i className="fas fa-copy"></i>
+                                    )}
+                                </button>
+                            </div>
                         </div>
 
                         {cliente.referido_por && (
                             <div className="mis-datos-cliente-field-container">
-                                <label className="mis-datos-cliente-label">Referido por:</label>
+                                <label className="mis-datos-cliente-label">Invitado por:</label>
                                 <input
                                     type="text"
                                     value={cliente.referido_por}
