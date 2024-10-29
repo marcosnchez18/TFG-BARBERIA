@@ -18,6 +18,7 @@ export default function ElegirCita() {
     const [selectedTime, setSelectedTime] = useState(null);
     const [servicios, setServicios] = useState([]);
     const [horariosDisponibles, setHorariosDisponibles] = useState([]);
+    const [disponibilidadDias, setDisponibilidadDias] = useState({});
     const today = dayjs().startOf('day');
 
     // Configuración de festivos
@@ -28,6 +29,29 @@ export default function ElegirCita() {
             .then(response => setServicios(response.data))
             .catch(error => console.error("Error al cargar los servicios:", error));
     }, []);
+
+    useEffect(() => {
+        if (selectedBarbero) {
+            axios.get(`/api/citas/disponibilidad`, { params: { barbero_id: selectedBarbero.id } })
+                .then(response => setDisponibilidadDias(response.data))
+                .catch(error => console.error("Error al obtener disponibilidad:", error));
+        }
+    }, [selectedBarbero]);
+
+    const tileClassName = ({ date }) => {
+        const dateStr = dayjs(date).format('YYYY-MM-DD');
+        const dayOfWeek = dayjs(date).day();
+
+        // Día sin citas disponibles en naranja
+        if (disponibilidadDias[dateStr]?.completo) {
+            return 'day-sin-citas';
+        }
+        // Aplica clase roja para domingos y festivos, excluyendo sábados
+        else if (holidays.isHoliday(date) || dayOfWeek === 0) {
+            return 'day-no-disponible';
+        }
+        return null;
+    };
 
     const barberos = [
         { id: 1, nombre: "José Ángel Sánchez Harana", imagen: "/images/jose.png" },
@@ -85,7 +109,6 @@ export default function ElegirCita() {
     };
 
     const handleReservation = () => {
-        // Formatear la fecha sin cambiar a UTC
         const fechaHoraCita = `${dayjs(selectedDate).format('YYYY-MM-DD')} ${selectedTime}`;
 
         axios.post('/citas/reservar', {
@@ -120,7 +143,6 @@ export default function ElegirCita() {
             });
         });
     };
-
 
     const handleBack = () => {
         setStep(prevStep => prevStep - 1);
@@ -177,6 +199,7 @@ export default function ElegirCita() {
                                 onChange={handleSelectDate}
                                 value={selectedDate}
                                 minDate={new Date()}
+                                tileClassName={tileClassName}  // Aplica las clases de CSS a los días
                             />
                         </div>
 

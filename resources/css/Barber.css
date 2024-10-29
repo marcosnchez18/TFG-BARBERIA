@@ -1307,7 +1307,7 @@ nav {
     background-size: cover;
     background-position: center;
     min-height: 100vh;
-   
+
 }
 
 .barbero-card, .servicio-card {
@@ -1336,4 +1336,22 @@ nav {
 
 .horario-button:hover {
     background-color: #2563eb;
+}
+
+.day-completo {
+    background-color: orange !important;
+    color: white !important;
+}
+
+.day-no-disponible {
+    color: red !important;
+}
+
+
+.day-sin-citas {
+    color: orange !important;
+}
+
+.day-no-disponible {
+    color: red !important;
 }
