@@ -100,7 +100,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Rutas para disponibilidad y reserva de citas
     Route::get('/api/citas/disponibilidad', [CitaController::class, 'disponibilidad'])->name('citas.disponibilidad');
+    Route::get('/api/citas/horas-reservadas', [CitaController::class, 'horasReservadas']);
     Route::post('/citas/reservar', [CitaController::class, 'reservar'])->name('citas.reservar');
+
 
     // Mostrar y actualizar datos del cliente en la ruta /mis-datos
     Route::get('/mis-datos', [ClienteController::class, 'edit'])->name('mis-datos');

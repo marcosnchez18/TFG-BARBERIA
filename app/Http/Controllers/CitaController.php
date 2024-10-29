@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\ConfirmacionCitaMail;
 use App\Models\Cita;
-use App\Models\Servicio;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Carbon\Carbon;
 
 class CitaController extends Controller
@@ -14,27 +15,32 @@ class CitaController extends Controller
     /**
      * Muestra la disponibilidad de días y horarios.
      */
-    public function disponibilidad()
+    public function disponibilidad(Request $request)
     {
         $disponibilidad = [];
         $hoy = Carbon::today();
+        $barberoId = $request->input('barbero_id'); // Barbero seleccionado para filtrar las citas
 
-        // Obtener días con citas completadas o agotadas para el calendario
+        // Revisa disponibilidad de los próximos 30 días
         for ($i = 0; $i < 30; $i++) {
             $fecha = $hoy->copy()->addDays($i);
             $fechaStr = $fecha->toDateString();
 
             if ($fecha->isSunday()) {
-                $disponibilidad[$fechaStr] = ['completo' => true]; // Domingo cerrado
+                // Domingo: cerrado
+                $disponibilidad[$fechaStr] = ['completo' => true];
             } elseif ($fecha->isSaturday()) {
-                // Sábados, verificar disponibilidad de 10:00 a 14:00
+                // Sábado: horario de 10:00 a 14:00, máximo 5 citas en este rango
                 $totalCitas = Cita::whereDate('fecha_hora_cita', $fecha)
-                                  ->whereBetween(DB::raw('HOUR(fecha_hora_cita)'), [10, 14])
-                                  ->count();
+                    ->where('barbero_id', $barberoId)
+                    ->whereBetween(DB::raw('HOUR(fecha_hora_cita)'), [10, 13])
+                    ->count();
                 $disponibilidad[$fechaStr] = ['completo' => $totalCitas >= 5];
             } else {
-                // Días entre semana, verificar disponibilidad completa en el horario
-                $totalCitas = Cita::whereDate('fecha_hora_cita', $fecha)->count();
+                // Días entre semana: horario completo de 10:00 a 20:30 con un descanso de 15:00 a 16:00
+                $totalCitas = Cita::whereDate('fecha_hora_cita', $fecha)
+                    ->where('barbero_id', $barberoId)
+                    ->count();
                 $disponibilidad[$fechaStr] = ['completo' => $totalCitas >= 12];
             }
         }
@@ -53,8 +59,9 @@ class CitaController extends Controller
             'fecha_hora_cita' => 'required|date',
         ]);
 
-        // Comprobar si la hora y el barbero están disponibles
         $fecha_hora_cita = Carbon::parse($request->fecha_hora_cita);
+
+        // Verifica si la hora ya está reservada
         $existeCita = Cita::where('barbero_id', $request->barbero_id)
                           ->where('fecha_hora_cita', $fecha_hora_cita)
                           ->exists();
@@ -63,8 +70,8 @@ class CitaController extends Controller
             return response()->json(['error' => 'Este horario ya está reservado para el barbero seleccionado.'], 422);
         }
 
-        // Crear la cita
-        Cita::create([
+        // Crea la cita
+        $cita = Cita::create([
             'usuario_id' => Auth::id(),
             'barbero_id' => $request->barbero_id,
             'servicio_id' => $request->servicio_id,
@@ -72,6 +79,27 @@ class CitaController extends Controller
             'estado' => 'pendiente',
         ]);
 
+        // Envía correo de confirmación al usuario
+        $user = Auth::user();
+        Mail::to($user->email)->send(new ConfirmacionCitaMail($cita, $user));
+
         return response()->json(['success' => '¡Cita reservada exitosamente!']);
     }
+
+    public function horasReservadas(Request $request)
+{
+    $fecha = $request->input('fecha');
+    $barberoId = $request->input('barbero_id');
+
+    $horasReservadas = Cita::whereDate('fecha_hora_cita', $fecha)
+        ->where('barbero_id', $barberoId)
+        ->pluck('fecha_hora_cita')
+        ->map(function ($fechaHora) {
+            return Carbon::parse($fechaHora)->format('H:i');
+        });
+
+    return response()->json($horasReservadas);
+}
+
+
 }

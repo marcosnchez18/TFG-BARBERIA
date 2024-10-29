@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Inertia } from '@inertiajs/inertia';
 import NavigationCliente from '../Components/NavigationCliente';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
@@ -9,7 +8,7 @@ import Footer from '../Components/Footer';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import dayjs from 'dayjs';
-import Holidays from 'date-holidays'; // Importamos la librería de festivos
+import Holidays from 'date-holidays';
 
 export default function ElegirCita() {
     const [step, setStep] = useState(1);
@@ -21,17 +20,13 @@ export default function ElegirCita() {
     const [horariosDisponibles, setHorariosDisponibles] = useState([]);
     const today = dayjs().startOf('day');
 
-    // Configuramos los días festivos para Cádiz
-    const holidays = new Holidays('ES', 'AN', 'CA'); // ES para España, AN para Andalucía, CA para Cádiz
+    // Configuración de festivos
+    const holidays = new Holidays('ES', 'AN', 'CA');
 
     useEffect(() => {
         axios.get('/data/servicios.json')
-            .then(response => {
-                setServicios(response.data);
-            })
-            .catch(error => {
-                console.error("Error al cargar los servicios:", error);
-            });
+            .then(response => setServicios(response.data))
+            .catch(error => console.error("Error al cargar los servicios:", error));
     }, []);
 
     const barberos = [
@@ -52,21 +47,36 @@ export default function ElegirCita() {
     const handleSelectDate = (date) => {
         setSelectedDate(date);
         const dayOfWeek = dayjs(date).day();
-        const isHoliday = holidays.isHoliday(date); // Verifica si el día es festivo
+        const isHoliday = holidays.isHoliday(date);
 
         // Configuración de horarios
+        let horarios = [];
         if (dayjs(date).isSame(today, 'day') || isHoliday) {
             setHorariosDisponibles([]); // Sin horarios para el día actual o festivo
+            return;
         } else if (dayOfWeek === 6) { // Sábado
-            setHorariosDisponibles(["10:00", "10:45", "11:30", "12:15", "13:00"]);
+            horarios = ["10:00", "10:45", "11:30", "12:15", "13:00"];
         } else if (dayOfWeek === 0) { // Domingo
             setHorariosDisponibles([]); // Domingo cerrado
+            return;
         } else {
-            setHorariosDisponibles([
+            horarios = [
                 "10:00", "10:45", "11:30", "12:15", "13:00",
                 "16:00", "16:45", "17:30", "18:15", "19:00", "19:45", "20:30"
-            ]);
+            ];
         }
+
+        // Llama al backend para obtener horas reservadas y filtrar las horas disponibles
+        const formattedDate = dayjs(date).format('YYYY-MM-DD');
+        axios.get(`/api/citas/horas-reservadas`, {
+            params: { fecha: formattedDate, barbero_id: selectedBarbero.id }
+        })
+        .then(response => {
+            const reservedTimes = response.data;
+            const availableTimes = horarios.filter(hora => !reservedTimes.includes(hora));
+            setHorariosDisponibles(availableTimes);
+        })
+        .catch(error => console.error("Error al obtener disponibilidad:", error));
     };
 
     const handleSelectHorario = (horario) => {
@@ -75,21 +85,42 @@ export default function ElegirCita() {
     };
 
     const handleReservation = () => {
-        const fechaHoraCita = `${selectedDate.toISOString().split('T')[0]} ${selectedTime}`;
+        // Formatear la fecha sin cambiar a UTC
+        const fechaHoraCita = `${dayjs(selectedDate).format('YYYY-MM-DD')} ${selectedTime}`;
+
         axios.post('/citas/reservar', {
             barbero_id: selectedBarbero.id,
             servicio_id: selectedServicio.id,
             fecha_hora_cita: fechaHoraCita
         })
         .then(response => {
-            alert(response.data.success);
+            Swal.fire({
+                title: '¡Cita Reservada Exitosamente!',
+                html: `
+                    <p><strong>Barbero:</strong> ${selectedBarbero.nombre}</p>
+                    <p><strong>Servicio:</strong> ${selectedServicio.nombre} - €${selectedServicio.precio}</p>
+                    <p><strong>Fecha y Hora:</strong> ${dayjs(selectedDate).format('DD/MM/YYYY')} ${selectedTime}</p>
+                `,
+                icon: 'success',
+                confirmButtonText: 'Aceptar'
+            });
             setStep(1);
+            setSelectedBarbero(null);
+            setSelectedServicio(null);
+            setSelectedDate(null);
+            setSelectedTime(null);
         })
         .catch(error => {
             console.error("Error al reservar la cita:", error);
-            alert(error.response.data.error);
+            Swal.fire({
+                title: 'Error',
+                text: error.response.data.error || 'Hubo un problema al reservar la cita.',
+                icon: 'error',
+                confirmButtonText: 'Aceptar'
+            });
         });
     };
+
 
     const handleBack = () => {
         setStep(prevStep => prevStep - 1);
@@ -174,7 +205,7 @@ export default function ElegirCita() {
                         <h3 className="text-2xl font-semibold">Confirmar Cita</h3>
                         <p className="mt-4">Barbero: {selectedBarbero.nombre}</p>
                         <p>Servicio: {selectedServicio.nombre} - €{selectedServicio.precio}</p>
-                        <p>Fecha y Hora: {selectedDate.toDateString()} {selectedTime}</p>
+                        <p>Fecha y Hora: {dayjs(selectedDate).format('DD/MM/YYYY')} {selectedTime}</p>
                         <button
                             onClick={handleReservation}
                             className="confirm-button mt-6 bg-green-500 text-white px-8 py-3 rounded-md hover:bg-green-600"
