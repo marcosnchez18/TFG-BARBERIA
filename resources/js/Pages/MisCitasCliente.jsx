@@ -1,14 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { usePage } from '@inertiajs/react';
 import Swal from 'sweetalert2';
 import axios from 'axios';
 import NavigationCliente from '../Components/NavigationCliente';
 
 export default function MisCitasCliente() {
-    // Obtén citas del objeto de props y asegura que citas esté definido por defecto como un array vacío
     const { citas = [] } = usePage().props;
 
-    // Función para cancelar la cita
     const cancelarCita = (id, metodoPago) => {
         Swal.fire({
             title: '¿Estás seguro?',
@@ -30,7 +28,6 @@ export default function MisCitasCliente() {
                                 : 'Se ha cancelado su cita, hasta pronto.',
                             showConfirmButton: true,
                         }).then(() => {
-                            // Recarga la página después de cerrar la alerta
                             window.location.reload();
                         });
                     })
@@ -45,7 +42,6 @@ export default function MisCitasCliente() {
         });
     };
 
-    // Función para obtener la imagen del barbero según el ID
     const obtenerImagenBarbero = (barberoId) => {
         switch (barberoId) {
             case 1:
@@ -53,7 +49,7 @@ export default function MisCitasCliente() {
             case 2:
                 return "/images/hector.png";
             default:
-                return "/images/default.png"; // Imagen por defecto en caso de no coincidir con los IDs
+                return "/images/default.png";
         }
     };
 
@@ -61,10 +57,10 @@ export default function MisCitasCliente() {
         <div>
             <NavigationCliente />
             <div className="container mx-auto p-8">
-                <h1 className="text-4xl font-bold mb-6">Mis Citas</h1>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-                    {citas.length > 0 ? (
-                        citas.map((cita) => (
+                <h1 className="text-4xl font-bold mb-6 text-center">Mis Citas</h1>
+                {citas.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                        {citas.map((cita) => (
                             <div key={cita.id} className="p-6 border rounded-lg shadow bg-white">
                                 <div className="flex items-center mb-4">
                                     <img
@@ -92,11 +88,13 @@ export default function MisCitasCliente() {
                                     Cancelar Cita
                                 </button>
                             </div>
-                        ))
-                    ) : (
-                        <p className="text-xl text-center">No tienes citas programadas.</p>
-                    )}
-                </div>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="flex items-center justify-center h-64">
+                        <p className="text-xl text-red-500 italic">No tienes citas programadas.</p>
+                    </div>
+                )}
             </div>
         </div>
     );
