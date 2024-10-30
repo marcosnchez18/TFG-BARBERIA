@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Carbon\Carbon;
+use Inertia\Inertia;
 
 class CitaController extends Controller
 {
@@ -112,5 +113,43 @@ class CitaController extends Controller
         $cita->save();
 
         return response()->json(['success' => 'Método de pago actualizado']);
+    }
+
+    /**
+     * Cancela una cita y envía una alerta de confirmación.
+     */
+    public function cancelar(Request $request, $id)
+    {
+        // Verifica si la cita existe y pertenece al usuario autenticado
+        $cita = Cita::where('id', $id)
+            ->where('usuario_id', Auth::id())
+            ->first();
+
+        if (!$cita) {
+            return response()->json(['error' => 'No tienes citas para cancelar.'], 404);
+        }
+
+        // Elimina la cita
+        $cita->delete();
+
+        // Retorna respuesta con mensaje de confirmación para SweetAlert
+        return response()->json([
+            'success' => 'Cita cancelada exitosamente. Se ha solicitado la devolución del importe. Será ingresado en tu cuenta de PayPal de 3 a 5 días laborables.'
+        ]);
+    }
+
+    public function misCitas()
+    {
+        // ID del usuario autenticado
+        $usuarioId = Auth::id();
+
+        // Obtener citas con joins para incluir detalles del barbero y servicio
+        $citas = Cita::where('usuario_id', $usuarioId)
+            ->with(['barbero:id,nombre', 'servicio:id,nombre,precio']) // Cargar barbero y servicio con sus datos relevantes
+            ->get();
+
+        return Inertia::render('MisCitasCliente', [
+            'citas' => $citas,
+        ]);
     }
 }

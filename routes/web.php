@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
@@ -68,9 +69,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('mi-cuenta');
 
     // Dashboard del administrador
-    Route::get('/mi-gestion-admin', function () {
-        return Inertia::render('AdminDashboard', ['user' => auth()->user()]);
-    })->name('mi-gestion-admin');
+    Route::get('/mi-gestion-admin', [AdminController::class, 'dashboard'])->name('mi-gestion-admin');
 
     // Rutas de gestión de citas, foro y clientes para el administrador
     Route::get('/admin/citas', function () {
@@ -91,9 +90,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Rutas para el cliente (incluyendo edición de datos)
     Route::get('/reservar-cita', [NoticiaController::class, 'showNoticias'])->name('reservar-cita');
-    Route::get('/mis-citas', function () {
-        return Inertia::render('MisCitasCliente');
-    })->name('mis-citas');
+    Route::get('/mis-citas', [CitaController::class, 'misCitas'])->name('mis-citas');
+
+
     Route::get('/mis-citas/elegir', function () {
         return Inertia::render('ElegirCita');
     })->name('mis-citas-elegir');
@@ -105,6 +104,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Nueva ruta para actualizar el método de pago de la cita
     Route::patch('/citas/{id}/actualizar-metodo-pago', [CitaController::class, 'actualizarMetodoPago'])->name('citas.actualizar-metodo-pago');
+
+    // Ruta para cancelar una cita y mostrar el mensaje de devolución de importe
+    Route::delete('/citas/{id}/cancelar', [CitaController::class, 'cancelar'])->name('citas.cancelar');
 
     // Mostrar y actualizar datos del cliente en la ruta /mis-datos
     Route::get('/mis-datos', [ClienteController::class, 'edit'])->name('mis-datos');
