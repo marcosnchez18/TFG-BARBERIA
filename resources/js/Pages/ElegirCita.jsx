@@ -58,7 +58,7 @@ export default function ElegirCita() {
 
     const barberos = [
         { id: 1, nombre: "José Ángel Sánchez Harana", imagen: "/images/jose.png" },
-        { id: 2, nombre: "Daniel Valle Vargas", imagen: "/images/daniel.png" }
+        { id: 2, nombre: "Daniel Valle Vargas", imagen: "/images/hector.png" }
     ];
 
     const handleSelectBarbero = (barbero) => {
@@ -116,10 +116,10 @@ export default function ElegirCita() {
         })
         .then(response => {
             Swal.fire({
-                title: '¡Cita Reservada Exitosamente!',
+                title: '¡Cita Reservada!',
                 html: `
                     <p><strong>Barbero:</strong> ${selectedBarbero.nombre}</p>
-                    <p><strong>Servicio:</strong> ${selectedServicio.nombre} - €${selectedServicio.precio}</p>
+                    <p><strong>Servicio:</strong> ${selectedServicio.nombre} - ${selectedServicio.precio}€</p>
                     <p><strong>Fecha y Hora:</strong> ${dayjs(selectedDate).format('DD/MM/YYYY')} ${selectedTime}</p>
                 `,
                 icon: 'success',
@@ -187,11 +187,12 @@ export default function ElegirCita() {
     return (
         <div className="elegir-cita-background">
             <NavigationCliente />
+            <br /><br />
             <div className="container mx-auto p-8 bg-white rounded-lg mt-10 shadow-lg">
-                <h2 className="text-4xl font-bold text-center mb-6">Reservar Cita</h2>
+                <h2 className="text-4xl font-bold text-center mb-6">Reserve su Cita</h2>
                 {step === 1 && (
                     <div className="barbero-selection">
-                        <h3 className="text-2xl font-semibold text-center">Selecciona un Barbero</h3>
+                        <h3 className="text-2xl font-semibold text-center">¿Con quién quieres reservar la cita?</h3>
                         <div className="flex justify-around mt-6">
                             {barberos.map(barbero => (
                                 <div
@@ -208,8 +209,8 @@ export default function ElegirCita() {
                 )}
                 {step === 2 && (
                     <div className="servicio-selection">
-                        <h3 className="text-2xl font-semibold text-center">Selecciona un Servicio</h3>
-                        <div className="grid grid-cols-2 gap-6 mt-6">
+                        <h3 className="text-2xl font-semibold text-center">Seleccione un Servicio:</h3>
+                        <div className="grid grid-cols-3 gap-6 mt-6">
                             {servicios.map(servicio => (
                                 <div
                                     key={servicio.id}
@@ -217,7 +218,7 @@ export default function ElegirCita() {
                                     onClick={() => handleSelectServicio(servicio)}
                                 >
                                     <h4 className="text-xl font-bold">{servicio.nombre}</h4>
-                                    <p className="text-gray-600 mt-2">€{servicio.precio}</p>
+                                    <p className="text-gray-600 mt-2">{servicio.precio}€</p>
                                 </div>
                             ))}
                         </div>
@@ -226,7 +227,8 @@ export default function ElegirCita() {
                 )}
                 {step === 3 && (
                     <div className="calendar-selection text-center">
-                        <h3 className="text-2xl font-semibold">Selecciona el Día</h3>
+                        <h3 className="text-2xl font-semibold">Selecciona el día:</h3>
+                        <br /><br />
                         <div className="calendar-container mt-6 flex flex-col items-center">
                             <Calendar
                                 onChange={handleSelectDate}
@@ -235,6 +237,7 @@ export default function ElegirCita() {
                                 tileClassName={tileClassName}
                             />
                         </div>
+                        <br /><br />
                         {selectedDate && horariosDisponibles.length > 0 && (
                             <div className="horarios-container mt-4 grid grid-cols-4 gap-2">
                                 {horariosDisponibles.map(horario => (
@@ -251,25 +254,37 @@ export default function ElegirCita() {
                         {selectedDate && horariosDisponibles.length === 0 && (
                             <p className="text-xl text-red-500 mt-4">Sin citas disponibles</p>
                         )}
+                        <br /><br />
                         <button onClick={handleBack} className="back-button mt-8 bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600">Volver</button>
                     </div>
                 )}
                 {step === 4 && (
-                    <div className="text-center mt-8">
-                        <h3 className="text-2xl font-semibold">Confirmar Cita</h3>
-                        <p className="mt-4">Barbero: {selectedBarbero.nombre}</p>
-                        <p>Servicio: {selectedServicio.nombre} - €{selectedServicio.precio}</p>
-                        <p>Fecha y Hora: {dayjs(selectedDate).format('DD/MM/YYYY')} {selectedTime}</p>
-                        <button
-                            onClick={handleReservation}
-                            className="confirm-button mt-6 bg-green-500 text-white px-8 py-3 rounded-md hover:bg-green-600"
-                        >
-                            Confirmar Cita
-                        </button>
-                        <button onClick={handleBack} className="back-button mt-4 bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600">Volver</button>
-                    </div>
-                )}
+    <div className="confirm-cita-container text-center mt-8 p-6 bg-gray-100 rounded-lg shadow-lg">
+        <h3 className="text-3xl font-bold mb-6 text-[#A87B43]">Confirmación de la Cita</h3>
+        <div className="confirm-details text-lg text-gray-700 mb-4">
+            <p className="mb-2"><strong>Barbero:</strong> {selectedBarbero.nombre}</p>
+            <p className="mb-2"><strong>Servicio:</strong> {selectedServicio.nombre} - {selectedServicio.precio}€</p>
+            <p className="mb-2"><strong>Fecha y Hora:</strong> {dayjs(selectedDate).format('DD/MM/YYYY')} {selectedTime}</p>
+        </div>
+        <div className="button-group mt-6 flex justify-center gap-4">
+            <button
+                onClick={handleReservation}
+                 className="backer-button mt-8 bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600"
+            >
+                Confirmar
+            </button>
+            <button
+                onClick={handleBack}
+                 className="back-button mt-8 bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600"
+            >
+                Volver
+            </button>
+        </div>
+    </div>
+)}
+
             </div>
+            <br /><br /><br /><br />
             <SobreNosotros />
             <Footer />
             <WhatsAppButton />
