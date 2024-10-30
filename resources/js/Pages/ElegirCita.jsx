@@ -24,7 +24,6 @@ export default function ElegirCita() {
     const holidays = new Holidays('ES', 'AN', 'CA');
 
     useEffect(() => {
-        // Cargar SDK de PayPal al montar el componente
         const script = document.createElement("script");
         script.src = "https://www.paypal.com/sdk/js?client-id=ATtT5kxLGNQytT2BLx-v6UI52wA3PFMCF2ct7kG-4R4-4XmlDUIGWfgKKLJfxEpDFKHz_bd3YhEAKFK2&currency=EUR";
         script.async = true;
@@ -117,39 +116,53 @@ export default function ElegirCita() {
         })
         .then(response => {
             Swal.fire({
-                title: '¿Quieres pagar tu cita ahora?',
-                html: `<div id="paypal-button-container"></div>`,
-                showConfirmButton: false,
-                willOpen: () => {
-                    window.paypal.Buttons({
-                        createOrder: function(data, actions) {
-                            return actions.order.create({
-                                purchase_units: [{
-                                    amount: { value: selectedServicio.precio }
-                                }]
-                            });
-                        },
-                        onApprove: function(data, actions) {
-                            return actions.order.capture().then(function(details) {
-                                axios.patch(`/citas/${response.data.cita_id}/actualizar-metodo-pago`, { metodo_pago: 'adelantado' })
-                                .then(() => {
-                                    Swal.fire('Pago completado', `Gracias ${details.payer.name.given_name}!`, 'success');
+                title: '¡Cita Reservada Exitosamente!',
+                html: `
+                    <p><strong>Barbero:</strong> ${selectedBarbero.nombre}</p>
+                    <p><strong>Servicio:</strong> ${selectedServicio.nombre} - €${selectedServicio.precio}</p>
+                    <p><strong>Fecha y Hora:</strong> ${dayjs(selectedDate).format('DD/MM/YYYY')} ${selectedTime}</p>
+                `,
+                icon: 'success',
+                confirmButtonText: 'Aceptar',
+                showCloseButton: true // Muestra la "X" para cerrar
+            }).then(() => {
+                Swal.fire({
+                    title: '¿Quieres pagar tu cita ahora?',
+                    html: `<div id="paypal-button-container"></div>`,
+                    showConfirmButton: false,
+                    showCloseButton: true, // Muestra la "X" para cerrar
+                    willOpen: () => {
+                        window.paypal.Buttons({
+                            createOrder: function(data, actions) {
+                                return actions.order.create({
+                                    purchase_units: [{
+                                        amount: { value: selectedServicio.precio }
+                                    }]
                                 });
-                            });
-                        },
-                        onCancel: function() {
-                            axios.patch(`/citas/${response.data.cita_id}/actualizar-metodo-pago`, { metodo_pago: 'efectivo' })
-                            .then(() => {
-                                Swal.fire('Pago cancelado', 'Puedes pagar en efectivo al llegar a la cita.', 'info');
-                            });
-                        },
-                        onError: function(err) {
-                            console.error("Error en el pago de PayPal:", err);
-                            Swal.fire('Error', 'Hubo un problema con el pago. Inténtalo de nuevo.', 'error');
-                        }
-                    }).render('#paypal-button-container');
-                }
+                            },
+                            onApprove: function(data, actions) {
+                                return actions.order.capture().then(function(details) {
+                                    axios.patch(`/citas/${response.data.cita_id}/actualizar-metodo-pago`, { metodo_pago: 'adelantado' })
+                                    .then(() => {
+                                        Swal.fire('Pago completado', `Gracias ${details.payer.name.given_name}!`, 'success');
+                                    });
+                                });
+                            },
+                            onCancel: function() {
+                                axios.patch(`/citas/${response.data.cita_id}/actualizar-metodo-pago`, { metodo_pago: 'efectivo' })
+                                .then(() => {
+                                    Swal.fire('Pago cancelado', 'Puedes pagar en efectivo al llegar a la cita.', 'info');
+                                });
+                            },
+                            onError: function(err) {
+                                console.error("Error en el pago de PayPal:", err);
+                                Swal.fire('Error', 'Hubo un problema con el pago. Inténtalo de nuevo.', 'error');
+                            }
+                        }).render('#paypal-button-container');
+                    }
+                });
             });
+
             setStep(1);
             setSelectedBarbero(null);
             setSelectedServicio(null);
