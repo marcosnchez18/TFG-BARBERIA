@@ -21,8 +21,16 @@ export default function ElegirCita() {
     const [disponibilidadDias, setDisponibilidadDias] = useState({});
     const today = dayjs().startOf('day');
 
-    // Configuración de festivos
     const holidays = new Holidays('ES', 'AN', 'CA');
+
+    useEffect(() => {
+        // Cargar SDK de PayPal al montar el componente
+        const script = document.createElement("script");
+        script.src = "https://www.paypal.com/sdk/js?client-id=ATtT5kxLGNQytT2BLx-v6UI52wA3PFMCF2ct7kG-4R4-4XmlDUIGWfgKKLJfxEpDFKHz_bd3YhEAKFK2&currency=EUR";
+        script.async = true;
+        document.body.appendChild(script);
+        return () => document.body.removeChild(script);
+    }, []);
 
     useEffect(() => {
         axios.get('/data/servicios.json')
@@ -41,13 +49,9 @@ export default function ElegirCita() {
     const tileClassName = ({ date }) => {
         const dateStr = dayjs(date).format('YYYY-MM-DD');
         const dayOfWeek = dayjs(date).day();
-
-        // Día sin citas disponibles en naranja
         if (disponibilidadDias[dateStr]?.completo) {
             return 'day-sin-citas';
-        }
-        // Aplica clase roja para domingos y festivos, excluyendo sábados
-        else if (holidays.isHoliday(date) || dayOfWeek === 0) {
+        } else if (holidays.isHoliday(date) || dayOfWeek === 0) {
             return 'day-no-disponible';
         }
         return null;
@@ -72,16 +76,14 @@ export default function ElegirCita() {
         setSelectedDate(date);
         const dayOfWeek = dayjs(date).day();
         const isHoliday = holidays.isHoliday(date);
-
-        // Configuración de horarios
         let horarios = [];
         if (dayjs(date).isSame(today, 'day') || isHoliday) {
-            setHorariosDisponibles([]); // Sin horarios para el día actual o festivo
+            setHorariosDisponibles([]);
             return;
-        } else if (dayOfWeek === 6) { // Sábado
+        } else if (dayOfWeek === 6) {
             horarios = ["10:00", "10:45", "11:30", "12:15", "13:00"];
-        } else if (dayOfWeek === 0) { // Domingo
-            setHorariosDisponibles([]); // Domingo cerrado
+        } else if (dayOfWeek === 0) {
+            setHorariosDisponibles([]);
             return;
         } else {
             horarios = [
@@ -89,8 +91,6 @@ export default function ElegirCita() {
                 "16:00", "16:45", "17:30", "18:15", "19:00", "19:45", "20:30"
             ];
         }
-
-        // Llama al backend para obtener horas reservadas y filtrar las horas disponibles
         const formattedDate = dayjs(date).format('YYYY-MM-DD');
         axios.get(`/api/citas/horas-reservadas`, {
             params: { fecha: formattedDate, barbero_id: selectedBarbero.id }
@@ -110,7 +110,6 @@ export default function ElegirCita() {
 
     const handleReservation = () => {
         const fechaHoraCita = `${dayjs(selectedDate).format('YYYY-MM-DD')} ${selectedTime}`;
-
         axios.post('/citas/reservar', {
             barbero_id: selectedBarbero.id,
             servicio_id: selectedServicio.id,
@@ -118,14 +117,38 @@ export default function ElegirCita() {
         })
         .then(response => {
             Swal.fire({
-                title: '¡Cita Reservada Exitosamente!',
-                html: `
-                    <p><strong>Barbero:</strong> ${selectedBarbero.nombre}</p>
-                    <p><strong>Servicio:</strong> ${selectedServicio.nombre} - €${selectedServicio.precio}</p>
-                    <p><strong>Fecha y Hora:</strong> ${dayjs(selectedDate).format('DD/MM/YYYY')} ${selectedTime}</p>
-                `,
-                icon: 'success',
-                confirmButtonText: 'Aceptar'
+                title: '¿Quieres pagar tu cita ahora?',
+                html: `<div id="paypal-button-container"></div>`,
+                showConfirmButton: false,
+                willOpen: () => {
+                    window.paypal.Buttons({
+                        createOrder: function(data, actions) {
+                            return actions.order.create({
+                                purchase_units: [{
+                                    amount: { value: selectedServicio.precio }
+                                }]
+                            });
+                        },
+                        onApprove: function(data, actions) {
+                            return actions.order.capture().then(function(details) {
+                                axios.patch(`/citas/${response.data.cita_id}/actualizar-metodo-pago`, { metodo_pago: 'adelantado' })
+                                .then(() => {
+                                    Swal.fire('Pago completado', `Gracias ${details.payer.name.given_name}!`, 'success');
+                                });
+                            });
+                        },
+                        onCancel: function() {
+                            axios.patch(`/citas/${response.data.cita_id}/actualizar-metodo-pago`, { metodo_pago: 'efectivo' })
+                            .then(() => {
+                                Swal.fire('Pago cancelado', 'Puedes pagar en efectivo al llegar a la cita.', 'info');
+                            });
+                        },
+                        onError: function(err) {
+                            console.error("Error en el pago de PayPal:", err);
+                            Swal.fire('Error', 'Hubo un problema con el pago. Inténtalo de nuevo.', 'error');
+                        }
+                    }).render('#paypal-button-container');
+                }
             });
             setStep(1);
             setSelectedBarbero(null);
@@ -153,7 +176,6 @@ export default function ElegirCita() {
             <NavigationCliente />
             <div className="container mx-auto p-8 bg-white rounded-lg mt-10 shadow-lg">
                 <h2 className="text-4xl font-bold text-center mb-6">Reservar Cita</h2>
-
                 {step === 1 && (
                     <div className="barbero-selection">
                         <h3 className="text-2xl font-semibold text-center">Selecciona un Barbero</h3>
@@ -171,7 +193,6 @@ export default function ElegirCita() {
                         </div>
                     </div>
                 )}
-
                 {step === 2 && (
                     <div className="servicio-selection">
                         <h3 className="text-2xl font-semibold text-center">Selecciona un Servicio</h3>
@@ -190,7 +211,6 @@ export default function ElegirCita() {
                         <button onClick={handleBack} className="back-button mt-8 bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600">Volver</button>
                     </div>
                 )}
-
                 {step === 3 && (
                     <div className="calendar-selection text-center">
                         <h3 className="text-2xl font-semibold">Selecciona el Día</h3>
@@ -199,10 +219,9 @@ export default function ElegirCita() {
                                 onChange={handleSelectDate}
                                 value={selectedDate}
                                 minDate={new Date()}
-                                tileClassName={tileClassName}  // Aplica las clases de CSS a los días
+                                tileClassName={tileClassName}
                             />
                         </div>
-
                         {selectedDate && horariosDisponibles.length > 0 && (
                             <div className="horarios-container mt-4 grid grid-cols-4 gap-2">
                                 {horariosDisponibles.map(horario => (
@@ -222,7 +241,6 @@ export default function ElegirCita() {
                         <button onClick={handleBack} className="back-button mt-8 bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600">Volver</button>
                     </div>
                 )}
-
                 {step === 4 && (
                     <div className="text-center mt-8">
                         <h3 className="text-2xl font-semibold">Confirmar Cita</h3>

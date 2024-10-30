@@ -103,6 +103,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/api/citas/horas-reservadas', [CitaController::class, 'horasReservadas']);
     Route::post('/citas/reservar', [CitaController::class, 'reservar'])->name('citas.reservar');
 
+    // Nueva ruta para actualizar el método de pago de la cita
+    Route::patch('/citas/{id}/actualizar-metodo-pago', [CitaController::class, 'actualizarMetodoPago'])->name('citas.actualizar-metodo-pago');
 
     // Mostrar y actualizar datos del cliente en la ruta /mis-datos
     Route::get('/mis-datos', [ClienteController::class, 'edit'])->name('mis-datos');
