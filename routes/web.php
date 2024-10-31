@@ -95,6 +95,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
 Route::patch('/admin/citas/{id}/cambiar-estado', [AdminController::class, 'cambiarEstado'])->name('citas.cambiar-estado');
 Route::delete('/admin/citas/{id}/cancelar', [AdminController::class, 'cancelarCita'])->name('citas.cancelar');
 
+Route::get('/admin/citas/{fecha}', [AdminController::class, 'citasPorDia']);
+Route::patch('/admin/citas/{id}/cambiar-estado', [AdminController::class, 'cambiarEstado']);
+Route::delete('/admin/citas/{id}/cancelar', [AdminController::class, 'cancelarCita']);
+
 
     // Rutas para el cliente (incluyendo edición de datos)
     Route::get('/reservar-cita', [NoticiaController::class, 'showNoticias'])->name('reservar-cita');
@@ -115,7 +119,7 @@ Route::delete('/admin/citas/{id}/cancelar', [AdminController::class, 'cancelarCi
     // Ruta para cancelar una cita y mostrar el mensaje de devolución de importe
     Route::delete('/citas/{id}/cancelar', [CitaController::class, 'cancelar'])->name('citas.cancelar');
     Route::patch('/citas/{id}/modificar', [CitaController::class, 'modificar'])->name('citas.modificar');
-    
+
 
 Route::patch('/citas/{id}/calificar', [CitaController::class, 'calificar'])->name('citas.calificar');
 

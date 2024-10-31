@@ -95,4 +95,19 @@ class AdminController extends Controller
 
         return response()->json(['message' => 'Cita cancelada exitosamente.']);
     }
+
+
+    public function citasPorDia($fecha)
+    {
+        $barberoId = Auth::id();
+        $fechaSeleccionada = Carbon::parse($fecha)->startOfDay();
+
+        $citas = Cita::where('barbero_id', $barberoId)
+            ->whereDate('fecha_hora_cita', $fechaSeleccionada)
+            ->with(['usuario:id,nombre', 'servicio:id,nombre'])
+            ->orderBy('fecha_hora_cita', 'asc')
+            ->get();
+
+        return response()->json($citas);
+    }
 }
