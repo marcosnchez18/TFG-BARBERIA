@@ -8,6 +8,9 @@ import dayjs from 'dayjs';
 import 'dayjs/locale/es';
 import Holidays from 'date-holidays';
 import NavigationCliente from '../Components/NavigationCliente';
+import WhatsAppButton from '@/Components/Wasa';
+import SobreNosotros from '@/Components/Sobrenosotros';
+import Footer from '../Components/Footer';
 
 dayjs.locale('es');
 
@@ -246,6 +249,9 @@ export default function MisCitasCliente() {
                     </div>
                 )}
             </div>
+            <SobreNosotros />
+            <Footer />
+            <WhatsAppButton />
         </div>
     );
 }

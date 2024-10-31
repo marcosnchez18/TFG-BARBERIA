@@ -71,10 +71,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Dashboard del administrador
     Route::get('/mi-gestion-admin', [AdminController::class, 'dashboard'])->name('mi-gestion-admin');
 
-    // Rutas de gestión de citas, foro y clientes para el administrador
+    // Ruta para la vista de citas del barbero en la interfaz de administración
     Route::get('/admin/citas', function () {
         return Inertia::render('CitasAdmin');
     })->name('admin-citas');
+
+    // Ruta para obtener las citas del barbero logueado
+    Route::get('/admin/citas-barbero', [AdminController::class, 'citasBarbero'])->name('admin.citas-barbero');
 
     // Foro de noticias del administrador
     Route::get('/admin/foro', [NoticiaController::class, 'index'])->name('admin-foro');
@@ -88,10 +91,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('/admin/clientes/{id}/deshabilitar', [ClienteController::class, 'deshabilitar'])->name('clientes.deshabilitar');
     Route::patch('/admin/clientes/{id}/habilitar', [ClienteController::class, 'habilitar'])->name('clientes.habilitar');
 
+    
+Route::patch('/admin/citas/{id}/cambiar-estado', [AdminController::class, 'cambiarEstado'])->name('citas.cambiar-estado');
+Route::delete('/admin/citas/{id}/cancelar', [AdminController::class, 'cancelarCita'])->name('citas.cancelar');
+
+
     // Rutas para el cliente (incluyendo edición de datos)
     Route::get('/reservar-cita', [NoticiaController::class, 'showNoticias'])->name('reservar-cita');
     Route::get('/mis-citas', [CitaController::class, 'misCitas'])->name('mis-citas');
-
 
     Route::get('/mis-citas/elegir', function () {
         return Inertia::render('ElegirCita');
@@ -108,7 +115,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Ruta para cancelar una cita y mostrar el mensaje de devolución de importe
     Route::delete('/citas/{id}/cancelar', [CitaController::class, 'cancelar'])->name('citas.cancelar');
     Route::patch('/citas/{id}/modificar', [CitaController::class, 'modificar'])->name('citas.modificar');
-    
 
     // Mostrar y actualizar datos del cliente en la ruta /mis-datos
     Route::get('/mis-datos', [ClienteController::class, 'edit'])->name('mis-datos');
