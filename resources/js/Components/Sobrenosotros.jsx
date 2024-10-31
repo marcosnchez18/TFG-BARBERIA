@@ -8,7 +8,7 @@ export default function Finpaginas() {
                 <img className="logo_fin" src="/images/logo.png" alt="Logo de Barbería" />
                 <p className="dir">Calle Ancha, 43, Sanlúcar de Bda (11540), Cádiz</p>
                 <p className="dir">+34 622541527 +34 956 56 78 32</p>
-                <p className="dir">info@barber18@barbershop.com <br /> barbersanlucar@gmail.com</p>
+                <p className="dir">barbers18sanlucar@gmail.com</p>
                 <br /><br /><br />
                 <hr />
                 <br /><br /><br />

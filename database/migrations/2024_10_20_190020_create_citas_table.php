@@ -19,6 +19,7 @@ return new class extends Migration
             $table->enum('estado', ['pendiente', 'completada', 'ausente'])->default('pendiente');
             $table->dateTime('fecha_hora_cita');
             $table->integer('valoracion')->nullable(); // Valoración opcional, si la cita fue completada
+            $table->enum('metodo_pago', ['adelantado', 'efectivo'])->default('efectivo'); // Método de pago
             $table->timestamps();
         });
     }

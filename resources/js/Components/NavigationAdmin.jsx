@@ -19,13 +19,13 @@ export default function NavigationAdmin() {
             <div className="container mx-auto flex items-center justify-between">
                 {/* Logo de la Barbería (Izquierda) */}
                 <div className="flex items-center">
-                    <Link href={route('mi-gestion-admin')}>
+                <button onClick={() => setShowLogoutModal(true)}>
                         <img
                             src="/images/logo.png"
                             alt="Logo Barbería"
                             className="w-20 h-20 md:w-30 md:h-30"
                         />
-                    </Link>
+                    </button>
                 </div>
 
                 {/* Icono de menú hamburguesa (Visible en pantallas pequeñas) */}
@@ -48,6 +48,7 @@ export default function NavigationAdmin() {
                     <button onClick={() => setShowLogoutModal(true)} className="text-lg md:text-xl text-white hover:text-gray-400 flex items-center nav-item-hover">
                              Home
                         </button>
+                        <Link href={route('mi-gestion-admin')} className="text-lg md:text-xl text-white hover:text-gray-400 nav-item-hover">Estadísticas</Link>
                         <Link href={route('admin-citas')} className="text-lg md:text-xl text-white hover:text-gray-400 nav-item-hover">Próximas Citas</Link>
                         <Link href={route('admin-foro')} className="text-lg md:text-xl text-white hover:text-gray-400 nav-item-hover">Foro</Link>
                         <Link href={route('admin-clientes')} className="text-lg md:text-xl text-white hover:text-gray-400 nav-item-hover">Clientes</Link>

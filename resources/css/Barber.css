@@ -971,7 +971,7 @@ nav {
 }
 
 .epic-noticia-empty {
-    color: #ffdd44;
+    color: #a52424;
     font-weight: bold;
 }
 
@@ -1083,4 +1083,534 @@ nav {
 
 .clientes-admin-btn-enable:hover {
     background-color: #059669; /* Verde oscuro */
+}
+
+
+/* Estilos exclusivos para el formulario de MisDatosCliente */
+
+#mis-datos-cliente-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+    background-color: rgba(249, 249, 249, 0.85); /* Fondo con transparencia */
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease-in-out;
+    font-family: 'Times New Roman', Times, serif; /* Fuente aplicada */
+}
+
+#mis-datos-cliente-container:hover {
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+}
+
+/* Títulos y etiquetas */
+.mis-datos-cliente-title {
+    color: #000000;
+    font-size: 2.5rem;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.mis-datos-cliente-label {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #6d570f;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+/* Inputs */
+.mis-datos-cliente-input {
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 1rem;
+    font-family: 'Times New Roman', Times, serif; /* Fuente aplicada */
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    transition: border-color 0.3s ease;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.mis-datos-cliente-input:focus {
+    border-color: #5a67d8;
+    outline: none;
+}
+
+/* Botones */
+.mis-datos-cliente-button {
+    padding: 0.5rem 1.25rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    font-family: 'Times New Roman', Times, serif; /* Fuente aplicada */
+}
+
+.mis-datos-cliente-button-edit {
+    background-color: #3182ce;
+}
+
+.mis-datos-cliente-button-edit:hover {
+    background-color: #2bb04c;
+    transform: scale(1.05);
+}
+
+.mis-datos-cliente-button-save {
+    background-color: #38a169;
+}
+
+.mis-datos-cliente-button-save:hover {
+    background-color: #2f855a;
+    transform: scale(1.05);
+}
+
+/* Deshabilitado */
+.mis-datos-cliente-disabled {
+    background-color: #e2e8f0;
+    cursor: not-allowed;
+}
+
+/* Espaciado entre campos */
+.mis-datos-cliente-field-container {
+    margin-bottom: 1.25rem;
+}
+
+.mis-datos-cliente-error {
+    color: #e53e3e;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+
+
+/* Opciones de la sección principal */
+.inicio-cliente-seccion {
+    margin-top: 2rem;
+    padding: 2rem;
+    background-color: rgba(255, 248, 240, 0.85);
+    border-radius: 8px;
+}
+
+.inicio-cliente-opciones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: space-between;
+}
+
+.inicio-cliente-carta {
+    flex: 1 1 calc(33.333% - 1rem); /* Para distribuir 3 cartas en una fila con espacio entre ellas */
+    min-width: 250px; /* Para un ancho mínimo en dispositivos más pequeños */
+}
+
+.inicio-cliente-carta-contenedor {
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.inicio-cliente-carta-contenedor:hover {
+    transform: scale(1.05);
+}
+
+.inicio-cliente-carta-titulo {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #2d3748;
+}
+
+.inicio-cliente-carta-descripcion {
+    font-size: 1rem;
+    color: #4a5568;
+    margin-top: 0.5rem;
+}
+
+.inicio-cliente-carta-boton {
+    display: inline-block;
+    margin-top: 1rem;
+    padding: 0.75rem 1.5rem;
+    background-color: #A87B43;
+    color: #fff;
+    border-radius: 4px;
+    text-align: center;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+    font-family: 'Times New Roman', serif; /* Fuente actualizada */
+}
+
+.inicio-cliente-carta-boton:hover {
+    background-color: #8f6918;
+}
+
+
+
+
+
+.inicio-cliente-seccion-promocion {
+    background-color: rgba(250, 247, 240, 0.8); /* El último valor (0.8) define la opacidad: 1 es opaco y 0 es totalmente transparente */
+    padding: 3rem 0;
+    text-align: center;
+}
+
+
+.inicio-cliente-promocion-titulo {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #383329;
+    font-family: 'Times New Roman', serif;
+    margin-bottom: 1rem;
+}
+
+.inicio-cliente-promocion-descripcion {
+    font-size: 1.125rem;
+    color: #22262c;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.inicio-cliente-promocion-boton {
+    margin-top: 1.5rem;
+    padding: 0.75rem 2rem;
+    background-color: #A87B43;
+    color: #fff;
+    font-size: 1rem;
+    font-family: 'Times New Roman', serif;
+    font-weight: bold;
+    border-radius: 8px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.inicio-cliente-promocion-boton:hover {
+    background-color: #2b6cb0;
+    transform: scale(1.05);
+}
+
+
+.back-button {
+    transition: background-color 0.3s ease;
+    font-weight: bold;
+}
+
+.back-button:hover {
+    background-color: #4a5568;
+}
+
+.elegir-cita-background {
+    background-image: url('/images/barberia.jpg');
+    background-size: cover;
+    background-position: center;
+    min-height: 100vh;
+
+}
+
+.barbero-card, .servicio-card {
+    border-radius: 12px;
+    padding: 20px;
+    transition: transform 0.2s, box-shadow 0.2s;
+    background-color: #f9f9f9;
+}
+
+.barbero-card:hover, .servicio-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
+}
+
+.calendar-container .react-calendar {
+    border: none;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.horario-button {
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.horario-button:hover {
+    background-color: #2563eb;
+}
+
+.day-completo {
+    background-color: orange !important;
+    color: white !important;
+}
+
+.day-no-disponible {
+    color: red !important;
+}
+
+
+.day-sin-citas {
+    color: orange !important;
+}
+
+.day-no-disponible {
+    color: red !important;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+/* Fondo principal de la página de selección de cita */
+.elegir-cita-background {
+    background-color: #f9f9f9;
+    min-height: 100vh;
+
+
+}
+
+/* Contenedor principal */
+.elegir-cita-container {
+    width: 90%;
+    max-width: 800px;
+    background-color: #ffffff;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin: 0 auto;
+}
+
+/* Título principal */
+.elegir-cita-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #333333;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+/* Selección de barbero */
+.barbero-selection {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: #463b0c;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.servicio-selection {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: #4e4a37;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.barbero-card-container {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+}
+
+.barbero-card {
+    width: 150px;
+    padding: 15px;
+    text-align: center;
+    border-radius: 8px;
+    transition: box-shadow 0.3s;
+    cursor: pointer;
+}
+
+.barbero-card:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.barbero-card-image {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    margin: 0 auto;
+}
+
+.barbero-card-name {
+    font-size: 1.2rem;
+    font-weight: 500;
+    margin-top: 10px;
+}
+
+/* Selección de servicio */
+.servicio-selection-title {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: #444444;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+
+
+.servicio-card-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    margin-top: 20px;
+}
+
+
+.servicio-selection p {
+    color: rgb(124, 106, 6); /* Cambia el color de los párrafos a rojo */
+}
+
+
+.servicio-card {
+    padding: 20px;
+    text-align: center;
+    border-radius: 8px;
+    border: 1px solid #1f1507;
+    background-color: #f1f4f7;
+    color: #000000;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.servicio-card:hover {
+    background-color: #e0f0ff;
+}
+
+.servicio-card-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+}
+
+.servicio-card-price {
+    font-size: 1rem;
+    color: #666666;
+    margin-top: 8px;
+}
+
+.back-button {
+    background-color: #A87B43;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 500;
+    font-family: "Times New Roman", Times, serif;
+    transition: background-color 0.3s;
+}
+
+.backer-button {
+    background-color: #209c10;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 500;
+    font-family: "Times New Roman", Times, serif;
+    transition: background-color 0.3s;
+}
+
+
+.back-button:hover {
+    background-color: #745910;
+}
+
+/* Selección de día en el calendario */
+.calendar-selection-title {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: #444444;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.calendar-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    transform: scale(1.2);
+}
+
+.horarios-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.horario-button {
+    padding: 10px;
+    background-color: #007bff;
+    color: white;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.horario-button:hover {
+    background-color: #0056b3;
+}
+
+/* Día no disponible en el calendario */
+.day-no-disponible {
+    background-color: #ffdddd !important;
+    color: #888888;
+}
+
+.day-sin-citas {
+    background-color: #ffe6b3 !important;
+}
+
+/* Confirmación de cita */
+.confirmar-cita-title {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: #444444;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.confirmar-cita-details {
+    font-size: 1rem;
+    color: #333333;
+    margin: 8px 0;
+}
+
+.confirm-button {
+    background-color: #28a745;
+    color: white;
+    padding: 15px 30px;
+    border-radius: 8px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 20px;
+}
+
+.confirm-button:hover {
+    background-color: #218838;
+}
+
+/* Ajustes de separación para el layout */
+.elegir-cita-spacer {
+    margin: 40px 0;
+}
+
+.elegir-cita-spacer-large {
+    margin: 60px 0;
+}
+
+
+/* Día completo de citas en el calendario */
+.day-completo {
+    background-color: #ffcccc !important; /* Fondo rojo claro */
+    color: #ff0000 !important; /* Texto en rojo */
+    font-weight: bold;
+    border-radius: 50%; /* Opcional: le da un aspecto circular */
 }

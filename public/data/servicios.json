@@ -1,0 +1,11 @@
+[
+    { "id": 1, "nombre": "Corte de Pelo", "precio": 12 },
+    { "id": 2, "nombre": "Afeitado Clásico", "precio": 4 },
+    { "id": 3, "nombre": "Arreglo de Barba", "precio": 6 },
+    { "id": 4, "nombre": "Corte + Barba", "precio": 15 },
+    { "id": 5, "nombre": "Depilado de Cejas", "precio": 4 },
+    { "id": 6, "nombre": "Champoo + Estilo", "precio": 5 },
+    { "id": 7, "nombre": "Alisado de Keratina", "precio": 50 },
+    { "id": 8, "nombre": "Mechas", "precio": 7 },
+    { "id": 9, "nombre": "Corte + Barba + Cejas + Lavado", "precio": 20 }
+]

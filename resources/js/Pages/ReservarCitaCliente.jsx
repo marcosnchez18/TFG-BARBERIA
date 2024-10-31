@@ -3,6 +3,7 @@ import NavigationCliente from '../Components/NavigationCliente';
 import WhatsAppButton from '@/Components/Wasa';
 import SobreNosotros from '@/Components/Sobrenosotros';
 import Footer from '../Components/Footer';
+import { Inertia } from '@inertiajs/inertia';
 import '../../css/Barber.css';
 
 export default function ReservarCitaCliente({ noticias }) {
@@ -36,12 +37,14 @@ export default function ReservarCitaCliente({ noticias }) {
 
                 {/* Botón para pedir cita */}
                 <div className="text-center mt-10">
-                    <button
-                        onClick={() => window.location.href = route('elegir')}
-                        className="boton_lugar"
-                    >
-                        Pedir Cita
-                    </button>
+                <button
+    onClick={() => Inertia.visit(route('mis-citas-elegir'))}
+
+    className="boton_lugar"
+>
+    Pedir Cita
+</button>
+
                 </div>
             </div>
             <br /><br />

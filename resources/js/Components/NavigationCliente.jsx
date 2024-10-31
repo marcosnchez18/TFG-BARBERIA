@@ -20,13 +20,13 @@ export default function NavigationCliente() {
             <div className="container mx-auto flex items-center justify-between">
                 {/* Logo de la Barbería (Izquierda) */}
                 <div className="flex items-center">
-                    <Link href={route('mi-cuenta')}>
+                <button onClick={() => setShowLogoutModal(true)}>
                         <img
                             src="/images/logo.png"
                             alt="Logo Barbería"
                             className="w-20 h-20 md:w-30 md:h-30"
                         />
-                    </Link>
+                    </button>
                 </div>
 
                 {/* Icono de menú hamburguesa (Visible en pantallas pequeñas) */}
@@ -44,7 +44,9 @@ export default function NavigationCliente() {
                     } flex-col md:flex md:flex-row space-y-4 md:space-y-0 md:space-x-8 mt-4 md:mt-0 mx-auto items-center`}
                     style={{ fontFamily: 'Times New Roman, serif' }}
                 >
-                    <Link href={route('mi-cuenta')} className="text-lg md:text-xl text-white hover:text-gray-400 nav-item-hover">Home</Link>
+                    <button onClick={() => setShowLogoutModal(true)} className="text-lg md:text-xl text-white hover:text-gray-400 flex items-center nav-item-hover">
+                        Home
+                    </button>
                     <Link href={route('reservar-cita')} className="text-lg md:text-xl text-white hover:text-gray-400 nav-item-hover">Reservar Cita</Link>
                     <Link href={route('mis-citas')} className="text-lg md:text-xl text-white hover:text-gray-400 nav-item-hover">Mis Citas</Link>
                     <Link href={route('mis-datos')} className="text-lg md:text-xl text-white hover:text-gray-400 nav-item-hover">Mis Datos</Link>
