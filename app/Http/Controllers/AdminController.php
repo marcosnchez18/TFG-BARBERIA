@@ -38,59 +38,61 @@ class AdminController extends Controller
             ->join('servicios', 'citas.servicio_id', '=', 'servicios.id')
             ->sum('servicios.precio');
 
+        // Calcular valoración media de citas completadas del barbero
+        $valoracionMedia = Cita::where('barbero_id', $barberoId)
+            ->where('estado', 'completada')
+            ->whereNotNull('valoracion')
+            ->avg('valoracion');
+
         return Inertia::render('AdminDashboard', [
             'user' => Auth::user(),
             'citasHoy' => $citasHoy,
             'nuevosUsuariosHoy' => $nuevosUsuariosHoy,
             'gananciasMes' => $gananciasMes,
             'nombreMesActual' => ucfirst($nombreMesActual),
+            'valoracionMedia' => $valoracionMedia ? round($valoracionMedia, 2) : 'N/A',
         ]);
     }
 
     public function citasBarbero()
-{
-    // Verificamos si el usuario autenticado es un barbero (rol admin)
-    if (Auth::user()->rol !== 'admin') {
-        return response()->json(['error' => 'Acceso no autorizado'], 403);
+    {
+        if (Auth::user()->rol !== 'admin') {
+            return response()->json(['error' => 'Acceso no autorizado'], 403);
+        }
+
+        $barberoId = Auth::id();
+
+        // Filtrar las citas pendientes y futuras del barbero logueado
+        $citas = Cita::where('barbero_id', $barberoId)
+            ->where('fecha_hora_cita', '>=', Carbon::now())
+            ->where('estado', 'pendiente')
+            ->with(['usuario:id,nombre', 'servicio:id,nombre'])
+            ->orderBy('fecha_hora_cita', 'asc')
+            ->get();
+
+        return response()->json($citas);
     }
 
-    $barberoId = Auth::id(); // ID del barbero autenticado
+    public function cambiarEstado(Request $request, $id)
+    {
+        $cita = Cita::findOrFail($id);
+        $nuevoEstado = $request->input('estado');
 
-    // Filtrar las citas pendientes y futuras del barbero logueado
-    $citas = Cita::where('barbero_id', $barberoId)
-        ->where('fecha_hora_cita', '>=', Carbon::now())
-        ->where('estado', 'pendiente') // Opcional: Solo citas pendientes
-        ->with(['usuario:id,nombre', 'servicio:id,nombre']) // Obtener solo los campos necesarios
-        ->orderBy('fecha_hora_cita', 'asc')
-        ->get();
+        if (in_array($nuevoEstado, ['completada', 'ausente', 'pendiente'])) {
+            $cita->estado = $nuevoEstado;
+            $cita->save();
 
-    return response()->json($citas);
-}
+            return response()->json(['success' => true, 'estado' => $nuevoEstado]);
+        }
 
-// En AdminController o CitaController
-public function cambiarEstado(Request $request, $id)
-{
-    $cita = Cita::findOrFail($id);
-    $nuevoEstado = $request->input('estado');
-
-    if (in_array($nuevoEstado, ['completada', 'ausente', 'pendiente'])) {
-        $cita->estado = $nuevoEstado;
-        $cita->save();
-
-        return response()->json(['success' => true, 'estado' => $nuevoEstado]);
+        return response()->json(['success' => false, 'message' => 'Estado no válido'], 400);
     }
 
-    return response()->json(['success' => false, 'message' => 'Estado no válido'], 400);
-}
+    public function cancelarCita($id)
+    {
+        $cita = Cita::findOrFail($id);
+        $cita->delete();
 
-
-public function cancelarCita($id)
-{
-    $cita = Cita::findOrFail($id);
-    $cita->delete();
-
-    return response()->json(['message' => 'Cita cancelada exitosamente.']);
-}
-
-
+        return response()->json(['message' => 'Cita cancelada exitosamente.']);
+    }
 }

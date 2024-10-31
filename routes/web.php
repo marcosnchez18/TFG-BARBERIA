@@ -91,7 +91,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('/admin/clientes/{id}/deshabilitar', [ClienteController::class, 'deshabilitar'])->name('clientes.deshabilitar');
     Route::patch('/admin/clientes/{id}/habilitar', [ClienteController::class, 'habilitar'])->name('clientes.habilitar');
 
-    
+
 Route::patch('/admin/citas/{id}/cambiar-estado', [AdminController::class, 'cambiarEstado'])->name('citas.cambiar-estado');
 Route::delete('/admin/citas/{id}/cancelar', [AdminController::class, 'cancelarCita'])->name('citas.cancelar');
 
@@ -115,6 +115,10 @@ Route::delete('/admin/citas/{id}/cancelar', [AdminController::class, 'cancelarCi
     // Ruta para cancelar una cita y mostrar el mensaje de devolución de importe
     Route::delete('/citas/{id}/cancelar', [CitaController::class, 'cancelar'])->name('citas.cancelar');
     Route::patch('/citas/{id}/modificar', [CitaController::class, 'modificar'])->name('citas.modificar');
+    
+
+Route::patch('/citas/{id}/calificar', [CitaController::class, 'calificar'])->name('citas.calificar');
+
 
     // Mostrar y actualizar datos del cliente en la ruta /mis-datos
     Route::get('/mis-datos', [ClienteController::class, 'edit'])->name('mis-datos');

@@ -9,7 +9,7 @@ import 'dayjs/locale/es';
 import Holidays from 'date-holidays';
 import NavigationCliente from '../Components/NavigationCliente';
 import WhatsAppButton from '@/Components/Wasa';
-import SobreNosotros from '@/Components/Sobrenosotros';
+import SobreNosotros from '../Components/Sobrenosotros';
 import Footer from '../Components/Footer';
 
 dayjs.locale('es');
@@ -21,11 +21,33 @@ export default function MisCitasCliente() {
     const [selectedServicio, setSelectedServicio] = useState(null);
     const [selectedDate, setSelectedDate] = useState(null);
     const [horariosDisponibles, setHorariosDisponibles] = useState([]);
-
     const today = dayjs().startOf('day');
     const holidays = new Holidays('ES', 'AN', 'CA');
 
-    const citasOrdenadas = citas.sort((a, b) => new Date(a.fecha_hora_cita) - new Date(b.fecha_hora_cita));
+    const citasOrdenadas = citas
+        .filter(cita => dayjs(cita.fecha_hora_cita).isAfter(today) && cita.estado === 'pendiente')
+        .sort((a, b) => new Date(a.fecha_hora_cita) - new Date(b.fecha_hora_cita));
+
+    const citasCompletadas = citas
+        .filter(cita =>
+            cita.estado === 'completada' ||
+            cita.estado === 'ausente' ||
+            dayjs(cita.fecha_hora_cita).isBefore(today)
+        )
+        .sort((a, b) => new Date(a.fecha_hora_cita) - new Date(b.fecha_hora_cita));
+
+    const getEstadoClass = (estado) => {
+        switch (estado) {
+            case 'pendiente':
+                return 'text-blue-500';
+            case 'completada':
+                return 'text-green-500';
+            case 'ausente':
+                return 'text-red-500';
+            default:
+                return 'text-gray-500';
+        }
+    };
 
     const cancelarCita = (id, metodoPago) => {
         Swal.fire({
@@ -133,6 +155,46 @@ export default function MisCitasCliente() {
         });
     };
 
+    const calificarCita = (citaId, valor) => {
+        axios.patch(`/citas/${citaId}/calificar`, { valoracion: valor })
+            .then(() => {
+                Swal.fire({
+                    title: 'Valoración guardada',
+                    text: `Has valorado esta cita con ${valor} estrellas.`,
+                    icon: 'success',
+                    confirmButtonText: 'Aceptar'
+                }).then(() => window.location.reload());
+            })
+            .catch(error => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: error.response?.data?.error || 'Ocurrió un error al guardar la valoración',
+                });
+            });
+    };
+
+    const StarRating = ({ citaId, valoracion }) => {
+        const [rating, setRating] = useState(valoracion || 0);
+
+        return (
+            <div className="star-rating mt-4">
+                {[1, 2, 3, 4, 5].map(star => (
+                    <span
+                        key={star}
+                        className={`text-3xl cursor-pointer ${star <= rating ? 'text-yellow-400' : 'text-gray-300'}`}
+                        onClick={() => {
+                            setRating(star);
+                            calificarCita(citaId, star);
+                        }}
+                    >
+                        ★
+                    </span>
+                ))}
+            </div>
+        );
+    };
+
     const tileClassName = ({ date }) => {
         const dayOfWeek = date.getDay();
         if (dayOfWeek === 0 || holidays.isHoliday(date)) {
@@ -145,7 +207,8 @@ export default function MisCitasCliente() {
         <div>
             <NavigationCliente />
             <div className="container mx-auto p-8 relative text-center">
-                <h1 className="text-4xl font-bold mb-6">Mis Citas</h1>
+                <h1 className="text-4xl font-bold mb-6">Próximas Citas</h1>
+                <hr className="my-4 border-t-2 border-gray-300 w-full" />
 
                 {showModificar && (
                     <div className="modify-cita-overlay fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50">
@@ -202,6 +265,7 @@ export default function MisCitasCliente() {
                     </div>
                 )}
 
+                {/* Próximas citas */}
                 {citasOrdenadas.length > 0 ? (
                     <div className="flex flex-col gap-4 mt-6 items-center">
                         {citasOrdenadas.map((cita) => {
@@ -215,7 +279,7 @@ export default function MisCitasCliente() {
                                 <div key={cita.id} className="p-4 border rounded-lg shadow bg-white flex justify-between items-center w-full max-w-md">
                                     <div className="text-left">
                                         <p><strong>Método de Pago:</strong> {cita.metodo_pago === 'adelantado' ? 'PayPal' : 'Efectivo'}</p>
-                                        <p><strong>Estado:</strong> {cita.estado.charAt(0).toUpperCase() + cita.estado.slice(1)}</p>
+                                        <p><strong>Estado:</strong> <span className={getEstadoClass(cita.estado)}>{cita.estado.charAt(0).toUpperCase() + cita.estado.slice(1)}</span></p>
                                         <p><strong>Barbero:</strong> {cita.barbero?.nombre || 'No asignado'}</p>
                                         <div className="mt-4 flex gap-2">
                                             <button
@@ -245,7 +309,46 @@ export default function MisCitasCliente() {
                     </div>
                 ) : (
                     <div className="flex items-center justify-center h-64">
-                        <p className="text-xl text-red-500 italic">No tienes citas programadas.</p>
+                        <p className="text-xl text-gray-500 italic">No tienes citas programadas.</p>
+                    </div>
+                )}
+
+                {/* Citas completadas o ausentes */}
+                <h2 className="text-3xl font-bold mt-12">Citas Completadas</h2>
+                <hr className="my-4 border-t-2 border-gray-300 w-full" />
+                {citasCompletadas.length > 0 ? (
+                    <div className="flex flex-col gap-4 mt-6 items-center">
+                        {citasCompletadas.map((cita) => {
+                            const fecha = dayjs(cita.fecha_hora_cita);
+                            const mes = fecha.format('MMMM');
+                            const dia = fecha.format('DD');
+                            const hora = fecha.format('HH:mm');
+                            const año = fecha.format('YYYY');
+
+                            return (
+                                <div key={cita.id} className="p-4 border rounded-lg shadow bg-white flex justify-between items-center w-full max-w-md">
+                                    <div className="text-left">
+                                        <p><strong>Método de Pago:</strong> {cita.metodo_pago === 'adelantado' ? 'PayPal' : 'Efectivo'}</p>
+                                        <p><strong>Estado:</strong> <span className={getEstadoClass(cita.estado)}>{cita.estado.charAt(0).toUpperCase() + cita.estado.slice(1)}</span></p>
+                                        <p><strong>Barbero:</strong> {cita.barbero?.nombre || 'No asignado'}</p>
+                                        {cita.estado === 'completada' && (
+                                            <StarRating citaId={cita.id} valoracion={cita.valoracion} />
+                                        )}
+                                    </div>
+                                    <div className="mx-4 border-l-2 border-gray-300 h-full"></div>
+                                    <div className="flex flex-col items-center text-center" style={{ color: '#D2B48C' }}>
+                                        <p className="text-2xl">{mes}</p>
+                                        <p className="text-4xl font-bold">{dia}</p>
+                                        <p className="text-xl">{hora}</p>
+                                        <p className="text-xl">{año}</p>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                ) : (
+                    <div className="flex items-center justify-center h-64">
+                        <p className="text-xl text-gray-500 italic">No tienes citas completadas.</p>
                     </div>
                 )}
             </div>

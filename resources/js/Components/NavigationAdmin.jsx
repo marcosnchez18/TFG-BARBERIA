@@ -48,6 +48,7 @@ export default function NavigationAdmin() {
                     <button onClick={() => setShowLogoutModal(true)} className="text-lg md:text-xl text-white hover:text-gray-400 flex items-center nav-item-hover">
                              Home
                         </button>
+                        <Link href={route('mi-gestion-admin')} className="text-lg md:text-xl text-white hover:text-gray-400 nav-item-hover">Estadísticas</Link>
                         <Link href={route('admin-citas')} className="text-lg md:text-xl text-white hover:text-gray-400 nav-item-hover">Próximas Citas</Link>
                         <Link href={route('admin-foro')} className="text-lg md:text-xl text-white hover:text-gray-400 nav-item-hover">Foro</Link>
                         <Link href={route('admin-clientes')} className="text-lg md:text-xl text-white hover:text-gray-400 nav-item-hover">Clientes</Link>

@@ -178,5 +178,18 @@ class CitaController extends Controller
     }
 }
 
+public function calificar(Request $request, $id)
+{
+    $request->validate(['valoracion' => 'required|integer|min:1|max:5']);
 
+    $cita = Cita::findOrFail($id);
+    if ($cita->estado === 'completada') {
+        $cita->valoracion = $request->input('valoracion');
+        $cita->save();
+
+        return response()->json(['message' => 'Valoración guardada exitosamente.']);
+    }
+
+    return response()->json(['error' => 'Solo puedes valorar citas completadas.'], 400);
+}
 }

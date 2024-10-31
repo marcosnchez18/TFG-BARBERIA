@@ -3,8 +3,9 @@ import { usePage } from '@inertiajs/react';
 import NavigationAdmin from '../Components/NavigationAdmin';
 import SobreNosotros from '@/Components/Sobrenosotros';
 import Footer from '../Components/Footer';
+
 export default function AdminDashboard() {
-    const { user, citasHoy, nuevosUsuariosHoy, gananciasMes, nombreMesActual } = usePage().props;
+    const { user, citasHoy, nuevosUsuariosHoy, gananciasMes, nombreMesActual, valoracionMedia } = usePage().props;
 
     return (
         <div className="admin-dashboard bg-gray-100 min-h-screen">
@@ -35,8 +36,8 @@ export default function AdminDashboard() {
                                 <span className="text-3xl font-bold">€{gananciasMes}</span>
                             </div>
                             <div className="stat bg-[#F3F1E4] p-4 rounded-lg text-center">
-                                <p className="text-xl font-semibold text-[#A87B43]">Total Citas Hoy</p>
-                                <span className="text-3xl font-bold">{citasHoy}</span>
+                                <p className="text-xl font-semibold text-[#A87B43]">Valoración media</p>
+                                <span className="text-3xl font-bold">{valoracionMedia ? valoracionMedia.toFixed(2) : 'N/A'}</span>
                             </div>
                         </div>
                     </div>
