@@ -2,10 +2,27 @@ import React, { useState } from 'react';
 import { usePage } from '@inertiajs/react';
 import Swal from 'sweetalert2';
 import axios from 'axios';
+import Calendar from 'react-calendar';
+import 'react-calendar/dist/Calendar.css';
+import dayjs from 'dayjs';
+import 'dayjs/locale/es';
+import Holidays from 'date-holidays';
 import NavigationCliente from '../Components/NavigationCliente';
 
+dayjs.locale('es');
+
 export default function MisCitasCliente() {
-    const { citas = [] } = usePage().props;
+    const { citas = [], servicios = [] } = usePage().props;
+    const [showModificar, setShowModificar] = useState(false);
+    const [selectedCita, setSelectedCita] = useState(null);
+    const [selectedServicio, setSelectedServicio] = useState(null);
+    const [selectedDate, setSelectedDate] = useState(null);
+    const [horariosDisponibles, setHorariosDisponibles] = useState([]);
+
+    const today = dayjs().startOf('day');
+    const holidays = new Holidays('ES', 'AN', 'CA');
+
+    const citasOrdenadas = citas.sort((a, b) => new Date(a.fecha_hora_cita) - new Date(b.fecha_hora_cita));
 
     const cancelarCita = (id, metodoPago) => {
         Swal.fire({
@@ -19,7 +36,7 @@ export default function MisCitasCliente() {
             if (result.isConfirmed) {
                 axios
                     .delete(`/citas/${id}/cancelar`)
-                    .then((response) => {
+                    .then(() => {
                         Swal.fire({
                             icon: 'success',
                             title: 'Cita cancelada exitosamente',
@@ -42,53 +59,186 @@ export default function MisCitasCliente() {
         });
     };
 
-    const obtenerImagenBarbero = (barberoId) => {
-        switch (barberoId) {
-            case 1:
-                return "/images/jose.png";
-            case 2:
-                return "/images/hector.png";
-            default:
-                return "/images/default.png";
+    const handleModifyClick = (cita) => {
+        setSelectedCita(cita);
+        setSelectedServicio(cita.servicio);
+        setShowModificar(true);
+    };
+
+    const handleSelectServicio = (servicio) => {
+        setSelectedServicio(servicio);
+    };
+
+    const handleSelectDate = (date) => {
+        setSelectedDate(date);
+        const dayOfWeek = dayjs(date).day();
+        const isHoliday = holidays.isHoliday(date);
+        let horarios = [];
+
+        if (dayjs(date).isSame(today, 'day') || isHoliday) {
+            setHorariosDisponibles([]);
+            return;
+        } else if (dayOfWeek === 6) {
+            horarios = ["10:00", "10:45", "11:30", "12:15", "13:00"];
+        } else if (dayOfWeek === 0) {
+            setHorariosDisponibles([]);
+            return;
+        } else {
+            horarios = [
+                "10:00", "10:45", "11:30", "12:15", "13:00",
+                "16:00", "16:45", "17:30", "18:15", "19:00", "19:45", "20:30"
+            ];
         }
+
+        const formattedDate = dayjs(date).format('YYYY-MM-DD');
+        axios.get(`/api/citas/horas-reservadas`, {
+            params: { fecha: formattedDate, barbero_id: selectedCita.barbero.id }
+        })
+        .then(response => {
+            const reservedTimes = response.data;
+            const availableTimes = horarios.filter(hora => !reservedTimes.includes(hora));
+            setHorariosDisponibles(availableTimes);
+        })
+        .catch(error => console.error("Error al obtener disponibilidad:", error));
+    };
+
+    const handleConfirmModification = (horario) => {
+        if (!selectedServicio || !selectedDate || !selectedCita) {
+            Swal.fire('Error', 'Por favor, selecciona un servicio, día y cita antes de confirmar.', 'error');
+            return;
+        }
+
+        const fechaHoraCita = `${dayjs(selectedDate).format('YYYY-MM-DD')} ${horario}`;
+        axios.patch(`/citas/${selectedCita.id}/modificar`, {
+            servicio_id: selectedServicio.id,
+            fecha_hora_cita: fechaHoraCita,
+        })
+        .then(() => {
+            Swal.fire({
+                title: 'Cita modificada',
+                text: 'Tu cita ha sido modificada con éxito.',
+                icon: 'success',
+                confirmButtonText: 'Aceptar'
+            }).then(() => window.location.reload());
+        })
+        .catch(error => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: error.response?.data?.error || 'Ocurrió un error al modificar la cita',
+            });
+        });
+    };
+
+    const tileClassName = ({ date }) => {
+        const dayOfWeek = date.getDay();
+        if (dayOfWeek === 0 || holidays.isHoliday(date)) {
+            return 'day-no-disponible text-red-500';
+        }
+        return null;
     };
 
     return (
         <div>
             <NavigationCliente />
-            <div className="container mx-auto p-8">
-                <h1 className="text-4xl font-bold mb-6 text-center">Mis Citas</h1>
-                {citas.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-                        {citas.map((cita) => (
-                            <div key={cita.id} className="p-6 border rounded-lg shadow bg-white">
-                                <div className="flex items-center mb-4">
-                                    <img
-                                        src={obtenerImagenBarbero(cita.barbero.id)}
-                                        alt={cita.barbero.nombre}
-                                        className="w-16 h-16 rounded-full mr-4"
-                                    />
-                                    <div>
-                                        <p className="text-lg font-semibold">{cita.barbero.nombre}</p>
-                                        <p className="text-gray-500">{cita.servicio.nombre}</p>
+            <div className="container mx-auto p-8 relative text-center">
+                <h1 className="text-4xl font-bold mb-6">Mis Citas</h1>
+
+                {showModificar && (
+                    <div className="modify-cita-overlay fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50">
+                        <div className="modify-cita p-6 bg-gray-100 rounded-lg shadow-md w-11/12 md:w-3/4 lg:w-1/2 max-w-2xl text-center">
+                            <h2 className="text-3xl font-semibold mb-6">Modificar Cita</h2>
+                            <div className="mb-6">
+                                <h3 className="text-xl font-semibold mb-2">Selecciona un Servicio:</h3>
+                                <div className="grid grid-cols-2 gap-4">
+                                    {servicios.map((servicio) => (
+                                        <div
+                                            key={servicio.id}
+                                            className={`servicio-card p-4 border ${selectedServicio?.id === servicio.id ? 'bg-blue-100' : 'bg-white'} rounded-lg cursor-pointer text-center`}
+                                            onClick={() => handleSelectServicio(servicio)}
+                                        >
+                                            <h4 className="font-bold">{servicio.nombre}</h4>
+                                            <p className="text-gray-500">{servicio.precio}€</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                            <div className="calendar-selection text-center mt-6">
+                                <h3 className="text-xl font-semibold">Selecciona el Día:</h3>
+                                <Calendar
+                                    onChange={handleSelectDate}
+                                    value={selectedDate}
+                                    minDate={new Date()}
+                                    tileClassName={tileClassName}
+                                    className="mx-auto"
+                                />
+                            </div>
+                            {selectedDate && horariosDisponibles.length > 0 && (
+                                <div className="horarios-disponibles mt-4 grid grid-cols-4 gap-2 justify-center">
+                                    {horariosDisponibles.map((hora) => (
+                                        <button
+                                            key={hora}
+                                            onClick={() => handleConfirmModification(hora)}
+                                            className="horario-button px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+                                        >
+                                            {hora}
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
+                            {selectedDate && horariosDisponibles.length === 0 && (
+                                <p className="text-red-500 mt-4">No hay horarios disponibles para el día seleccionado.</p>
+                            )}
+                            <button
+                                className="mt-6 bg-gray-500 text-white px-4 py-2 rounded"
+                                onClick={() => setShowModificar(false)}
+                            >
+                                Cancelar Modificación
+                            </button>
+                        </div>
+                    </div>
+                )}
+
+                {citasOrdenadas.length > 0 ? (
+                    <div className="flex flex-col gap-4 mt-6 items-center">
+                        {citasOrdenadas.map((cita) => {
+                            const fecha = dayjs(cita.fecha_hora_cita);
+                            const mes = fecha.format('MMMM');
+                            const dia = fecha.format('DD');
+                            const hora = fecha.format('HH:mm');
+                            const año = fecha.format('YYYY');
+
+                            return (
+                                <div key={cita.id} className="p-4 border rounded-lg shadow bg-white flex justify-between items-center w-full max-w-md">
+                                    <div className="text-left">
+                                        <p><strong>Método de Pago:</strong> {cita.metodo_pago === 'adelantado' ? 'PayPal' : 'Efectivo'}</p>
+                                        <p><strong>Estado:</strong> {cita.estado.charAt(0).toUpperCase() + cita.estado.slice(1)}</p>
+                                        <p><strong>Barbero:</strong> {cita.barbero?.nombre || 'No asignado'}</p>
+                                        <div className="mt-4 flex gap-2">
+                                            <button
+                                                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                                                onClick={() => cancelarCita(cita.id, cita.metodo_pago)}
+                                            >
+                                                Cancelar
+                                            </button>
+                                            <button
+                                                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                                                onClick={() => handleModifyClick(cita)}
+                                            >
+                                                Modificar
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div className="mx-4 border-l-2 border-gray-300 h-full"></div>
+                                    <div className="flex flex-col items-center text-center" style={{ color: '#D2B48C' }}>
+                                        <p className="text-2xl">{mes}</p>
+                                        <p className="text-4xl font-bold">{dia}</p>
+                                        <p className="text-xl">{hora}</p>
+                                        <p className="text-xl">{año}</p>
                                     </div>
                                 </div>
-                                <p><strong>Fecha y Hora:</strong> {cita.fecha_hora_cita}</p>
-                                <p>
-                                    <strong>Método de Pago:</strong>{' '}
-                                    {cita.metodo_pago === 'adelantado' ? 'PayPal' : 'Efectivo'}
-                                </p>
-                                <p>
-                                    <strong>Estado:</strong> {cita.estado.charAt(0).toUpperCase() + cita.estado.slice(1)}
-                                </p>
-                                <button
-                                    className="mt-4 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-                                    onClick={() => cancelarCita(cita.id, cita.metodo_pago)}
-                                >
-                                    Cancelar Cita
-                                </button>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 ) : (
                     <div className="flex items-center justify-center h-64">

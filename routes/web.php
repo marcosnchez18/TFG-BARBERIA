@@ -107,6 +107,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Ruta para cancelar una cita y mostrar el mensaje de devolución de importe
     Route::delete('/citas/{id}/cancelar', [CitaController::class, 'cancelar'])->name('citas.cancelar');
+    Route::patch('/citas/{id}/modificar', [CitaController::class, 'modificar'])->name('citas.modificar');
+    
 
     // Mostrar y actualizar datos del cliente en la ruta /mis-datos
     Route::get('/mis-datos', [ClienteController::class, 'edit'])->name('mis-datos');

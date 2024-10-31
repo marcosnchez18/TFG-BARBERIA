@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Mail\ConfirmacionCitaMail;
 use App\Models\Cita;
+use App\Notifications\CitaModificada;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -152,4 +153,30 @@ class CitaController extends Controller
             'citas' => $citas,
         ]);
     }
+
+    public function modificar(Request $request, $id)
+{
+    // Validar la solicitud entrante
+    $request->validate([
+        'servicio_id' => 'required|exists:servicios,id',
+        'fecha_hora_cita' => 'required|date_format:Y-m-d H:i',
+    ]);
+
+    try {
+        // Buscar la cita por su ID
+        $cita = Cita::findOrFail($id);
+
+        // Actualizar los datos de la cita
+        $cita->servicio_id = $request->input('servicio_id');
+        $cita->fecha_hora_cita = $request->input('fecha_hora_cita');
+        $cita->save();
+
+        // Responder con éxito
+        return response()->json(['message' => 'Cita modificada con éxito.'], 200);
+    } catch (\Exception $e) {
+        return response()->json(['error' => 'Error al modificar la cita.'], 500);
+    }
+}
+
+
 }

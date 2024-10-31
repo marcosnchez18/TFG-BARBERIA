@@ -12,7 +12,8 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        $schedule->command('citas:update-completadas')->hourly();
+        // Ejecuta el comando cada 15 minutos
+        $schedule->command('citas:update-completadas')->everyFifteenMinutes();
     }
 
     /**
@@ -24,5 +25,4 @@ class Kernel extends ConsoleKernel
 
         require base_path('routes/console.php');
     }
-
 }

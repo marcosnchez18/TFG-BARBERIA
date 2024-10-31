@@ -9,7 +9,7 @@ use Carbon\Carbon;
 class UpdateCitasCompletadas extends Command
 {
     protected $signature = 'citas:update-completadas';
-    protected $description = 'Marca como completadas las citas cuyo horario ya ha pasado';
+    protected $description = 'Marca como completadas las citas cuyo horario ya ha pasado por más de 45 minutos';
 
     public function __construct()
     {
@@ -18,10 +18,11 @@ class UpdateCitasCompletadas extends Command
 
     public function handle()
     {
-        $now = Carbon::now();
+        // Hora actual menos 45 minutos
+        $timeThreshold = Carbon::now()->subMinutes(45);
 
-        // Actualiza citas con fecha y hora pasada
-        $citasActualizadas = Cita::where('fecha_hora_cita', '<', $now)
+        // Actualiza citas con fecha y hora pasada por más de 45 minutos
+        $citasActualizadas = Cita::where('fecha_hora_cita', '<', $timeThreshold)
             ->where('estado', 'pendiente')
             ->update(['estado' => 'completada']);
 
