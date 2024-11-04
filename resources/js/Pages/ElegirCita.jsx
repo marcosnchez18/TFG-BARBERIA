@@ -22,6 +22,9 @@ export default function ElegirCita() {
     const today = dayjs().startOf('day');
 
     const holidays = new Holidays('ES', 'AN', 'CA');
+    const [saldo, setSaldo] = useState(0); // Saldo del cliente
+    const [usarSaldo, setUsarSaldo] = useState(false); // Estado del checkbox de usar saldo
+
 
     useEffect(() => {
         const script = document.createElement("script");
@@ -44,6 +47,19 @@ export default function ElegirCita() {
                 .catch(error => console.error("Error al obtener disponibilidad:", error));
         }
     }, [selectedBarbero]);
+
+    useEffect(() => {
+        axios.get('/admin/user/saldo')
+            .then(response => {
+                const saldoObtenido = parseFloat(response.data.saldo);
+                console.log("Saldo recibido de la API:", saldoObtenido);
+                setSaldo(saldoObtenido);
+            })
+            .catch(error => console.error("Error al obtener el saldo:", error));
+    }, []);
+
+
+
 
     const tileClassName = ({ date }) => {
         const dateStr = dayjs(date).format('YYYY-MM-DD');
@@ -108,18 +124,28 @@ export default function ElegirCita() {
     };
 
     const handleReservation = () => {
+        const descuento = usarSaldo ? Math.min(saldo, selectedServicio.precio) : 0;
+        const precioFinal = selectedServicio.precio - descuento;
+
         const fechaHoraCita = `${dayjs(selectedDate).format('YYYY-MM-DD')} ${selectedTime}`;
         axios.post('/citas/reservar', {
             barbero_id: selectedBarbero.id,
             servicio_id: selectedServicio.id,
-            fecha_hora_cita: fechaHoraCita
+            fecha_hora_cita: fechaHoraCita,
+            descuento_aplicado: descuento // Envía el descuento aplicado al backend
         })
         .then(response => {
+            if (usarSaldo && descuento > 0) {
+                axios.patch('/admin/user/quitar-saldo', { descuento })
+                    .then(() => console.log('Saldo descontado'))
+                    .catch(error => console.error('Error al descontar el saldo:', error));
+            }
+
             Swal.fire({
                 title: '¡Cita Reservada!',
                 html: `
                     <p><strong>Barbero:</strong> ${selectedBarbero.nombre}</p>
-                    <p><strong>Servicio:</strong> ${selectedServicio.nombre} - ${selectedServicio.precio}€</p>
+                    <p><strong>Servicio:</strong> ${selectedServicio.nombre} - ${precioFinal.toFixed(2)}€</p>
                     <p><strong>Fecha y Hora:</strong> ${dayjs(selectedDate).format('DD/MM/YYYY')} ${selectedTime}</p>
                 `,
                 icon: 'success',
@@ -136,7 +162,7 @@ export default function ElegirCita() {
                             createOrder: function(data, actions) {
                                 return actions.order.create({
                                     purchase_units: [{
-                                        amount: { value: selectedServicio.precio }
+                                        amount: { value: precioFinal.toFixed(2) }
                                     }]
                                 });
                             },
@@ -179,6 +205,7 @@ export default function ElegirCita() {
             });
         });
     };
+
 
     const handleBack = () => {
         setStep(prevStep => prevStep - 1);
@@ -265,6 +292,19 @@ export default function ElegirCita() {
             <p className="mb-2"><strong>Barbero:</strong> {selectedBarbero.nombre}</p>
             <p className="mb-2"><strong>Servicio:</strong> {selectedServicio.nombre} - {selectedServicio.precio}€</p>
             <p className="mb-2"><strong>Fecha y Hora:</strong> {dayjs(selectedDate).format('DD/MM/YYYY')} {selectedTime}</p>
+            {saldo > 0 && (
+    <div className="mt-4">
+        <input
+            type="checkbox"
+            id="usarSaldo"
+            checked={usarSaldo}
+            onChange={() => setUsarSaldo(!usarSaldo)}
+            className="mr-2"
+        />
+        <label htmlFor="usarSaldo">Usar saldo promocional de {saldo.toFixed(2)}€</label>
+    </div>
+)}
+
         </div>
         <div className="button-group mt-6 flex justify-center gap-4">
             <button

@@ -113,6 +113,9 @@ Route::delete('/admin/citas/{id}/cancelar', [AdminController::class, 'cancelarCi
     Route::get('/api/citas/disponibilidad', [CitaController::class, 'disponibilidad'])->name('citas.disponibilidad');
     Route::get('/api/citas/horas-reservadas', [CitaController::class, 'horasReservadas']);
     Route::post('/citas/reservar', [CitaController::class, 'reservar'])->name('citas.reservar');
+    Route::get('/admin/user/saldo', [AdminController::class, 'getSaldo'])->name('admin.user.saldo');
+
+    Route::patch('/admin/user/quitar-saldo', [AdminController::class, 'quitaSaldo'])->name('admin.user.quitar-saldo');
 
     // Nueva ruta para actualizar el método de pago de la cita
     Route::patch('/citas/{id}/actualizar-metodo-pago', [CitaController::class, 'actualizarMetodoPago'])->name('citas.actualizar-metodo-pago');

@@ -110,4 +110,38 @@ class AdminController extends Controller
 
         return response()->json($citas);
     }
+
+    public function quitaSaldo(Request $request)
+{
+    $request->validate([
+        'descuento' => 'required|numeric|min:0',
+    ]);
+
+    // Obtenemos al usuario autenticado nuevamente para evitar problemas de sincronización
+    $user = User::find(Auth::id());
+
+    if ($user && $user->saldo >= $request->descuento) {
+        // Resta el saldo y guarda
+        $user->saldo = $user->saldo - $request->descuento;
+        $user->update(['saldo' => $user->saldo]);
+
+        return response()->json(['success' => 'Saldo descontado correctamente.'], 200);
+    } else {
+        return response()->json(['error' => 'Saldo insuficiente o usuario no encontrado.'], 400);
+    }
+}
+
+
+// En tu AdminController o en un controlador específico de usuario
+public function getSaldo()
+{
+    $user = Auth::user();
+
+    // Asegúrate de que el saldo se devuelve como un valor numérico
+    return response()->json([
+        'saldo' => (float) $user->saldo
+    ], 200);
+}
+
+
 }
