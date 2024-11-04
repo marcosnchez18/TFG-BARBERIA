@@ -143,7 +143,7 @@ export default function ClientesAdmin({ clientes }) {
                     </table>
                 </div>
             </div>
-            <br /><br /><br /><br />
+            <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
             <SobreNosotros />
             <Footer />
         </div>

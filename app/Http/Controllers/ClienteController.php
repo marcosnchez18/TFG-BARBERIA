@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class ClienteController extends Controller
@@ -79,6 +80,17 @@ class ClienteController extends Controller
 
         return redirect()->back()->with('success', 'Datos actualizados correctamente.');
     }
+
+    public function eliminarCuenta()
+{
+    $user = Auth::id();
+    $user_actual = User::findOrFail($user);
+    Auth::logout();
+    $user_actual->delete();
+
+    return redirect('/')->with('message', 'Cuenta eliminada con éxito.');
+}
+
 
 
 }

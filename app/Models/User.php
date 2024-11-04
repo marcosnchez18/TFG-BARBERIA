@@ -71,29 +71,23 @@ class User extends Authenticatable implements MustVerifyEmail  // Implementar Mu
      */
     public static function generateNumeroTarjetaVIP()
     {
-        // Generar un número de tarjeta VIP único con 16 caracteres en hexadecimal
+        // Generar un número de tarjeta VIP único con 16 caracteres
         return strtoupper(bin2hex(random_bytes(8)));
     }
 
-    /**
-     * Relación con las citas: un usuario (cliente) puede tener muchas citas.
-     */
+
     public function citas()
     {
         return $this->hasMany(Cita::class, 'usuario_id');
     }
 
-    /**
-     * Relación con las citas como barbero: un barbero puede tener muchas citas.
-     */
+
     public function citasBarbero()
     {
         return $this->hasMany(Cita::class, 'barbero_id');
     }
 
-    /**
-     * Relación con las noticias: un barbero puede escribir muchas noticias.
-     */
+
     public function noticias()
     {
         return $this->hasMany(Noticia::class, 'usuario_id');

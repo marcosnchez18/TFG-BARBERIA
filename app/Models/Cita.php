@@ -15,19 +15,18 @@ class Cita extends Model
         'valoracion'
     ];
 
-    // Relación con el cliente que agenda la cita
+
     public function usuario()
     {
         return $this->belongsTo(User::class, 'usuario_id');
     }
 
-    // Relación con el barbero que atiende la cita
     public function barbero()
     {
         return $this->belongsTo(User::class, 'barbero_id');
     }
 
-    // Relación con el servicio
+
     public function servicio()
     {
         return $this->belongsTo(Servicio::class, 'servicio_id');

@@ -47,7 +47,7 @@ export default function ReservarCitaCliente({ noticias }) {
 
                 </div>
             </div>
-            <br /><br />
+            <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
             <SobreNosotros />
             <Footer />
             <WhatsAppButton />

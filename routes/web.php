@@ -94,6 +94,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 Route::patch('/admin/citas/{id}/cambiar-estado', [AdminController::class, 'cambiarEstado'])->name('citas.cambiar-estado');
 Route::delete('/admin/citas/{id}/cancelar', [AdminController::class, 'cancelarCita'])->name('citas.cancelar');
+Route::get('/admin/citas-barbero', [CitaController::class, 'citasDelDia']);
 
 Route::get('/admin/citas/{fecha}', [AdminController::class, 'citasPorDia']);
 Route::patch('/admin/citas/{id}/cambiar-estado', [AdminController::class, 'cambiarEstado']);
@@ -127,6 +128,8 @@ Route::patch('/citas/{id}/calificar', [CitaController::class, 'calificar'])->nam
     // Mostrar y actualizar datos del cliente en la ruta /mis-datos
     Route::get('/mis-datos', [ClienteController::class, 'edit'])->name('mis-datos');
     Route::patch('/mis-datos', [ClienteController::class, 'update'])->name('cliente.update');
+    Route::post('/cliente/eliminar', [ClienteController::class, 'eliminarCuenta'])->name('cliente.eliminar');
+
 });
 
 // Rutas para restablecimiento de contraseña

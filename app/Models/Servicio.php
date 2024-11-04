@@ -13,7 +13,7 @@ class Servicio extends Model
         'duracion'
     ];
 
-    // Relación con las citas
+   
     public function citas()
     {
         return $this->hasMany(Cita::class, 'servicio_id');

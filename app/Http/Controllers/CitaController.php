@@ -192,4 +192,18 @@ public function calificar(Request $request, $id)
 
     return response()->json(['error' => 'Solo puedes valorar citas completadas.'], 400);
 }
+
+public function citasDelDia(Request $request)
+    {
+        // Usa la fecha de hoy si no se especifica en la solicitud
+        $fecha = $request->input('fecha', Carbon::today()->toDateString());
+        $barberoId = Auth::id(); // Usar el ID del barbero logueado
+
+        $citas = Cita::whereDate('fecha_hora_cita', $fecha)
+            ->where('barbero_id', $barberoId)
+            ->with(['usuario', 'servicio']) // Asegúrate de incluir los datos necesarios
+            ->get();
+
+        return response()->json($citas);
+    }
 }
