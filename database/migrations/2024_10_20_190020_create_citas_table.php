@@ -18,9 +18,9 @@ return new class extends Migration
             $table->foreignId('servicio_id')->constrained('servicios')->onDelete('cascade');
             $table->enum('estado', ['pendiente', 'completada', 'ausente'])->default('pendiente');
             $table->dateTime('fecha_hora_cita');
-            $table->integer('valoracion')->nullable(); // Valoración opcional si la cita fue completada
+            $table->integer('valoracion')->nullable(); 
             $table->enum('metodo_pago', ['pendiente', 'adelantado', 'efectivo'])->default('pendiente');
-            $table->decimal('descuento_aplicado', 8, 2)->nullable(); // Monto del descuento aplicado
+            $table->decimal('descuento_aplicado', 8, 2)->nullable();
             $table->decimal('precio_cita', 8, 2)->nullable()->after('descuento_aplicado');
             $table->timestamps();
         });

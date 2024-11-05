@@ -92,13 +92,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('/admin/clientes/{id}/habilitar', [ClienteController::class, 'habilitar'])->name('clientes.habilitar');
 
 
-Route::patch('/admin/citas/{id}/cambiar-estado', [AdminController::class, 'cambiarEstado'])->name('citas.cambiar-estado');
-Route::delete('/admin/citas/{id}/cancelar', [AdminController::class, 'cancelarCita'])->name('citas.cancelar');
-Route::get('/admin/citas-barbero', [CitaController::class, 'citasDelDia']);
+    Route::patch('/admin/citas/{id}/cambiar-estado', [AdminController::class, 'cambiarEstado'])->name('citas.cambiar-estado');
+    Route::delete('/admin/citas/{id}/cancelar', [AdminController::class, 'cancelarCita'])->name('citas.cancelar');
+    Route::get('/admin/citas-barbero', [CitaController::class, 'citasDelDia']);
 
-Route::get('/admin/citas/{fecha}', [AdminController::class, 'citasPorDia']);
-Route::patch('/admin/citas/{id}/cambiar-estado', [AdminController::class, 'cambiarEstado']);
-Route::delete('/admin/citas/{id}/cancelar', [AdminController::class, 'cancelarCita']);
+    Route::get('/admin/citas/{fecha}', [AdminController::class, 'citasPorDia']);
+    Route::patch('/admin/citas/{id}/cambiar-estado', [AdminController::class, 'cambiarEstado']);
+    Route::delete('/admin/citas/{id}/cancelar', [AdminController::class, 'cancelarCita']);
 
 
     // Rutas para el cliente (incluyendo edición de datos)
@@ -125,14 +125,13 @@ Route::delete('/admin/citas/{id}/cancelar', [AdminController::class, 'cancelarCi
     Route::patch('/citas/{id}/modificar', [CitaController::class, 'modificar'])->name('citas.modificar');
 
 
-Route::patch('/citas/{id}/calificar', [CitaController::class, 'calificar'])->name('citas.calificar');
+    Route::patch('/citas/{id}/calificar', [CitaController::class, 'calificar'])->name('citas.calificar');
 
 
     // Mostrar y actualizar datos del cliente en la ruta /mis-datos
     Route::get('/mis-datos', [ClienteController::class, 'edit'])->name('mis-datos');
     Route::patch('/mis-datos', [ClienteController::class, 'update'])->name('cliente.update');
     Route::post('/cliente/eliminar', [ClienteController::class, 'eliminarCuenta'])->name('cliente.eliminar');
-
 });
 
 // Rutas para restablecimiento de contraseña
