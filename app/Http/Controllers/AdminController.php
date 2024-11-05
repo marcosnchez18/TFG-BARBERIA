@@ -31,12 +31,10 @@ class AdminController extends Controller
             ->whereDate('created_at', $today)
             ->count();
 
-        // Ganancias del mes actual
+        // Ganancias del mes actual basadas en la columna precio_cita
         $gananciasMes = Cita::where('barbero_id', $barberoId)
             ->whereBetween('fecha_hora_cita', [$startOfMonth, $endOfMonth])
-            ->whereIn('metodo_pago', ['adelantado', 'efectivo'])
-            ->join('servicios', 'citas.servicio_id', '=', 'servicios.id')
-            ->sum('servicios.precio');
+            ->sum('precio_cita');
 
         // Calcular valoración media de citas completadas del barbero
         $valoracionMedia = Cita::where('barbero_id', $barberoId)
@@ -50,7 +48,8 @@ class AdminController extends Controller
             'nuevosUsuariosHoy' => $nuevosUsuariosHoy,
             'gananciasMes' => $gananciasMes,
             'nombreMesActual' => ucfirst($nombreMesActual),
-            'valoracionMedia' => $valoracionMedia ? round($valoracionMedia, 2) : 'N/A',
+            'valoracionMedia' => $valoracionMedia ? round($valoracionMedia, 2) : 0,
+
         ]);
     }
 
@@ -89,12 +88,21 @@ class AdminController extends Controller
     }
 
     public function cancelarCita($id)
-    {
-        $cita = Cita::findOrFail($id);
-        $cita->delete();
+{
+    $cita = Cita::findOrFail($id);
 
-        return response()->json(['message' => 'Cita cancelada exitosamente.']);
+    // Verifica si la cita tiene un descuento aplicado y devuelve el saldo al usuario
+    if ($cita->descuento_aplicado > 0) {
+        $usuario = $cita->usuario; // Asegúrate de que la relación 'usuario' esté definida en el modelo Cita
+        $usuario->saldo += $cita->descuento_aplicado;
+        $usuario->save();
     }
+
+    // Elimina la cita
+    $cita->delete();
+
+    return response()->json(['message' => 'Cita cancelada exitosamente.']);
+}
 
 
     public function citasPorDia($fecha)

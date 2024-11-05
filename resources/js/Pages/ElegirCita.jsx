@@ -127,16 +127,41 @@ export default function ElegirCita() {
         const descuento = usarSaldo ? Math.min(saldo, selectedServicio.precio) : 0;
         const precioFinal = selectedServicio.precio - descuento;
 
+        if (saldo > 0) { // Solo muestra el mensaje si el saldo es mayor a 0
+            Swal.fire({
+                title: `Tienes ${saldo.toFixed(2)}€ de saldo. ¿Quieres canjearlo?`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, canjear saldo',
+                cancelButtonText: 'No, gracias',
+            }).then((result) => {
+                const aplicarDescuento = result.isConfirmed;
+
+                // Si se confirma el canjeo, aplica el descuento
+                const descuentoAplicado = aplicarDescuento ? Math.min(saldo, selectedServicio.precio) : 0;
+                const precioFinalConDescuento = selectedServicio.precio - descuentoAplicado;
+
+                realizarReserva(descuentoAplicado, precioFinalConDescuento);
+            });
+        } else {
+            // Si el saldo es 0, realiza la reserva directamente sin descuento
+            realizarReserva(0, precioFinal);
+        }
+    };
+
+    // Función para realizar la reserva en el backend
+    const realizarReserva = (descuentoAplicado, precioFinalConDescuento) => {
         const fechaHoraCita = `${dayjs(selectedDate).format('YYYY-MM-DD')} ${selectedTime}`;
         axios.post('/citas/reservar', {
             barbero_id: selectedBarbero.id,
             servicio_id: selectedServicio.id,
             fecha_hora_cita: fechaHoraCita,
-            descuento_aplicado: descuento // Envía el descuento aplicado al backend
+            descuento_aplicado: descuentoAplicado,
+            precio_cita: precioFinalConDescuento,
         })
         .then(response => {
-            if (usarSaldo && descuento > 0) {
-                axios.patch('/admin/user/quitar-saldo', { descuento })
+            if (descuentoAplicado > 0) {
+                axios.patch('/admin/user/quitar-saldo', { descuento: descuentoAplicado })
                     .then(() => console.log('Saldo descontado'))
                     .catch(error => console.error('Error al descontar el saldo:', error));
             }
@@ -145,24 +170,24 @@ export default function ElegirCita() {
                 title: '¡Cita Reservada!',
                 html: `
                     <p><strong>Barbero:</strong> ${selectedBarbero.nombre}</p>
-                    <p><strong>Servicio:</strong> ${selectedServicio.nombre} - ${precioFinal.toFixed(2)}€</p>
+                    <p><strong>Servicio:</strong> ${selectedServicio.nombre} - ${precioFinalConDescuento.toFixed(2)}€</p>
                     <p><strong>Fecha y Hora:</strong> ${dayjs(selectedDate).format('DD/MM/YYYY')} ${selectedTime}</p>
                 `,
                 icon: 'success',
                 confirmButtonText: 'Aceptar',
-                showCloseButton: true // Muestra la "X" para cerrar
+                showCloseButton: true
             }).then(() => {
                 Swal.fire({
                     title: '¿Quieres pagar tu cita ahora?',
                     html: `<div id="paypal-button-container"></div>`,
                     showConfirmButton: false,
-                    showCloseButton: true, // Muestra la "X" para cerrar
+                    showCloseButton: true,
                     willOpen: () => {
                         window.paypal.Buttons({
                             createOrder: function(data, actions) {
                                 return actions.order.create({
                                     purchase_units: [{
-                                        amount: { value: precioFinal.toFixed(2) }
+                                        amount: { value: precioFinalConDescuento.toFixed(2) }
                                     }]
                                 });
                             },
@@ -207,6 +232,9 @@ export default function ElegirCita() {
     };
 
 
+
+
+
     const handleBack = () => {
         setStep(prevStep => prevStep - 1);
     };
@@ -233,6 +261,7 @@ export default function ElegirCita() {
                             ))}
                         </div>
                     </div>
+
                 )}
                 {step === 2 && (
                     <div className="servicio-selection">
@@ -292,18 +321,7 @@ export default function ElegirCita() {
             <p className="mb-2"><strong>Barbero:</strong> {selectedBarbero.nombre}</p>
             <p className="mb-2"><strong>Servicio:</strong> {selectedServicio.nombre} - {selectedServicio.precio}€</p>
             <p className="mb-2"><strong>Fecha y Hora:</strong> {dayjs(selectedDate).format('DD/MM/YYYY')} {selectedTime}</p>
-            {saldo > 0 && (
-    <div className="mt-4">
-        <input
-            type="checkbox"
-            id="usarSaldo"
-            checked={usarSaldo}
-            onChange={() => setUsarSaldo(!usarSaldo)}
-            className="mr-2"
-        />
-        <label htmlFor="usarSaldo">Usar saldo promocional de {saldo.toFixed(2)}€</label>
-    </div>
-)}
+
 
         </div>
         <div className="button-group mt-6 flex justify-center gap-4">

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Mail\ConfirmacionCitaMail;
 use App\Models\Cita;
+use App\Models\Servicio;
 use App\Notifications\CitaModificada;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -11,6 +12,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Carbon\Carbon;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Log;
+
 
 class CitaController extends Controller
 {
@@ -18,10 +21,16 @@ class CitaController extends Controller
      * Muestra la disponibilidad de días y horarios.
      */
     public function disponibilidad(Request $request)
-    {
+{
+    try {
         $disponibilidad = [];
         $hoy = Carbon::today();
         $barberoId = $request->input('barbero_id');
+
+        if (!$barberoId) {
+            Log::warning('El ID del barbero es necesario');
+            return response()->json(['error' => 'El ID del barbero es necesario'], 400);
+        }
 
         for ($i = 0; $i < 30; $i++) {
             $fecha = $hoy->copy()->addDays($i);
@@ -30,9 +39,10 @@ class CitaController extends Controller
             if ($fecha->isSunday()) {
                 $disponibilidad[$fechaStr] = ['completo' => true];
             } elseif ($fecha->isSaturday()) {
+
                 $totalCitas = Cita::whereDate('fecha_hora_cita', $fecha)
                     ->where('barbero_id', $barberoId)
-                    ->whereBetween(DB::raw('HOUR(fecha_hora_cita)'), [10, 13])
+                    ->whereRaw('EXTRACT(HOUR FROM fecha_hora_cita) BETWEEN 10 AND 13')
                     ->count();
                 $disponibilidad[$fechaStr] = ['completo' => $totalCitas >= 5];
             } else {
@@ -44,19 +54,33 @@ class CitaController extends Controller
         }
 
         return response()->json($disponibilidad);
+
+    } catch (\Exception $e) {
+        Log::error("Error en la disponibilidad: " . $e->getMessage(), [
+            'barbero_id' => $request->input('barbero_id'),
+            'trace' => $e->getTraceAsString()
+        ]);
+
+        return response()->json(['error' => 'Error al obtener disponibilidad'], 500);
     }
+}
+
+
 
     /**
      * Almacena una nueva cita en la base de datos.
      */
     public function reservar(Request $request)
-    {
-        $request->validate([
-            'barbero_id' => 'required|exists:users,id',
-            'servicio_id' => 'required|exists:servicios,id',
-            'fecha_hora_cita' => 'required|date',
-        ]);
+{
+    $request->validate([
+        'barbero_id' => 'required|exists:users,id',
+        'servicio_id' => 'required|exists:servicios,id',
+        'fecha_hora_cita' => 'required|date',
+        'descuento_aplicado' => 'nullable|numeric|min:0',
+        'precio_cita' => 'nullable|numeric|min:0', // Validación para el precio de la cita
+    ]);
 
+    try {
         $fecha_hora_cita = Carbon::parse($request->fecha_hora_cita);
 
         $existeCita = Cita::where('barbero_id', $request->barbero_id)
@@ -67,20 +91,41 @@ class CitaController extends Controller
             return response()->json(['error' => 'Este horario ya está reservado para el barbero seleccionado.'], 422);
         }
 
+        // Obtén el servicio para calcular el precio final de la cita con el descuento
+        $servicio = Servicio::findOrFail($request->servicio_id);
+        $precioCita = $servicio->precio - $request->input('descuento_aplicado', 0);
+
+        // Crear la cita con el precio final y el descuento aplicado
         $cita = Cita::create([
             'usuario_id' => Auth::id(),
             'barbero_id' => $request->barbero_id,
             'servicio_id' => $request->servicio_id,
             'fecha_hora_cita' => $fecha_hora_cita,
             'estado' => 'pendiente',
-            'metodo_pago' => 'pendiente'  // Inicializa con 'pendiente'
+            'metodo_pago' => 'pendiente',
+            'descuento_aplicado' => $request->input('descuento_aplicado', 0),
+            'precio_cita' => $precioCita, // Guardar el precio final de la cita con descuento
         ]);
 
+        Log::info('Descuento aplicado a la cita:', [
+            'descuento' => $request->input('descuento_aplicado'),
+            'precio_cita' => $precioCita
+        ]);
+
+        // Enviar correo de confirmación
         $user = Auth::user();
         Mail::to($user->email)->send(new ConfirmacionCitaMail($cita, $user));
 
         return response()->json(['success' => '¡Cita reservada exitosamente!', 'cita_id' => $cita->id]);
+
+    } catch (\Exception $e) {
+        Log::error('Error al reservar cita: ' . $e->getMessage());
+        return response()->json(['error' => 'Ocurrió un problema al reservar la cita.'], 500);
     }
+}
+
+
+
 
     /**
      * Muestra las horas reservadas para una fecha y barbero específicos.
@@ -120,24 +165,32 @@ class CitaController extends Controller
      * Cancela una cita y envía una alerta de confirmación.
      */
     public function cancelar(Request $request, $id)
-    {
-        // Verifica si la cita existe y pertenece al usuario autenticado
-        $cita = Cita::where('id', $id)
-            ->where('usuario_id', Auth::id())
-            ->first();
+{
+    // Verifica si la cita existe y pertenece al usuario autenticado
+    $cita = Cita::where('id', $id)
+        ->where('usuario_id', Auth::id())
+        ->first();
 
-        if (!$cita) {
-            return response()->json(['error' => 'No tienes citas para cancelar.'], 404);
-        }
-
-        // Elimina la cita
-        $cita->delete();
-
-        // Retorna respuesta con mensaje de confirmación para SweetAlert
-        return response()->json([
-            'success' => 'Cita cancelada exitosamente. Se ha solicitado la devolución del importe. Será ingresado en tu cuenta de PayPal de 3 a 5 días laborables.'
-        ]);
+    if (!$cita) {
+        return response()->json(['error' => 'No tienes citas para cancelar.'], 404);
     }
+
+    // Si existe un descuento aplicado, se devuelve al saldo del usuario
+    if ($cita->descuento_aplicado > 0) {
+        $usuario = $cita->usuario;
+        $usuario->saldo += $cita->descuento_aplicado;
+        $usuario->save();
+    }
+
+    // Elimina la cita
+    $cita->delete();
+
+    // Retorna respuesta con mensaje de confirmación para SweetAlert
+    return response()->json([
+        'success' => 'Cita cancelada exitosamente. Se ha solicitado la devolución del importe. Será ingresado en tu cuenta de PayPal de 3 a 5 días laborables.'
+    ]);
+}
+
 
     public function misCitas()
     {

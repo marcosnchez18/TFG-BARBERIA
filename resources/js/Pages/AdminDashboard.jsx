@@ -80,13 +80,53 @@ export default function AdminDashboard() {
         }
     };
 
+    const renderStars = (rating) => {
+        const fullStars = Math.floor(rating);
+        const halfStar = rating % 1 >= 0.5;
+        const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
+
+        return (
+            <div className="flex justify-center space-x-1">
+                {[...Array(fullStars)].map((_, i) => (
+                    <Star key={`full-${i}`} filled />
+                ))}
+                {halfStar && <Star half />}
+                {[...Array(emptyStars)].map((_, i) => (
+                    <Star key={`empty-${i}`} />
+                ))}
+            </div>
+        );
+    };
+
+    const Star = ({ filled = false, half = false }) => (
+        <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            className="star"
+        >
+            <defs>
+                <linearGradient id="half-fill">
+                    <stop offset="50%" stopColor="#FFD700" />
+                    <stop offset="50%" stopColor="#E0E0E0" />
+                </linearGradient>
+            </defs>
+            <path
+                d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"
+                fill={filled ? '#FFD700' : half ? 'url(#half-fill)' : '#E0E0E0'}
+            />
+        </svg>
+    );
+
     return (
         <div className="admin-dashboard bg-gray-100 min-h-screen"
-        style={{
-            backgroundImage: `url('/images/barberia.jpg')`,
-            backgroundSize: 'cover',
-            backgroundAttachment: 'fixed',
-        }}>
+            style={{
+                backgroundImage: `url('/images/barberia.jpg')`,
+                backgroundSize: 'cover',
+                backgroundAttachment: 'fixed',
+            }}>
             <NavigationAdmin admin={true} />
             <br />
             <div className="container mx-auto flex flex-col lg:flex-row mt-12 p-8 bg-white rounded-lg shadow-lg w-full justify-between">
@@ -109,7 +149,9 @@ export default function AdminDashboard() {
                         </div>
                         <div className="stat bg-[#F3F1E4] p-4 rounded-lg text-center">
                             <p className="text-xl font-semibold text-[#A87B43]">Valoración media</p>
-                            <span className="text-3xl font-bold">{valoracionMedia ? Math.round(valoracionMedia) : 'N/A'} ⭐</span>
+                            <div className="flex justify-center mt-2">
+                                {renderStars(valoracionMedia || 0)}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -187,7 +229,7 @@ export default function AdminDashboard() {
                     </div>
                 </div>
             </div>
-             <br /><br /><br /><br />
+            <br /><br /><br /><br />
             <SobreNosotros />
             <Footer />
         </div>

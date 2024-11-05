@@ -12,9 +12,11 @@ class Cita extends Model
         'servicio_id',
         'estado',
         'fecha_hora_cita',
-        'valoracion'
+        'valoracion',
+        'metodo_pago',
+        'descuento_aplicado',
+        'precio_cita'
     ];
-
 
     public function usuario()
     {
@@ -25,7 +27,6 @@ class Cita extends Model
     {
         return $this->belongsTo(User::class, 'barbero_id');
     }
-
 
     public function servicio()
     {

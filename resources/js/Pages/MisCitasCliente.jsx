@@ -179,6 +179,7 @@ export default function MisCitasCliente() {
 
         return (
             <div className="star-rating mt-4">
+
                 {[1, 2, 3, 4, 5].map(star => (
                     <span
                         key={star}
@@ -192,6 +193,8 @@ export default function MisCitasCliente() {
                     </span>
                 ))}
             </div>
+
+
         );
     };
 
@@ -204,11 +207,18 @@ export default function MisCitasCliente() {
     };
 
     return (
-        <div>
-            <NavigationCliente />
-            <div className="container mx-auto p-8 relative text-center">
-                <h1 className="text-4xl font-bold mb-6">Próximas Citas</h1>
-                <hr className="my-4 border-t-2 border-gray-300 w-full" />
+        <div
+    style={{
+        backgroundImage: `url('/images/barberia.jpg')`,
+        backgroundSize: 'cover',
+        backgroundAttachment: 'fixed',
+    }}
+>
+    <NavigationCliente />
+
+    <div className="container mx-auto p-8 bg-white bg-opacity-80 rounded-lg mt-10 max-w-2xl">
+    <h2 className="text-4xl font-bold text-center mb-6">Próximas Citas</h2>
+    <hr className="my-4 border-t-2 border-gray-300 w-full" />
 
                 {showModificar && (
                     <div className="modify-cita-overlay fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50">
@@ -312,10 +322,13 @@ export default function MisCitasCliente() {
                         <p className="text-xl text-gray-500 italic">No tienes citas programadas.</p>
                     </div>
                 )}
-
+        <br /><br /><br /><br />
+        
                 {/* Citas completadas o ausentes */}
-                <h2 className="text-3xl font-bold mt-12">Citas Completadas</h2>
-                <hr className="my-4 border-t-2 border-gray-300 w-full" />
+                <div>
+    <h2 className="text-4xl font-bold text-center mb-6">Citas Completadas</h2>
+    <hr className="my-4 border-t-2 border-gray-300 w-full" />
+    </div>
                 {citasCompletadas.length > 0 ? (
                     <div className="flex flex-col gap-4 mt-6 items-center">
                         {citasCompletadas.map((cita) => {
