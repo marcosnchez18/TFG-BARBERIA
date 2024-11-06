@@ -132,7 +132,7 @@ export default function AdminDashboard() {
             <div className="container mx-auto flex flex-col lg:flex-row mt-12 p-8 bg-white rounded-lg shadow-lg w-full justify-between">
 
                 {/* Columna de estadísticas rápidas a la izquierda */}
-                <div className="bg-gray-50 rounded-lg p-6 shadow-md w-full max-w-xs lg:w-1/4 lg:mr-8 mb-8 lg:mb-0">
+                <div className="bg-gray-50 rounded-lg p-6 shadow-md w-full lg:max-w-xs lg:w-1/4 lg:mr-8 mb-8 lg:mb-0">
                     <h2 className="text-2xl font-semibold text-gray-700 mb-4">Estadísticas Rápidas</h2>
                     <div className="space-y-4">
                         <div className="stat bg-[#F7ECE3] p-4 rounded-lg text-center">
@@ -215,7 +215,7 @@ export default function AdminDashboard() {
                 </div>
 
                 {/* Columna de herramientas adicionales a la derecha */}
-                <div className="bg-gray-50 rounded-lg p-6 shadow-md w-full max-w-xs lg:w-1/4 lg:ml-8 mb-8 lg:mb-0">
+                <div className="bg-gray-50 rounded-lg p-6 shadow-md w-full lg:max-w-xs lg:w-1/4 lg:ml-8 mb-8 lg:mb-0">
                     <h2 className="text-2xl font-semibold text-gray-700 mb-4">Herramientas Útiles</h2>
                     <div className="space-y-4">
                         <div className="bg-[#E3F7F7] p-4 rounded-lg text-center">

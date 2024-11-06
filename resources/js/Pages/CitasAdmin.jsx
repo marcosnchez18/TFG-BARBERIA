@@ -92,13 +92,13 @@ export default function CitasAdmin() {
                                 const año = fecha.getFullYear();
 
                                 return (
-                                    <div key={cita.id} className="p-6 border rounded-lg shadow bg-white flex items-center justify-between max-w-full w-full">
-                                        <div className="text-left w-2/3">
+                                    <div key={cita.id} className="p-6 border rounded-lg shadow bg-white flex flex-col md:flex-row items-center md:justify-between max-w-full w-full">
+                                        <div className="text-left w-full md:w-2/3 mb-4 md:mb-0">
                                             <p><strong>Cliente:</strong> {cita.usuario.nombre}</p>
                                             <p><strong>Servicio:</strong> {cita.servicio.nombre}</p>
                                             <p><strong>Estado:</strong> <span className={getEstadoColor(cita.estado)}>{cita.estado.charAt(0).toUpperCase() + cita.estado.slice(1)}</span></p>
                                             <p><strong>Método de Pago:</strong> {cita.metodo_pago === 'adelantado' ? 'PayPal' : 'Efectivo'}</p>
-                                            <div className="mt-4 flex gap-2">
+                                            <div className="mt-4 flex gap-2 flex-wrap">
                                                 <button
                                                     onClick={() => handleCancelarCita(cita.id)}
                                                     className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
@@ -119,11 +119,11 @@ export default function CitasAdmin() {
                                                 </button>
                                             </div>
                                         </div>
-                                        <div className="text-right w-1/3 flex flex-col items-center" style={{ color: '#D2B48C' }}>
-                                            <p className="text-xl text-center">{mes}</p>
-                                            <p className="text-5xl font-bold mt-[-8px]">{dia}</p>
-                                            <p className="text-lg">{hora}</p>
-                                            <p className="text-lg">{año}</p>
+                                        <div className="text-right w-full md:w-1/3 flex flex-col items-center md:items-end sm:text-lg md:text-xl lg:text-2xl" style={{ color: '#D2B48C' }}>
+                                            <p className="text-base sm:text-lg md:text-xl lg:text-2xl">{mes}</p>
+                                            <p className="text-4xl font-bold sm:text-5xl md:text-6xl lg:text-7xl mt-[-8px]">{dia}</p>
+                                            <p className="text-base sm:text-lg md:text-xl lg:text-2xl">{hora}</p>
+                                            <p className="text-sm sm:text-base md:text-lg lg:text-xl">{año}</p>
                                         </div>
                                     </div>
                                 );
@@ -134,7 +134,6 @@ export default function CitasAdmin() {
                     )}
                 </div>
             </div>
-            <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
             <SobreNosotros />
             <Footer />
         </div>
