@@ -312,13 +312,7 @@ body, h1, h2, h3,h4, p {
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); /* Añade sombra para resaltar */
 }
 
-/* Estilo de la sección fin_home */
-.fin_home {
-    background-color: #171717;
-    color: #FFFFFF;
-    padding: 50px;
-    text-align: center;
-}
+
 
 /* Estilo de las imágenes */
 img.fotos_fades {
@@ -364,10 +358,15 @@ img.fotos_fades {
 
 /* Estilo de la sección fin_home */
 .fin_home {
-    background-color: #171717;
-    color: #FFFFFF;
+    background-color: #f8f8f8;
+    color: #000000;
     padding: 50px;
+    font-weight: 600;
     text-align: center;
+}
+
+.reser_desc {
+    font-weight: 100;
 }
 
 /* Contenedor general para las imágenes */
@@ -1050,7 +1049,7 @@ nav {
 
 /* Fila de la tabla en hover */
 .clientes-admin-table-row:hover {
-    background-color: #e1ebff; 
+    background-color: #e1ebff;
 }
 
 /* Botones de acción */
@@ -1613,4 +1612,59 @@ nav {
     color: #ff0000 !important;
     font-weight: bold;
     border-radius: 50%;
+}
+
+
+
+
+.carrusel-container {
+    text-align: center;
+    position: relative;
+    width: 100%;
+    max-width: 600px;
+    margin: auto;
+}
+
+.carrusel-slide {
+    display: flex;
+    justify-content: center;
+}
+
+.fotos_fades {
+    width: 100%;
+    max-width: 400px;
+    height: auto;
+    border-radius: 8px;
+}
+
+.carrusel-button {
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    font-size: 2rem;
+    padding: 0.5rem;
+    cursor: pointer;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.carrusel-button.prev {
+    left: 10px;
+}
+
+.carrusel-button.next {
+    right: 10px;
+}
+
+
+
+
+
+/* Estilo de la sección fin_home */
+.fin_home2 {
+    background-color: #171717;
+    color: #f0f0f0;
+    padding: 50px;
+    text-align: center;
 }
