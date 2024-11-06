@@ -10,14 +10,14 @@ export default function Navigation() {
 
     return (
         <nav className="bg-neutral-900 p-4">
-            <div className="container mx-auto flex flex-wrap justify-between items-center">
+            <div className="container mx-auto flex justify-between items-center">
                 {/* Logo de la Barbería */}
                 <div>
                     <Link href="/">
                         <img
                             src="/images/logo.png"
                             alt="Logo Barbería"
-                            className="w-30 h-30 md:w-40 md:h-30"
+                            className="w-24 h-24 md:w-50 md:h-50"
                         />
                     </Link>
                 </div>
@@ -60,18 +60,18 @@ export default function Navigation() {
                     )}
                 </button>
 
-                {/* Menú de navegación (con rectángulo en pantallas grandes) */}
+                {/* Menú de navegación en dispositivos grandes */}
                 <div
                     className={`${
                         isOpen ? 'block' : 'hidden'
-                    } w-full md:w-auto md:block bg-neutral-900 md:bg-neutral-800 md:p-4 md:rounded-lg shadow-md font-serif w-full md:w-auto mt-4 md:mt-0`}
+                    } md:flex md:items-center md:space-x-4 w-full md:w-auto bg-neutral-900 md:bg-neutral-800 md:p-4 md:rounded-lg font-serif`}
                     style={{ fontFamily: 'Times New Roman, serif' }}
                 >
-                    <ul className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
+                    <ul className="flex flex-col md:flex-row md:space-x-4 mt-4 md:mt-0 space-y-2 md:space-y-0">
                         <li>
                             <Link
                                 href={route('sobre-nosotros')}
-                                className="text-xl md:text-3xl text-white hover:text-gray-400"
+                                className="text-lg md:text-xl text-white hover:text-gray-400"
                             >
                                 Sobre Nosotros
                             </Link>
@@ -79,7 +79,7 @@ export default function Navigation() {
                         <li>
                             <Link
                                 href={route('servicios')}
-                                className="text-xl md:text-3xl text-white hover:text-gray-400"
+                                className="text-lg md:text-xl text-white hover:text-gray-400"
                             >
                                 Servicios
                             </Link>
@@ -87,7 +87,7 @@ export default function Navigation() {
                         <li>
                             <Link
                                 href={route('contacto')}
-                                className="text-xl md:text-3xl text-white hover:text-gray-400"
+                                className="text-lg md:text-xl text-white hover:text-gray-400"
                             >
                                 Contacto
                             </Link>
@@ -95,7 +95,7 @@ export default function Navigation() {
                         <li>
                             <Link
                                 href={route('equipo')}
-                                className="text-xl md:text-3xl text-white hover:text-gray-400"
+                                className="text-lg md:text-xl text-white hover:text-gray-400"
                             >
                                 Equipo
                             </Link>
@@ -103,41 +103,27 @@ export default function Navigation() {
                     </ul>
                 </div>
 
-                {/* Botones de Iniciar sesión y Registrarse */}
-                <div className="hidden md:flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 font-serif mt-4 md:mt-0">
-                    <Link
-                        href="/login"
-                        className="text-lg md:text-xl text-white hover:text-gray-400"
-                    >
-                        Iniciar sesión
+                {/* Botones de Iniciar sesión y Registrarse con iconos en dispositivos grandes */}
+                <div className="hidden md:flex items-center space-x-4 font-serif">
+                    <Link href="/login" className="text-white hover:text-gray-400">
+                        <i className="fa-solid fa-user text-lg md:text-xl"></i>
                     </Link>
-                    <Link
-                        href="/register"
-                        className="text-lg md:text-xl text-white hover:text-gray-400"
-                    >
-                        Registrarse
+                    <Link href="/register" className="text-white hover:text-gray-400">
+                        <i className="fa-sharp-duotone fa-solid fa-lock text-lg md:text-xl"></i>
                     </Link>
                 </div>
             </div>
 
-            {/* Menú en pantallas pequeñas */}
+            {/* Menú desplegable en dispositivos pequeños */}
             {isOpen && (
-                <div className="md:hidden mt-4">
-                    <div className="bg-neutral-800 p-4 rounded-lg shadow-md">
-                        <div className="flex flex-col space-y-4">
-                            <Link
-                                href="/login"
-                                className="text-lg text-white hover:text-gray-400"
-                            >
-                                Iniciar sesión
-                            </Link>
-                            <Link
-                                href="/register"
-                                className="text-lg text-white hover:text-gray-400"
-                            >
-                                Registrarse
-                            </Link>
-                        </div>
+                <div className="md:hidden mt-4 bg-neutral-800 p-4 rounded-lg shadow-md">
+                    <div className="flex flex-col space-y-4">
+                        <Link href="/login" className="text-white hover:text-gray-400">
+                            <i className="fa-solid fa-user text-lg"></i>
+                        </Link>
+                        <Link href="/register" className="text-white hover:text-gray-400">
+                            <i className="fa-sharp-duotone fa-solid fa-lock text-lg"></i>
+                        </Link>
                     </div>
                 </div>
             )}
