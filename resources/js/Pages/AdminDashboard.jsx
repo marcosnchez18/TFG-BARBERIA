@@ -227,12 +227,12 @@ export default function AdminDashboard() {
                             </Link>
                         </div>
 
-                        <div className="bg-[#E3F7F7] p-4 rounded-lg text-center">
+                        <div className="bg-[#dafcd0] p-4 rounded-lg text-center">
                             <p className="text-lg font-semibold">Editar Servicios</p>
                             <br />
                             <Link href={route('admin.servicios.editar')} className="mt-2 px-4 py-2 bg-[#A87B43] text-white rounded hover:bg-[#875d34]">
-    Editar
-</Link>
+                                Editar
+                            </Link>
 
 
                         </div>
