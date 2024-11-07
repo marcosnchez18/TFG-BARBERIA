@@ -10,6 +10,7 @@ import Swal from 'sweetalert2';
 import dayjs from 'dayjs';
 import Holidays from 'date-holidays';
 
+
 export default function ElegirCita() {
     const [step, setStep] = useState(1);
     const [selectedBarbero, setSelectedBarbero] = useState(null);
@@ -36,9 +37,10 @@ export default function ElegirCita() {
 
     useEffect(() => {
         axios.get('/data/servicios.json')
-            .then(response => setServicios(response.data))
+            .then(response => setServicios(response.data)) // Guarda los datos en el estado
             .catch(error => console.error("Error al cargar los servicios:", error));
     }, []);
+
 
     useEffect(() => {
         if (selectedBarbero) {

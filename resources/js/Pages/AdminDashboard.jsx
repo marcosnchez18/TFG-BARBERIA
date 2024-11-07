@@ -10,6 +10,7 @@ import Swal from 'sweetalert2';
 import axios from 'axios';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
 import 'dayjs/locale/es';
+import { Link } from '@inertiajs/react';
 
 dayjs.extend(localizedFormat);
 dayjs.locale('es');
@@ -219,13 +220,23 @@ export default function AdminDashboard() {
                     <h2 className="text-2xl font-semibold text-gray-700 mb-4">Herramientas Útiles</h2>
                     <div className="space-y-4">
                         <div className="bg-[#E3F7F7] p-4 rounded-lg text-center">
-                            <p className="text-lg font-semibold">Configuración</p>
-                            <button className="mt-2 px-4 py-2 bg-[#A87B43] text-white rounded hover:bg-[#875d34]">Editar Configuración</button>
+                            <p className="text-lg font-semibold">Nuevo Servicio</p>
+                            <br />
+                            <Link href={route('admin.servicios.create')} className="mt-2 px-4 py-2 bg-[#A87B43] text-white rounded hover:bg-[#875d34]">
+                                Añadir
+                            </Link>
                         </div>
-                        <div className="bg-[#F4E4D3] p-4 rounded-lg text-center">
-                            <p className="text-lg font-semibold">Informes</p>
-                            <button className="mt-2 px-4 py-2 bg-[#A87B43] text-white rounded hover:bg-[#875d34]">Generar Informe</button>
+
+                        <div className="bg-[#E3F7F7] p-4 rounded-lg text-center">
+                            <p className="text-lg font-semibold">Editar Servicios</p>
+                            <br />
+                            <Link href={route('admin.servicios.editar')} className="mt-2 px-4 py-2 bg-[#A87B43] text-white rounded hover:bg-[#875d34]">
+    Editar
+</Link>
+
+
                         </div>
+
                     </div>
                 </div>
             </div>

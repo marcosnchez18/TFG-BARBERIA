@@ -8,6 +8,7 @@ use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\NoticiaController;
 use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\CitaController;
+use App\Http\Controllers\ServicioController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -99,6 +100,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/admin/citas/{fecha}', [AdminController::class, 'citasPorDia']);
     Route::patch('/admin/citas/{id}/cambiar-estado', [AdminController::class, 'cambiarEstado']);
     Route::delete('/admin/citas/{id}/cancelar', [AdminController::class, 'cancelarCita']);
+
+    Route::get('/admin/nuevos-servicios', [ServicioController::class, 'create'])->name('admin.servicios.create');
+    Route::post('/admin/servicios', [ServicioController::class, 'store'])->name('admin.servicios.store');
+
+    Route::get('/admin/servicios/editar', [ServicioController::class, 'edit'])->name('admin.servicios.editar');
+
+    Route::patch('/admin/servicios/{id}', [ServicioController::class, 'update'])->name('servicios.update');
+
+    
+    Route::delete('/admin/servicios/{id}', [ServicioController::class, 'destroy'])->name('servicios.destroy');
+
 
 
     // Rutas para el cliente (incluyendo edición de datos)
