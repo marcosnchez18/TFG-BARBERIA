@@ -52,15 +52,18 @@ export default function MisCitasCliente() {
     const cancelarCita = (id, metodoPago) => {
         Swal.fire({
             title: '¿Estás seguro?',
-            text: '¿Deseas cancelar esta cita?',
-            icon: 'warning',
+            text: '¿Deseas cancelar esta cita? Si es así, ¿puedes darnos una breve explicación?',
+            input: 'textarea',
+            inputPlaceholder: 'Escribe tu explicación aquí...',
             showCancelButton: true,
             confirmButtonText: 'Sí, cancelar',
             cancelButtonText: 'No, mantener',
         }).then((result) => {
             if (result.isConfirmed) {
                 axios
-                    .delete(`/citas/${id}/cancelar`)
+                    .delete(`/citas/${id}/cancelar`, {
+                        data: { mensajeExplicacion: result.value }
+                    })
                     .then(() => {
                         Swal.fire({
                             icon: 'success',
@@ -83,6 +86,9 @@ export default function MisCitasCliente() {
             }
         });
     };
+
+
+
 
     const handleModifyClick = (cita) => {
         setSelectedCita(cita);
@@ -323,7 +329,7 @@ export default function MisCitasCliente() {
                     </div>
                 )}
         <br /><br /><br /><br />
-        
+
                 {/* Citas completadas o ausentes */}
                 <div>
     <h2 className="text-4xl font-bold text-center mb-6">Citas Completadas</h2>

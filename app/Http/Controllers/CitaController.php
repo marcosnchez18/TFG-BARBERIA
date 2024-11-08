@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\CancelacionCitaMail;
 use App\Mail\ConfirmacionCitaMail;
 use App\Models\Cita;
 use App\Models\Servicio;
@@ -166,30 +167,40 @@ class CitaController extends Controller
      */
     public function cancelar(Request $request, $id)
 {
-    // Verifica si la cita existe y pertenece al usuario autenticado
+    // Busca la cita del usuario autenticado, incluyendo la relación con servicio y barbero
     $cita = Cita::where('id', $id)
         ->where('usuario_id', Auth::id())
+        ->with(['servicio', 'barbero']) // Cargar el servicio y el barbero relacionado
         ->first();
 
     if (!$cita) {
         return response()->json(['error' => 'No tienes citas para cancelar.'], 404);
     }
 
-    // Si existe un descuento aplicado, se devuelve al saldo del usuario
+    // Reintegra saldo si aplica
     if ($cita->descuento_aplicado > 0) {
         $usuario = $cita->usuario;
         $usuario->saldo += $cita->descuento_aplicado;
         $usuario->save();
     }
 
-    // Elimina la cita
+    // Obtener los detalles de la cita para el correo
+    $mensajeExplicacion = $request->input('mensajeExplicacion');
+    $servicio = $cita->servicio ? $cita->servicio->nombre : 'No especificado';
+    $barbero = $cita->barbero ? $cita->barbero->nombre : 'No especificado';
+
+    // Enviar el correo de cancelación con los detalles
+    Mail::to('barbers18sanlucar@gmail.com')->send(new CancelacionCitaMail($cita->usuario, $cita->fecha_hora_cita, $servicio, $barbero, $mensajeExplicacion));
+
+    // Eliminar la cita
     $cita->delete();
 
-    // Retorna respuesta con mensaje de confirmación para SweetAlert
     return response()->json([
         'success' => 'Cita cancelada exitosamente. Se ha solicitado la devolución del importe. Será ingresado en tu cuenta de PayPal de 3 a 5 días laborables.'
     ]);
 }
+
+
 
 
     public function misCitas()
