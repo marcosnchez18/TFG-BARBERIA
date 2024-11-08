@@ -392,7 +392,7 @@ export default function MisCitasCliente() {
                                                     className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
                                                     onClick={() => generarPDF(cita)}
                                                 >
-                                                    <i className="fas fa-download mr-2"></i>
+                                                <i class="fa-solid fa-file-arrow-down"></i>
                                                 </button>
                                             )}
                                         </div>
