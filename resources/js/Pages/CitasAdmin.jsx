@@ -100,26 +100,29 @@ export default function CitasAdmin() {
                                             <p><strong>Método de Pago:</strong> {cita.metodo_pago === 'adelantado' ? 'PayPal' : 'Efectivo'}</p>
                                             <p><strong>Precio de la Cita:</strong> {Number(cita.precio_cita || 0).toFixed(2)}€</p>
 
-                                            <div className="mt-4 flex gap-2 flex-wrap">
-                                                <button
-                                                    onClick={() => handleCancelarCita(cita.id)}
-                                                    className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
-                                                >
-                                                    Cancelar Cita
-                                                </button>
-                                                <button
-                                                    onClick={() => handleCambiarEstado(cita.id, 'completada')}
-                                                    className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600"
-                                                >
-                                                    Completada
-                                                </button>
-                                                <button
-                                                    onClick={() => handleCambiarEstado(cita.id, 'ausente')}
-                                                    className="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600"
-                                                >
-                                                    Ausente
-                                                </button>
-                                            </div>
+                                            {/* Mostrar botones solo si el estado es "pendiente" */}
+                                            {cita.estado === 'pendiente' && (
+                                                <div className="mt-4 flex gap-2 flex-wrap">
+                                                    <button
+                                                        onClick={() => handleCancelarCita(cita.id)}
+                                                        className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+                                                    >
+                                                        <i className="fas fa-times"></i> {/* Ícono de cancelación */}
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleCambiarEstado(cita.id, 'completada')}
+                                                        className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600"
+                                                    >
+                                                        <i className="fas fa-check"></i> {/* Ícono de completada */}
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleCambiarEstado(cita.id, 'ausente')}
+                                                        className="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600"
+                                                    >
+                                                        <i className="fas fa-user-slash"></i> {/* Ícono de ausente */}
+                                                    </button>
+                                                </div>
+                                            )}
                                         </div>
                                         <div className="text-right w-full md:w-1/3 flex flex-col items-center md:items-end sm:text-lg md:text-xl lg:text-2xl" style={{ color: '#D2B48C' }}>
                                             <p className="text-base sm:text-lg md:text-xl lg:text-2xl">{mes}</p>
@@ -129,6 +132,7 @@ export default function CitasAdmin() {
                                         </div>
                                     </div>
                                 );
+
                             })}
                         </div>
                     ) : (
