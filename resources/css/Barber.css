@@ -459,7 +459,7 @@ img.fotos_fades:hover {
 iframe {
     width: 100%;
     height: 100%;
-    border: none; 
+    border: none;
 }
 
 
@@ -966,7 +966,7 @@ nav {
 
 .epic-noticia-author {
     font-size: 0.875rem;
-    color: #d4af37;
+    color: #000000;
 }
 
 .epic-noticia-empty {
