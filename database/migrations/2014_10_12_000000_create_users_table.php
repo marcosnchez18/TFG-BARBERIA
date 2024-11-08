@@ -18,11 +18,11 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->enum('rol', ['admin', 'cliente'])->default('cliente');
-            $table->decimal('saldo', 8, 2)->default(0); // Saldo del cliente
-            $table->integer('contador_ausencias')->default(0); // Ausencias
-            $table->enum('estado', ['activo', 'inactivo'])->default('activo'); // Estado de la cuenta
-            $table->string('numero_tarjeta_vip')->unique()->nullable(); // Número de tarjeta VIP
-            $table->string('referido_por')->nullable(); // Número de tarjeta del referidor
+            $table->decimal('saldo', 8, 2)->default(0);
+            $table->integer('contador_ausencias')->default(0);
+            $table->enum('estado', ['activo', 'inactivo'])->default('activo');
+            $table->string('numero_tarjeta_vip')->unique()->nullable();
+            $table->string('referido_por')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });
