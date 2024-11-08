@@ -265,7 +265,7 @@ public function citasDelDia(Request $request)
 
         $citas = Cita::whereDate('fecha_hora_cita', $fecha)
             ->where('barbero_id', $barberoId)
-            ->with(['usuario', 'servicio']) 
+            ->with(['usuario', 'servicio'])
             ->get();
 
         return response()->json($citas);

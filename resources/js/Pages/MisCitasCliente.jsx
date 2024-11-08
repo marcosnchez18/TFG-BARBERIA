@@ -297,6 +297,8 @@ export default function MisCitasCliente() {
                                         <p><strong>Método de Pago:</strong> {cita.metodo_pago === 'adelantado' ? 'PayPal' : 'Efectivo'}</p>
                                         <p><strong>Estado:</strong> <span className={getEstadoClass(cita.estado)}>{cita.estado.charAt(0).toUpperCase() + cita.estado.slice(1)}</span></p>
                                         <p><strong>Barbero:</strong> {cita.barbero?.nombre || 'No asignado'}</p>
+                                        <p><strong>Precio de la Cita:</strong> {Number(cita.precio_cita || 0).toFixed(2)}€</p>
+
                                         <div className="mt-4 flex gap-2">
                                             <button
                                                 className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
@@ -350,6 +352,8 @@ export default function MisCitasCliente() {
                                         <p><strong>Método de Pago:</strong> {cita.metodo_pago === 'adelantado' ? 'PayPal' : 'Efectivo'}</p>
                                         <p><strong>Estado:</strong> <span className={getEstadoClass(cita.estado)}>{cita.estado.charAt(0).toUpperCase() + cita.estado.slice(1)}</span></p>
                                         <p><strong>Barbero:</strong> {cita.barbero?.nombre || 'No asignado'}</p>
+                                        <p><strong>Precio de la Cita:</strong> {Number(cita.precio_cita || 0).toFixed(2)}€</p>
+
                                         {cita.estado === 'completada' && (
                                             <StarRating citaId={cita.id} valoracion={cita.valoracion} />
                                         )}

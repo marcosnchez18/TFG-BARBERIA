@@ -184,6 +184,7 @@ export default function AdminDashboard() {
                                         <p><strong>Servicio:</strong> {cita.servicio.nombre}</p>
                                         <p><strong>Hora:</strong> {dayjs(cita.fecha_hora_cita).format('HH:mm')}</p>
                                         <p><strong>Estado:</strong> <span className={getEstadoClass(cita.estado)}>{cita.estado.charAt(0).toUpperCase() + cita.estado.slice(1)}</span></p>
+                                        <p><strong>Precio de la Cita:</strong> {Number(cita.precio_cita || 0).toFixed(2)}€</p>
                                         {cita.estado === 'pendiente' && (
                                             <div className="mt-4 flex space-x-2">
                                                 <button
@@ -236,7 +237,7 @@ export default function AdminDashboard() {
 
 
                         </div>
-                        
+
 
 
                     </div>

@@ -71,7 +71,7 @@ export default function EditarServicios({ servicios }) {
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
                 minHeight: '100vh',
-                paddingBottom: '2rem',
+                
             }}
         >
             <NavigationAdmin />

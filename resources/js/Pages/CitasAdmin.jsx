@@ -98,6 +98,8 @@ export default function CitasAdmin() {
                                             <p><strong>Servicio:</strong> {cita.servicio.nombre}</p>
                                             <p><strong>Estado:</strong> <span className={getEstadoColor(cita.estado)}>{cita.estado.charAt(0).toUpperCase() + cita.estado.slice(1)}</span></p>
                                             <p><strong>Método de Pago:</strong> {cita.metodo_pago === 'adelantado' ? 'PayPal' : 'Efectivo'}</p>
+                                            <p><strong>Precio de la Cita:</strong> {Number(cita.precio_cita || 0).toFixed(2)}€</p>
+
                                             <div className="mt-4 flex gap-2 flex-wrap">
                                                 <button
                                                     onClick={() => handleCancelarCita(cita.id)}
