@@ -75,7 +75,7 @@ class ClienteController extends Controller
         if ($user->wasChanged('email')) {
             $user->email_verified_at = null; // Marcar email como no verificado
             $user->save();
-            $user->sendEmailVerificationNotification(); // Enviar enlace de verificación
+            $user->sendEmailVerificationNotification(); 
         }
 
         return redirect()->back()->with('success', 'Datos actualizados correctamente.');

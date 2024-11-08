@@ -78,7 +78,7 @@ class CitaController extends Controller
         'servicio_id' => 'required|exists:servicios,id',
         'fecha_hora_cita' => 'required|date',
         'descuento_aplicado' => 'nullable|numeric|min:0',
-        'precio_cita' => 'nullable|numeric|min:0', // Validación para el precio de la cita
+        'precio_cita' => 'nullable|numeric|min:0',
     ]);
 
     try {
@@ -92,7 +92,7 @@ class CitaController extends Controller
             return response()->json(['error' => 'Este horario ya está reservado para el barbero seleccionado.'], 422);
         }
 
-        // Obtén el servicio para calcular el precio final de la cita con el descuento
+
         $servicio = Servicio::findOrFail($request->servicio_id);
         $precioCita = $servicio->precio - $request->input('descuento_aplicado', 0);
 
@@ -105,7 +105,7 @@ class CitaController extends Controller
             'estado' => 'pendiente',
             'metodo_pago' => 'pendiente',
             'descuento_aplicado' => $request->input('descuento_aplicado', 0),
-            'precio_cita' => $precioCita, // Guardar el precio final de la cita con descuento
+            'precio_cita' => $precioCita,
         ]);
 
         Log::info('Descuento aplicado a la cita:', [
@@ -170,29 +170,29 @@ class CitaController extends Controller
     // Busca la cita del usuario autenticado, incluyendo la relación con servicio y barbero
     $cita = Cita::where('id', $id)
         ->where('usuario_id', Auth::id())
-        ->with(['servicio', 'barbero']) // Cargar el servicio y el barbero relacionado
+        ->with(['servicio', 'barbero'])
         ->first();
 
     if (!$cita) {
         return response()->json(['error' => 'No tienes citas para cancelar.'], 404);
     }
 
-    // Reintegra saldo si aplica
+
     if ($cita->descuento_aplicado > 0) {
         $usuario = $cita->usuario;
         $usuario->saldo += $cita->descuento_aplicado;
         $usuario->save();
     }
 
-    // Obtener los detalles de la cita para el correo
+
     $mensajeExplicacion = $request->input('mensajeExplicacion');
     $servicio = $cita->servicio ? $cita->servicio->nombre : 'No especificado';
     $barbero = $cita->barbero ? $cita->barbero->nombre : 'No especificado';
 
-    // Enviar el correo de cancelación con los detalles
+
     Mail::to('barbers18sanlucar@gmail.com')->send(new CancelacionCitaMail($cita->usuario, $cita->fecha_hora_cita, $servicio, $barbero, $mensajeExplicacion));
 
-    // Eliminar la cita
+
     $cita->delete();
 
     return response()->json([
@@ -205,12 +205,12 @@ class CitaController extends Controller
 
     public function misCitas()
     {
-        // ID del usuario autenticado
+
         $usuarioId = Auth::id();
 
-        // Obtener citas con joins para incluir detalles del barbero y servicio
+
         $citas = Cita::where('usuario_id', $usuarioId)
-            ->with(['barbero:id,nombre', 'servicio:id,nombre,precio']) // Cargar barbero y servicio con sus datos relevantes
+            ->with(['barbero:id,nombre', 'servicio:id,nombre,precio'])
             ->get();
 
         return Inertia::render('MisCitasCliente', [
@@ -235,7 +235,7 @@ class CitaController extends Controller
         $cita->fecha_hora_cita = $request->input('fecha_hora_cita');
         $cita->save();
 
-        // Responder con éxito
+
         return response()->json(['message' => 'Cita modificada con éxito.'], 200);
     } catch (\Exception $e) {
         return response()->json(['error' => 'Error al modificar la cita.'], 500);
@@ -261,11 +261,11 @@ public function citasDelDia(Request $request)
     {
         // Usa la fecha de hoy si no se especifica en la solicitud
         $fecha = $request->input('fecha', Carbon::today()->toDateString());
-        $barberoId = Auth::id(); // Usar el ID del barbero logueado
+        $barberoId = Auth::id();
 
         $citas = Cita::whereDate('fecha_hora_cita', $fecha)
             ->where('barbero_id', $barberoId)
-            ->with(['usuario', 'servicio']) // Asegúrate de incluir los datos necesarios
+            ->with(['usuario', 'servicio']) 
             ->get();
 
         return response()->json($citas);

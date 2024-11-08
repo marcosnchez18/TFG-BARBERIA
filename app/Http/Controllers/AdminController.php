@@ -73,19 +73,27 @@ class AdminController extends Controller
     }
 
     public function cambiarEstado(Request $request, $id)
-    {
-        $cita = Cita::findOrFail($id);
-        $nuevoEstado = $request->input('estado');
+{
+    $cita = Cita::findOrFail($id);
+    $nuevoEstado = $request->input('estado');
 
-        if (in_array($nuevoEstado, ['completada', 'ausente', 'pendiente'])) {
-            $cita->estado = $nuevoEstado;
-            $cita->save();
+    if (in_array($nuevoEstado, ['completada', 'ausente', 'pendiente'])) {
+        $cita->estado = $nuevoEstado;
+        $cita->save();
 
-            return response()->json(['success' => true, 'estado' => $nuevoEstado]);
+        // Añadir 0.05 € al saldo del cliente si el estado es "completada"
+        if ($nuevoEstado === 'completada') {
+            $cliente = $cita->usuario;
+            $cliente->saldo += 0.05;
+            $cliente->save();
         }
 
-        return response()->json(['success' => false, 'message' => 'Estado no válido'], 400);
+        return response()->json(['success' => true, 'estado' => $nuevoEstado]);
     }
+
+    return response()->json(['success' => false, 'message' => 'Estado no válido'], 400);
+}
+
 
     public function cancelarCita($id)
 {
@@ -93,7 +101,7 @@ class AdminController extends Controller
 
     // Verifica si la cita tiene un descuento aplicado y devuelve el saldo al usuario
     if ($cita->descuento_aplicado > 0) {
-        $usuario = $cita->usuario; // Asegúrate de que la relación 'usuario' esté definida en el modelo Cita
+        $usuario = $cita->usuario;
         $usuario->saldo += $cita->descuento_aplicado;
         $usuario->save();
     }
@@ -140,12 +148,12 @@ class AdminController extends Controller
 }
 
 
-// En tu AdminController o en un controlador específico de usuario
+
 public function getSaldo()
 {
     $user = Auth::user();
 
-    // Asegúrate de que el saldo se devuelve como un valor numérico
+    
     return response()->json([
         'saldo' => (float) $user->saldo
     ], 200);
