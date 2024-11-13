@@ -94,25 +94,30 @@ export default function ElegirCita() {
         setSelectedDate(date);
         const formattedDate = dayjs(date).format('YYYY-MM-DD');
 
-        if (!selectedServicio) {
-            console.error("Servicio no seleccionado.");
+        // Verifica que selectedServicio esté definido antes de hacer la solicitud
+        if (!selectedBarbero || !formattedDate || !selectedServicio) {
+            console.error("Faltan algunos parámetros necesarios para la solicitud.");
             return;
         }
 
-        // Llama a la API para obtener los horarios disponibles con la duración específica del servicio
-        axios.get(`/api/citas/horas-reservadas`, {
+        // Realiza la solicitud solo si todos los parámetros están presentes
+        axios.get(`/api/citas/disponibilidad`, {
             params: {
-                fecha: formattedDate,         // Verifica que formattedDate tenga un valor válido
-                barbero_id: selectedBarbero?.id,  // Verifica que selectedBarbero esté definido
-                servicio_id: selectedServicio?.id // Verifica que selectedServicio esté definido
+                barbero_id: selectedBarbero.id,
+                fecha: formattedDate,
+                servicio_id: selectedServicio.id
             }
         })
-
         .then(response => {
-            // Recibe los horarios disponibles ya ajustados en el backend según la duración
+            console.log("Horarios disponibles recibidos:", response.data);
             setHorariosDisponibles(response.data);
         })
-        .catch(error => console.error("Error al obtener disponibilidad:", error));
+        .catch(error => {
+            console.error("Error al obtener disponibilidad:", error);
+            if (error.response) {
+                console.log("Detalles del error:", error.response.data); // Imprime los detalles del error
+            }
+        });
     };
 
 
