@@ -17,19 +17,19 @@ class ServiciosTableSeeder extends Seeder
                 'nombre' => 'Corte de Pelo',
                 'descripcion' => 'Nuestros cortes de pelo están diseñados para resaltar tu estilo único, cuidando cada detalle para asegurar que salgas luciendo perfecto.',
                 'precio' => 12.00,
-                'duracion' => 45,
+                'duracion' => 30,
             ],
             [
                 'nombre' => 'Afeitado Clásico',
                 'descripcion' => 'Disfruta de un afeitado tradicional con navaja y espuma caliente, para una experiencia de barbería como ninguna otra.',
                 'precio' => 4.00,
-                'duracion' => 45,
+                'duracion' => 15,
             ],
             [
                 'nombre' => 'Arreglo de Barba',
                 'descripcion' => 'Déjanos cuidar de tu barba con precisión y dedicación, logrando un estilo impecable que combine con tu look personal.',
                 'precio' => 6.00,
-                'duracion' => 45,
+                'duracion' => 15,
             ],
             [
                 'nombre' => 'Corte + Barba',
@@ -41,19 +41,19 @@ class ServiciosTableSeeder extends Seeder
                 'nombre' => 'Depilado de Cejas',
                 'descripcion' => 'Contamos con las técnicas más avanzadas para que tus cejas luzcan bien definidas y se ajusten a tu rostro.',
                 'precio' => 4.00,
-                'duracion' => 45,
+                'duracion' => 15,
             ],
             [
                 'nombre' => 'Champoo + Estilo',
                 'descripcion' => 'Nuestro servicio de lavado de cabello incluye un peinado a medida para que te sientas renovado y fresco.',
                 'precio' => 5.00,
-                'duracion' => 45,
+                'duracion' => 20,
             ],
             [
                 'nombre' => 'Alisado de Keratina',
                 'descripcion' => 'Devuelve la vitalidad a tu cabello con nuestro alisado de keratina, ideal para eliminar el frizz y mejorar la salud del cabello.',
                 'precio' => 50.00,
-                'duracion' => 45,
+                'duracion' => 60,
             ],
             [
                 'nombre' => 'Mechas',
@@ -65,7 +65,7 @@ class ServiciosTableSeeder extends Seeder
                 'nombre' => 'Corte + Barba + Cejas + Lavado',
                 'descripcion' => 'Un paquete completo que incluye corte de pelo, barba, cejas y lavado, perfecto para un cambio total de look.',
                 'precio' => 20.00,
-                'duracion' => 45,
+                'duracion' => 60,
             ],
         ];
 

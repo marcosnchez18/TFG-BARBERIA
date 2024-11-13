@@ -12,6 +12,14 @@ class ServicioController extends Controller
     /**
      * Muestra el formulario para crear un nuevo servicio.
      */
+
+     public function index()
+    {
+        $servicios = Servicio::all(); // Obtiene todos los servicios de la base de datos
+        return response()->json($servicios); // Devuelve los datos en formato JSON
+    }
+
+    
     public function create()
     {
         return Inertia::render('NuevosServicios');

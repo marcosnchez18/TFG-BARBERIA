@@ -36,10 +36,11 @@ export default function ElegirCita() {
     }, []);
 
     useEffect(() => {
-        axios.get('/data/servicios.json')
-            .then(response => setServicios(response.data)) // Guarda los datos en el estado
+        axios.get('/api/servicios')
+            .then(response => setServicios(response.data))
             .catch(error => console.error("Error al cargar los servicios:", error));
     }, []);
+
 
 
     useEffect(() => {

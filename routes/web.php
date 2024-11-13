@@ -108,7 +108,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::patch('/admin/servicios/{id}', [ServicioController::class, 'update'])->name('servicios.update');
 
-    
+
     Route::delete('/admin/servicios/{id}', [ServicioController::class, 'destroy'])->name('servicios.destroy');
 
 
@@ -124,6 +124,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Rutas para disponibilidad y reserva de citas
     Route::get('/api/citas/disponibilidad', [CitaController::class, 'disponibilidad'])->name('citas.disponibilidad');
     Route::get('/api/citas/horas-reservadas', [CitaController::class, 'horasReservadas']);
+    Route::get('/api/servicios', [ServicioController::class, 'index'])->name('servicios.index');
     Route::post('/citas/reservar', [CitaController::class, 'reservar'])->name('citas.reservar');
     Route::get('/admin/user/saldo', [AdminController::class, 'getSaldo'])->name('admin.user.saldo');
 
