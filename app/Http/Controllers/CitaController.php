@@ -24,47 +24,73 @@ class CitaController extends Controller
     public function disponibilidad(Request $request)
 {
     try {
-        $disponibilidad = [];
-        $hoy = Carbon::today();
         $barberoId = $request->input('barbero_id');
+        $fechaSeleccionada = $request->input('fecha');
+        $servicioId = $request->input('servicio_id');
 
-        if (!$barberoId) {
-            Log::warning('El ID del barbero es necesario');
-            return response()->json(['error' => 'El ID del barbero es necesario'], 400);
+        // Validar los parámetros
+        if (!$barberoId || !$fechaSeleccionada || !$servicioId) {
+            return response()->json(['error' => 'Faltan parámetros necesarios.'], 400);
         }
 
-        for ($i = 0; $i < 30; $i++) {
-            $fecha = $hoy->copy()->addDays($i);
-            $fechaStr = $fecha->toDateString();
+        // Obtener la duración del servicio seleccionado
+        $servicio = Servicio::findOrFail($servicioId);
+        $duracionServicio = $servicio->duracion;
 
-            if ($fecha->isSunday()) {
-                $disponibilidad[$fechaStr] = ['completo' => true];
-            } elseif ($fecha->isSaturday()) {
+        // Define horarios de trabajo y intervalos posibles
+        $horariosTrabajo = [
+            ['inicio' => '10:00', 'fin' => '14:00'],
+            ['inicio' => '16:00', 'fin' => '20:00']
+        ];
 
-                $totalCitas = Cita::whereDate('fecha_hora_cita', $fecha)
-                    ->where('barbero_id', $barberoId)
-                    ->whereRaw('EXTRACT(HOUR FROM fecha_hora_cita) BETWEEN 10 AND 13')
-                    ->count();
-                $disponibilidad[$fechaStr] = ['completo' => $totalCitas >= 5];
-            } else {
-                $totalCitas = Cita::whereDate('fecha_hora_cita', $fecha)
-                    ->where('barbero_id', $barberoId)
-                    ->count();
-                $disponibilidad[$fechaStr] = ['completo' => $totalCitas >= 12];
+        // Obtener citas ya reservadas para ese día y barbero
+        $citas = Cita::where('barbero_id', $barberoId)
+            ->whereDate('fecha_hora_cita', $fechaSeleccionada)
+            ->get();
+
+        $horariosDisponibles = [];
+
+        // Calcular intervalos para cada bloque horario
+        foreach ($horariosTrabajo as $rango) {
+            $inicio = Carbon::parse("{$fechaSeleccionada} {$rango['inicio']}");
+            $fin = Carbon::parse("{$fechaSeleccionada} {$rango['fin']}");
+
+            while ($inicio->lessThanOrEqualTo($fin)) {
+                $esOcupado = false;
+                $finIntervalo = $inicio->copy()->addMinutes($duracionServicio);
+
+                // Verificar si el intervalo actual se solapa con una cita existente
+                foreach ($citas as $cita) {
+                    $inicioCita = Carbon::parse($cita->fecha_hora_cita);
+                    $finCita = $inicioCita->copy()->addMinutes($cita->servicio->duracion);
+
+                    if (
+                        $inicio->between($inicioCita, $finCita->subMinute()) ||
+                        $finIntervalo->between($inicioCita->addMinute(), $finCita)
+                    ) {
+                        $esOcupado = true;
+                        break;
+                    }
+                }
+
+                if (!$esOcupado && $finIntervalo->lessThanOrEqualTo($fin)) {
+                    $horariosDisponibles[] = $inicio->format('H:i');
+                }
+
+                // Avanza al siguiente intervalo en función de la duración del servicio
+                $inicio->addMinutes($duracionServicio);
             }
         }
 
-        return response()->json($disponibilidad);
+        return response()->json($horariosDisponibles);
 
     } catch (\Exception $e) {
-        Log::error("Error en la disponibilidad: " . $e->getMessage(), [
-            'barbero_id' => $request->input('barbero_id'),
-            'trace' => $e->getTraceAsString()
-        ]);
-
+        Log::error("Error en la disponibilidad: " . $e->getMessage());
         return response()->json(['error' => 'Error al obtener disponibilidad'], 500);
     }
 }
+
+
 
 
 
@@ -132,19 +158,67 @@ class CitaController extends Controller
      * Muestra las horas reservadas para una fecha y barbero específicos.
      */
     public function horasReservadas(Request $request)
-    {
-        $fecha = $request->input('fecha');
-        $barberoId = $request->input('barbero_id');
+{
+    $fecha = $request->input('fecha');
+    $barberoId = $request->input('barbero_id');
+    $servicioId = $request->input('servicio_id');
 
-        $horasReservadas = Cita::whereDate('fecha_hora_cita', $fecha)
-            ->where('barbero_id', $barberoId)
-            ->pluck('fecha_hora_cita')
-            ->map(function ($fechaHora) {
-                return Carbon::parse($fechaHora)->format('H:i');
-            });
-
-        return response()->json($horasReservadas);
+    // Validar que todos los parámetros estén presentes
+    if (!$fecha || !$barberoId || !$servicioId) {
+        return response()->json(['error' => 'Faltan parámetros necesarios.'], 400);
     }
+
+    // Obtener la duración del servicio seleccionado
+    $servicio = Servicio::findOrFail($servicioId);
+    $duracionServicio = $servicio->duracion;
+
+    // Horarios de trabajo del barbero
+    $horariosTrabajo = [
+        ['inicio' => '10:00', 'fin' => '14:00'],
+        ['inicio' => '16:00', 'fin' => '20:00']
+    ];
+
+    // Obtener todas las citas reservadas para ese día y barbero
+    $citas = Cita::where('barbero_id', $barberoId)
+        ->whereDate('fecha_hora_cita', $fecha)
+        ->get();
+
+    $horariosDisponibles = [];
+
+    // Iterar por cada bloque de horario de trabajo
+    foreach ($horariosTrabajo as $rango) {
+        $inicioBloque = Carbon::parse("{$fecha} {$rango['inicio']}");
+        $finBloque = Carbon::parse("{$fecha} {$rango['fin']}");
+
+        // Generar intervalos en base a la duración del servicio
+        while ($inicioBloque->addMinutes($duracionServicio)->lessThanOrEqualTo($finBloque)) {
+            $finIntervalo = $inicioBloque->copy()->addMinutes($duracionServicio);
+            $solapado = false;
+
+            // Verificar solapamiento con citas existentes
+            foreach ($citas as $cita) {
+                $inicioCita = Carbon::parse($cita->fecha_hora_cita);
+                $finCita = $inicioCita->copy()->addMinutes($cita->servicio->duracion);
+
+                if ($inicioBloque->between($inicioCita, $finCita->subMinute()) ||
+                    $finIntervalo->between($inicioCita->addMinute(), $finCita)) {
+                    $solapado = true;
+                    break;
+                }
+            }
+
+            if (!$solapado) {
+                $horariosDisponibles[] = $inicioBloque->format('H:i');
+            }
+
+            // Avanzar al siguiente intervalo de tiempo
+            $inicioBloque->addMinutes($duracionServicio);
+        }
+    }
+
+    return response()->json($horariosDisponibles);
+}
+
 
     /**
      * Actualiza el método de pago de la cita.

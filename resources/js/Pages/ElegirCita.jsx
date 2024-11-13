@@ -92,34 +92,29 @@ export default function ElegirCita() {
 
     const handleSelectDate = (date) => {
         setSelectedDate(date);
-        const dayOfWeek = dayjs(date).day();
-        const isHoliday = holidays.isHoliday(date);
-        let horarios = [];
-        if (dayjs(date).isSame(today, 'day') || isHoliday) {
-            setHorariosDisponibles([]);
-            return;
-        } else if (dayOfWeek === 6) {
-            horarios = ["10:00", "10:45", "11:30", "12:15", "13:00"];
-        } else if (dayOfWeek === 0) {
-            setHorariosDisponibles([]);
-            return;
-        } else {
-            horarios = [
-                "10:00", "10:45", "11:30", "12:15", "13:00",
-                "16:00", "16:45", "17:30", "18:15", "19:00", "19:45", "20:30"
-            ];
-        }
         const formattedDate = dayjs(date).format('YYYY-MM-DD');
+
+        if (!selectedServicio) {
+            console.error("Servicio no seleccionado.");
+            return;
+        }
+
+        // Llama a la API para obtener los horarios disponibles con la duración específica del servicio
         axios.get(`/api/citas/horas-reservadas`, {
-            params: { fecha: formattedDate, barbero_id: selectedBarbero.id }
+            params: {
+                fecha: formattedDate,         // Verifica que formattedDate tenga un valor válido
+                barbero_id: selectedBarbero?.id,  // Verifica que selectedBarbero esté definido
+                servicio_id: selectedServicio?.id // Verifica que selectedServicio esté definido
+            }
         })
+
         .then(response => {
-            const reservedTimes = response.data;
-            const availableTimes = horarios.filter(hora => !reservedTimes.includes(hora));
-            setHorariosDisponibles(availableTimes);
+            // Recibe los horarios disponibles ya ajustados en el backend según la duración
+            setHorariosDisponibles(response.data);
         })
         .catch(error => console.error("Error al obtener disponibilidad:", error));
     };
+
 
     const handleSelectHorario = (horario) => {
         setSelectedTime(horario);
