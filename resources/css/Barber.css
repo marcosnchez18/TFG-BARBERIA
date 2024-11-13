@@ -1555,7 +1555,7 @@ nav {
     background-color: #0056b3;
 }
 
-/* Día no disponible en el calendario */
+/* Día no disponible en el calendario error corregir */
 .day-no-disponible {
     background-color: #ffdddd !important;
     color: #888888;
