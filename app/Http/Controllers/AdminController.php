@@ -31,12 +31,10 @@ class AdminController extends Controller
             ->whereDate('created_at', $today)
             ->count();
 
-        // Ganancias del mes actual
+        // Ganancias del mes actual basadas en la columna precio_cita
         $gananciasMes = Cita::where('barbero_id', $barberoId)
             ->whereBetween('fecha_hora_cita', [$startOfMonth, $endOfMonth])
-            ->whereIn('metodo_pago', ['adelantado', 'efectivo'])
-            ->join('servicios', 'citas.servicio_id', '=', 'servicios.id')
-            ->sum('servicios.precio');
+            ->sum('precio_cita');
 
         // Calcular valoración media de citas completadas del barbero
         $valoracionMedia = Cita::where('barbero_id', $barberoId)
@@ -50,7 +48,8 @@ class AdminController extends Controller
             'nuevosUsuariosHoy' => $nuevosUsuariosHoy,
             'gananciasMes' => $gananciasMes,
             'nombreMesActual' => ucfirst($nombreMesActual),
-            'valoracionMedia' => $valoracionMedia ? round($valoracionMedia, 2) : 'N/A',
+            'valoracionMedia' => $valoracionMedia ? round($valoracionMedia, 2) : 0,
+
         ]);
     }
 
@@ -74,27 +73,44 @@ class AdminController extends Controller
     }
 
     public function cambiarEstado(Request $request, $id)
-    {
-        $cita = Cita::findOrFail($id);
-        $nuevoEstado = $request->input('estado');
+{
+    $cita = Cita::findOrFail($id);
+    $nuevoEstado = $request->input('estado');
 
-        if (in_array($nuevoEstado, ['completada', 'ausente', 'pendiente'])) {
-            $cita->estado = $nuevoEstado;
-            $cita->save();
+    if (in_array($nuevoEstado, ['completada', 'ausente', 'pendiente'])) {
+        $cita->estado = $nuevoEstado;
+        $cita->save();
 
-            return response()->json(['success' => true, 'estado' => $nuevoEstado]);
+        // Añadir 0.05 € al saldo del cliente si el estado es "completada"
+        if ($nuevoEstado === 'completada') {
+            $cliente = $cita->usuario;
+            $cliente->saldo += 0.05;
+            $cliente->save();
         }
 
-        return response()->json(['success' => false, 'message' => 'Estado no válido'], 400);
+        return response()->json(['success' => true, 'estado' => $nuevoEstado]);
     }
+
+    return response()->json(['success' => false, 'message' => 'Estado no válido'], 400);
+}
+
 
     public function cancelarCita($id)
-    {
-        $cita = Cita::findOrFail($id);
-        $cita->delete();
+{
+    $cita = Cita::findOrFail($id);
 
-        return response()->json(['message' => 'Cita cancelada exitosamente.']);
+    // Verifica si la cita tiene un descuento aplicado y devuelve el saldo al usuario
+    if ($cita->descuento_aplicado > 0) {
+        $usuario = $cita->usuario;
+        $usuario->saldo += $cita->descuento_aplicado;
+        $usuario->save();
     }
+
+    // Elimina la cita
+    $cita->delete();
+
+    return response()->json(['message' => 'Cita cancelada exitosamente.']);
+}
 
 
     public function citasPorDia($fecha)
@@ -110,4 +126,38 @@ class AdminController extends Controller
 
         return response()->json($citas);
     }
+
+    public function quitaSaldo(Request $request)
+{
+    $request->validate([
+        'descuento' => 'required|numeric|min:0',
+    ]);
+
+    // Obtenemos al usuario autenticado nuevamente para evitar problemas de sincronización
+    $user = User::find(Auth::id());
+
+    if ($user && $user->saldo >= $request->descuento) {
+        // Resta el saldo y guarda
+        $user->saldo = $user->saldo - $request->descuento;
+        $user->update(['saldo' => $user->saldo]);
+
+        return response()->json(['success' => 'Saldo descontado correctamente.'], 200);
+    } else {
+        return response()->json(['error' => 'Saldo insuficiente o usuario no encontrado.'], 400);
+    }
+}
+
+
+
+public function getSaldo()
+{
+    $user = Auth::user();
+
+    
+    return response()->json([
+        'saldo' => (float) $user->saldo
+    ], 200);
+}
+
+
 }

@@ -10,6 +10,7 @@ import Swal from 'sweetalert2';
 import dayjs from 'dayjs';
 import Holidays from 'date-holidays';
 
+
 export default function ElegirCita() {
     const [step, setStep] = useState(1);
     const [selectedBarbero, setSelectedBarbero] = useState(null);
@@ -22,6 +23,9 @@ export default function ElegirCita() {
     const today = dayjs().startOf('day');
 
     const holidays = new Holidays('ES', 'AN', 'CA');
+    const [saldo, setSaldo] = useState(0); // Saldo del cliente
+    const [usarSaldo, setUsarSaldo] = useState(false); // Estado del checkbox de usar saldo
+
 
     useEffect(() => {
         const script = document.createElement("script");
@@ -32,10 +36,12 @@ export default function ElegirCita() {
     }, []);
 
     useEffect(() => {
-        axios.get('/data/servicios.json')
+        axios.get('/api/servicios')
             .then(response => setServicios(response.data))
             .catch(error => console.error("Error al cargar los servicios:", error));
     }, []);
+
+
 
     useEffect(() => {
         if (selectedBarbero) {
@@ -44,6 +50,19 @@ export default function ElegirCita() {
                 .catch(error => console.error("Error al obtener disponibilidad:", error));
         }
     }, [selectedBarbero]);
+
+    useEffect(() => {
+        axios.get('/admin/user/saldo')
+            .then(response => {
+                const saldoObtenido = parseFloat(response.data.saldo);
+                console.log("Saldo recibido de la API:", saldoObtenido);
+                setSaldo(saldoObtenido);
+            })
+            .catch(error => console.error("Error al obtener el saldo:", error));
+    }, []);
+
+
+
 
     const tileClassName = ({ date }) => {
         const dateStr = dayjs(date).format('YYYY-MM-DD');
@@ -73,34 +92,34 @@ export default function ElegirCita() {
 
     const handleSelectDate = (date) => {
         setSelectedDate(date);
-        const dayOfWeek = dayjs(date).day();
-        const isHoliday = holidays.isHoliday(date);
-        let horarios = [];
-        if (dayjs(date).isSame(today, 'day') || isHoliday) {
-            setHorariosDisponibles([]);
-            return;
-        } else if (dayOfWeek === 6) {
-            horarios = ["10:00", "10:45", "11:30", "12:15", "13:00"];
-        } else if (dayOfWeek === 0) {
-            setHorariosDisponibles([]);
-            return;
-        } else {
-            horarios = [
-                "10:00", "10:45", "11:30", "12:15", "13:00",
-                "16:00", "16:45", "17:30", "18:15", "19:00", "19:45", "20:30"
-            ];
-        }
         const formattedDate = dayjs(date).format('YYYY-MM-DD');
-        axios.get(`/api/citas/horas-reservadas`, {
-            params: { fecha: formattedDate, barbero_id: selectedBarbero.id }
+
+        // Verifica que selectedServicio esté definido antes de hacer la solicitud
+        if (!selectedBarbero || !formattedDate || !selectedServicio) {
+            console.error("Faltan algunos parámetros necesarios para la solicitud.");
+            return;
+        }
+
+        // Realiza la solicitud solo si todos los parámetros están presentes
+        axios.get(`/api/citas/disponibilidad`, {
+            params: {
+                barbero_id: selectedBarbero.id,
+                fecha: formattedDate,
+                servicio_id: selectedServicio.id
+            }
         })
         .then(response => {
-            const reservedTimes = response.data;
-            const availableTimes = horarios.filter(hora => !reservedTimes.includes(hora));
-            setHorariosDisponibles(availableTimes);
+            console.log("Horarios disponibles recibidos:", response.data);
+            setHorariosDisponibles(response.data);
         })
-        .catch(error => console.error("Error al obtener disponibilidad:", error));
+        .catch(error => {
+            console.error("Error al obtener disponibilidad:", error);
+            if (error.response) {
+                console.log("Detalles del error:", error.response.data); // Imprime los detalles del error
+            }
+        });
     };
+
 
     const handleSelectHorario = (horario) => {
         setSelectedTime(horario);
@@ -108,35 +127,70 @@ export default function ElegirCita() {
     };
 
     const handleReservation = () => {
+        const descuento = usarSaldo ? Math.min(saldo, selectedServicio.precio) : 0;
+        const precioFinal = selectedServicio.precio - descuento;
+
+        if (saldo > 0) { // Solo muestra el mensaje si el saldo es mayor a 0
+            Swal.fire({
+                title: `Tienes ${saldo.toFixed(2)}€ de saldo. ¿Quieres canjearlo?`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, canjear saldo',
+                cancelButtonText: 'No, gracias',
+            }).then((result) => {
+                const aplicarDescuento = result.isConfirmed;
+
+                // Si se confirma el canjeo, aplica el descuento
+                const descuentoAplicado = aplicarDescuento ? Math.min(saldo, selectedServicio.precio) : 0;
+                const precioFinalConDescuento = selectedServicio.precio - descuentoAplicado;
+
+                realizarReserva(descuentoAplicado, precioFinalConDescuento);
+            });
+        } else {
+            // Si el saldo es 0, realiza la reserva directamente sin descuento
+            realizarReserva(0, precioFinal);
+        }
+    };
+
+    // Función para realizar la reserva en el backend
+    const realizarReserva = (descuentoAplicado, precioFinalConDescuento) => {
         const fechaHoraCita = `${dayjs(selectedDate).format('YYYY-MM-DD')} ${selectedTime}`;
         axios.post('/citas/reservar', {
             barbero_id: selectedBarbero.id,
             servicio_id: selectedServicio.id,
-            fecha_hora_cita: fechaHoraCita
+            fecha_hora_cita: fechaHoraCita,
+            descuento_aplicado: descuentoAplicado,
+            precio_cita: precioFinalConDescuento,
         })
         .then(response => {
+            if (descuentoAplicado > 0) {
+                axios.patch('/admin/user/quitar-saldo', { descuento: descuentoAplicado })
+                    .then(() => console.log('Saldo descontado'))
+                    .catch(error => console.error('Error al descontar el saldo:', error));
+            }
+
             Swal.fire({
                 title: '¡Cita Reservada!',
                 html: `
                     <p><strong>Barbero:</strong> ${selectedBarbero.nombre}</p>
-                    <p><strong>Servicio:</strong> ${selectedServicio.nombre} - ${selectedServicio.precio}€</p>
+                    <p><strong>Servicio:</strong> ${selectedServicio.nombre} - ${precioFinalConDescuento.toFixed(2)}€</p>
                     <p><strong>Fecha y Hora:</strong> ${dayjs(selectedDate).format('DD/MM/YYYY')} ${selectedTime}</p>
                 `,
                 icon: 'success',
                 confirmButtonText: 'Aceptar',
-                showCloseButton: true // Muestra la "X" para cerrar
+                showCloseButton: true
             }).then(() => {
                 Swal.fire({
                     title: '¿Quieres pagar tu cita ahora?',
                     html: `<div id="paypal-button-container"></div>`,
                     showConfirmButton: false,
-                    showCloseButton: true, // Muestra la "X" para cerrar
+                    showCloseButton: true,
                     willOpen: () => {
                         window.paypal.Buttons({
                             createOrder: function(data, actions) {
                                 return actions.order.create({
                                     purchase_units: [{
-                                        amount: { value: selectedServicio.precio }
+                                        amount: { value: precioFinalConDescuento.toFixed(2) }
                                     }]
                                 });
                             },
@@ -180,6 +234,10 @@ export default function ElegirCita() {
         });
     };
 
+
+
+
+
     const handleBack = () => {
         setStep(prevStep => prevStep - 1);
     };
@@ -206,6 +264,7 @@ export default function ElegirCita() {
                             ))}
                         </div>
                     </div>
+
                 )}
                 {step === 2 && (
                     <div className="servicio-selection">
@@ -265,6 +324,8 @@ export default function ElegirCita() {
             <p className="mb-2"><strong>Barbero:</strong> {selectedBarbero.nombre}</p>
             <p className="mb-2"><strong>Servicio:</strong> {selectedServicio.nombre} - {selectedServicio.precio}€</p>
             <p className="mb-2"><strong>Fecha y Hora:</strong> {dayjs(selectedDate).format('DD/MM/YYYY')} {selectedTime}</p>
+
+
         </div>
         <div className="button-group mt-6 flex justify-center gap-4">
             <button

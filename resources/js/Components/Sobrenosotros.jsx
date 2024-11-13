@@ -3,7 +3,7 @@ import '../../css/Barber.css'; // Asegúrate de importar el archivo CSS
 
 export default function Finpaginas() {
     return (
-        <section className="fin_home">
+        <section className="fin_home2">
             <div className="fin-content">
                 <img className="logo_fin" src="/images/logo.png" alt="Logo de Barbería" />
                 <p className="dir">Calle Ancha, 43, Sanlúcar de Bda (11540), Cádiz</p>

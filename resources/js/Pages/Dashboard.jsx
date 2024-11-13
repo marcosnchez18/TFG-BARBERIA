@@ -108,7 +108,7 @@ export default function ClienteInicio() {
                     Más información
                 </button>
             </section>
-
+            <br /><br />
             <SobreNosotros />
             <Footer />
             <WhatsAppButton />

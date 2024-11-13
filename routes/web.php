@@ -8,6 +8,7 @@ use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\NoticiaController;
 use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\CitaController;
+use App\Http\Controllers\ServicioController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -92,12 +93,24 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('/admin/clientes/{id}/habilitar', [ClienteController::class, 'habilitar'])->name('clientes.habilitar');
 
 
-Route::patch('/admin/citas/{id}/cambiar-estado', [AdminController::class, 'cambiarEstado'])->name('citas.cambiar-estado');
-Route::delete('/admin/citas/{id}/cancelar', [AdminController::class, 'cancelarCita'])->name('citas.cancelar');
+    Route::patch('/admin/citas/{id}/cambiar-estado', [AdminController::class, 'cambiarEstado'])->name('citas.cambiar-estado');
+    Route::delete('/admin/citas/{id}/cancelar', [AdminController::class, 'cancelarCita'])->name('citas.cancelar');
+    Route::get('/admin/citas-barbero', [CitaController::class, 'citasDelDia']);
 
-Route::get('/admin/citas/{fecha}', [AdminController::class, 'citasPorDia']);
-Route::patch('/admin/citas/{id}/cambiar-estado', [AdminController::class, 'cambiarEstado']);
-Route::delete('/admin/citas/{id}/cancelar', [AdminController::class, 'cancelarCita']);
+    Route::get('/admin/citas/{fecha}', [AdminController::class, 'citasPorDia']);
+    Route::patch('/admin/citas/{id}/cambiar-estado', [AdminController::class, 'cambiarEstado']);
+    Route::delete('/admin/citas/{id}/cancelar', [AdminController::class, 'cancelarCita']);
+
+    Route::get('/admin/nuevos-servicios', [ServicioController::class, 'create'])->name('admin.servicios.create');
+    Route::post('/admin/servicios', [ServicioController::class, 'store'])->name('admin.servicios.store');
+
+    Route::get('/admin/servicios/editar', [ServicioController::class, 'edit'])->name('admin.servicios.editar');
+
+    Route::patch('/admin/servicios/{id}', [ServicioController::class, 'update'])->name('servicios.update');
+
+
+    Route::delete('/admin/servicios/{id}', [ServicioController::class, 'destroy'])->name('servicios.destroy');
+
 
 
     // Rutas para el cliente (incluyendo edición de datos)
@@ -111,7 +124,11 @@ Route::delete('/admin/citas/{id}/cancelar', [AdminController::class, 'cancelarCi
     // Rutas para disponibilidad y reserva de citas
     Route::get('/api/citas/disponibilidad', [CitaController::class, 'disponibilidad'])->name('citas.disponibilidad');
     Route::get('/api/citas/horas-reservadas', [CitaController::class, 'horasReservadas']);
+    Route::get('/api/servicios', [ServicioController::class, 'index'])->name('servicios.index');
     Route::post('/citas/reservar', [CitaController::class, 'reservar'])->name('citas.reservar');
+    Route::get('/admin/user/saldo', [AdminController::class, 'getSaldo'])->name('admin.user.saldo');
+
+    Route::patch('/admin/user/quitar-saldo', [AdminController::class, 'quitaSaldo'])->name('admin.user.quitar-saldo');
 
     // Nueva ruta para actualizar el método de pago de la cita
     Route::patch('/citas/{id}/actualizar-metodo-pago', [CitaController::class, 'actualizarMetodoPago'])->name('citas.actualizar-metodo-pago');
@@ -121,12 +138,13 @@ Route::delete('/admin/citas/{id}/cancelar', [AdminController::class, 'cancelarCi
     Route::patch('/citas/{id}/modificar', [CitaController::class, 'modificar'])->name('citas.modificar');
 
 
-Route::patch('/citas/{id}/calificar', [CitaController::class, 'calificar'])->name('citas.calificar');
+    Route::patch('/citas/{id}/calificar', [CitaController::class, 'calificar'])->name('citas.calificar');
 
 
     // Mostrar y actualizar datos del cliente en la ruta /mis-datos
     Route::get('/mis-datos', [ClienteController::class, 'edit'])->name('mis-datos');
     Route::patch('/mis-datos', [ClienteController::class, 'update'])->name('cliente.update');
+    Route::post('/cliente/eliminar', [ClienteController::class, 'eliminarCuenta'])->name('cliente.eliminar');
 });
 
 // Rutas para restablecimiento de contraseña

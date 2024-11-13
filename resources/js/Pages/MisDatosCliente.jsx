@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { usePage, useForm } from '@inertiajs/react';
+import { Inertia } from '@inertiajs/inertia';
 import Swal from 'sweetalert2';
 import NavigationCliente from '../Components/NavigationCliente';
 import '../../css/Barber.css';
@@ -20,51 +21,22 @@ export default function MisDatosCliente() {
     });
     const [copied, setCopied] = useState(false);
 
-    const validateFields = (field) => {
-        let error = null;
-        if (field === 'nombre') {
-            if (!data.nombre.trim()) {
-                error = 'El nombre no puede estar vacío.';
-            } else if (data.nombre === cliente.nombre) {
-                error = 'Por favor, introduce un nombre distinto al actual.';
+    const handleEliminarCuenta = () => {
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: 'Esta acción no se puede deshacer. Tu cuenta será eliminada permanentemente.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, eliminar cuenta',
+            cancelButtonText: 'Cancelar',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Inertia.post(route('cliente.eliminar'), {}, {
+                    onSuccess: () => {
+                        Swal.fire('Cuenta eliminada', 'Tu cuenta ha sido eliminada con éxito.', 'success');
+                    }
+                });
             }
-        }
-        if (field === 'email') {
-            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!data.email.trim()) {
-                error = 'El email no puede estar vacío.';
-            } else if (!emailPattern.test(data.email)) {
-                error = 'Por favor, introduce un email válido.';
-            } else if (data.email === cliente.email) {
-                error = 'Por favor, introduce un email distinto al actual.';
-            }
-        }
-        return error;
-    };
-
-    const handleSubmit = (field) => {
-        const errorMessage = validateFields(field);
-        if (errorMessage) {
-            Swal.fire('Error', errorMessage, 'error');
-            return;
-        }
-        patch(route('cliente.update'), {
-            preserveScroll: true,
-            onSuccess: () => {
-                if (field === 'email') {
-                    Swal.fire({
-                        title: 'Revisa tu correo',
-                        text: 'Se ha enviado un enlace de verificación a tu nuevo email.',
-                        icon: 'info',
-                    });
-                } else {
-                    Swal.fire('Actualizado', `${field} actualizado correctamente`, 'success');
-                }
-                setIsEditing({ ...isEditing, [field]: false });
-            },
-            onError: () => {
-                Swal.fire('Error', `No se pudo actualizar el campo ${field}`, 'error');
-            },
         });
     };
 
@@ -189,6 +161,14 @@ export default function MisDatosCliente() {
                                 />
                             </div>
                         )}
+
+                        <button
+                            type="button"
+                            onClick={handleEliminarCuenta}
+                            className="mt-8 w-full py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                        >
+                            Eliminar mi cuenta
+                        </button>
                     </form>
                 </div>
             </div>

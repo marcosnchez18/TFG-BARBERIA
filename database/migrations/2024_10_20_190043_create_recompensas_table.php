@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('recompensas', function (Blueprint $table) {
             $table->id();
-            $table->string('cliente_referente_id'); // Número de tarjeta VIP del cliente referente
-            $table->string('cliente_referido_id'); // Número de tarjeta VIP del cliente referido
-            $table->decimal('monto_referencia', 8, 2)->default(2.00); // 2€ para ambos
+            $table->string('cliente_referente_id'); 
+            $table->string('cliente_referido_id');
+            $table->decimal('monto_referencia', 8, 2)->default(2.00);
             $table->timestamps();
 
             // Llaves foráneas referenciando la tarjeta VIP

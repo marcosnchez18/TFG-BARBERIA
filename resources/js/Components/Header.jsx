@@ -21,6 +21,8 @@ export default function Header() {
                     <br />
                     <p className="barber">BARBER’S 18</p>
                 </div>
+
+
             </div>
         </header>
     );

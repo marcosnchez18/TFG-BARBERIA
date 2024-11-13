@@ -4,6 +4,7 @@ import Footer from '../Components/Footer';
 import { Link } from '@inertiajs/react';
 import Navieq from '@/Components/NavigationEq';
 import LogosServicios from '@/Components/Logosservicios';
+import SobreNosotros from '@/Components/Sobrenosotros';
 import WhatsAppButton from '@/Components/Wasa';
 
 export default function Equipo() {
@@ -61,6 +62,7 @@ export default function Equipo() {
             </section>
 
             <LogosServicios />
+            <SobreNosotros />
             <Footer />
             <WhatsAppButton />
         </div>

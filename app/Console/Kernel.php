@@ -13,7 +13,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         // Ejecuta el comando cada 15 minutos
-        $schedule->command('citas:update-completadas')->everyFifteenMinutes();
+        $schedule->command('citas:update-completadas')->everyFortyFiveMinutes();
     }
 
     /**

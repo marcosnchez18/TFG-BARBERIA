@@ -53,7 +53,7 @@ class NoticiaController extends Controller
     // Editar una noticia
     public function edit(Noticia $noticia)
     {
-        // Devolver la vista con la noticia a editar (si usas una vista separada para editar)
+
         return Inertia::render('EditarNoticia', [
             'noticia' => $noticia
         ]);
@@ -62,29 +62,28 @@ class NoticiaController extends Controller
     // Actualizar una noticia
     public function update(Request $request, Noticia $noticia)
     {
-        // Validar los datos actualizados
+        
         $request->validate([
             'titulo' => 'required|string|max:255',
             'contenido' => 'required|string',
         ]);
 
-        // Actualizar la noticia con los nuevos datos
+
         $noticia->update([
             'titulo' => $request->titulo,
             'contenido' => $request->contenido,
         ]);
 
-        // Redirigir al foro con un mensaje de éxito
+
         return redirect()->route('admin-foro')->with('message', 'Noticia actualizada con éxito.');
     }
 
-    // Eliminar una noticia
     public function destroy(Noticia $noticia)
 {
-    // Eliminar la noticia de la base de datos
+
     $noticia->delete();
 
-    // Redirigir al foro con un mensaje de éxito
+
     return redirect()->route('admin-foro')->with('message', 'Noticia eliminada con éxito.');
 }
 

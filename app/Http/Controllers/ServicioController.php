@@ -3,63 +3,110 @@
 namespace App\Http\Controllers;
 
 use App\Models\Servicio;
+use Illuminate\Support\Facades\File;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class ServicioController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Muestra el formulario para crear un nuevo servicio.
      */
-    public function index()
+
+     public function index()
     {
-        //
+        $servicios = Servicio::all(); // Obtiene todos los servicios de la base de datos
+        return response()->json($servicios); // Devuelve los datos en formato JSON
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
+    
     public function create()
     {
-        //
+        return Inertia::render('NuevosServicios');
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Guarda un nuevo servicio en la base de datos y actualiza el archivo JSON.
      */
     public function store(Request $request)
     {
-        //
+
+        $validated = $request->validate([
+            'nombre' => 'required|string|max:255',
+            'descripcion' => 'nullable|string',
+            'precio' => 'required|numeric|min:0',
+            'duracion' => 'required|integer|min:1',
+        ]);
+
+
+        Servicio::create($validated);
+
+
+        $this->actualizarServiciosJson();
+
+
+        return redirect()->route('admin.servicios.create')->with('success', 'Servicio creado correctamente.');
     }
 
     /**
-     * Display the specified resource.
+     * Actualiza el archivo JSON con los servicios actuales de la base de datos.
      */
-    public function show(Servicio $servicio)
+    protected function actualizarServiciosJson()
     {
-        //
+
+        $servicios = Servicio::select('id', 'nombre', 'precio', 'descripcion', 'duracion')->get();
+
+
+        $jsonData = json_encode($servicios, JSON_PRETTY_PRINT);
+
+
+        File::put(public_path('data/servicios.json'), $jsonData);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Servicio $servicio)
+
+
+    public function edit()
     {
-        //
+        $servicios = Servicio::all();
+
+        return Inertia::render('EditarServicios', [
+            'servicios' => $servicios,
+        ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Servicio $servicio)
+    public function destroy($id)
     {
-        //
+
+        $servicio = Servicio::findOrFail($id);
+        $servicio->delete();
+
+
+        $this->actualizarServiciosJson();
+
+
+        return redirect()->route('admin.servicios.editar')->with('success', 'Servicio eliminado correctamente.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Servicio $servicio)
+
+
+    public function update(Request $request, $id)
     {
-        //
+
+        $validated = $request->validate([
+            'nombre' => 'required|string|max:255',
+            'descripcion' => 'nullable|string',
+            'precio' => 'required|numeric|min:0',
+            'duracion' => 'required|integer|min:1',
+        ]);
+
+
+        $servicio = Servicio::findOrFail($id);
+        $servicio->update($validated);
+
+
+        $this->actualizarServiciosJson();
+
+
+        return redirect()->route('admin.servicios.editar')->with('success', 'Servicio actualizado correctamente.');
     }
 }

@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('nombre');
             $table->text('descripcion')->nullable();
             $table->decimal('precio', 8, 2);
-            $table->integer('duracion'); // Duración del servicio en minutos
+            $table->integer('duracion'); 
             $table->timestamps();
         });
     }

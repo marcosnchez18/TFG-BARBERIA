@@ -312,13 +312,7 @@ body, h1, h2, h3,h4, p {
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); /* Añade sombra para resaltar */
 }
 
-/* Estilo de la sección fin_home */
-.fin_home {
-    background-color: #171717;
-    color: #FFFFFF;
-    padding: 50px;
-    text-align: center;
-}
+
 
 /* Estilo de las imágenes */
 img.fotos_fades {
@@ -364,10 +358,15 @@ img.fotos_fades {
 
 /* Estilo de la sección fin_home */
 .fin_home {
-    background-color: #171717;
-    color: #FFFFFF;
+    background-color: #f8f8f8;
+    color: #000000;
     padding: 50px;
+    font-weight: 600;
     text-align: center;
+}
+
+.reser_desc {
+    font-weight: 100;
 }
 
 /* Contenedor general para las imágenes */
@@ -458,9 +457,9 @@ img.fotos_fades:hover {
 }
 
 iframe {
-    width: 100%; /* Asegura que el iframe ocupe todo el ancho del contenedor */
-    height: 100%; /* Asegura que el iframe ocupe toda la altura del contenedor */
-    border: none; /* Elimina los bordes */
+    width: 100%;
+    height: 100%;
+    border: none;
 }
 
 
@@ -967,7 +966,7 @@ nav {
 
 .epic-noticia-author {
     font-size: 0.875rem;
-    color: #d4af37;
+    color: #000000;
 }
 
 .epic-noticia-empty {
@@ -1027,7 +1026,7 @@ nav {
 /* Estilos de la tabla */
 .clientes-admin-table {
     min-width: 100%;
-    background-color: #f5f2f0; /* Fondo gris oscuro */
+    background-color: #f5f2f0;
     color: #000000;
     border-radius: 0.5rem;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -1036,7 +1035,7 @@ nav {
 /* Encabezados de la tabla */
 .clientes-admin-table-header {
     padding: 0.75rem 1.5rem;
-    background-color: #756951; /* Azul oscuro */
+    background-color: #756951;
     text-transform: uppercase;
     font-weight: bold;
     font-size: 0.875rem;
@@ -1050,39 +1049,39 @@ nav {
 
 /* Fila de la tabla en hover */
 .clientes-admin-table-row:hover {
-    background-color: #e1ebff; /* Gris oscuro */
+    background-color: #e1ebff;
 }
 
 /* Botones de acción */
 .clientes-admin-btn-delete, .clientes-admin-btn-disable, .clientes-admin-btn-enable {
     font-weight: bold;
     padding: 0.5rem 1rem;
-    border-radius: 9999px; /* Bordes redondeados */
+    border-radius: 9999px;
     color: #ffffff;
 }
 
 .clientes-admin-btn-delete {
-    background-color: #ef4444; /* Rojo */
+    background-color: #ef4444;
 }
 
 .clientes-admin-btn-delete:hover {
-    background-color: #b91c1c; /* Rojo oscuro */
+    background-color: #b91c1c;
 }
 
 .clientes-admin-btn-disable {
-    background-color: #f59e0b; /* Amarillo */
+    background-color: #f59e0b;
 }
 
 .clientes-admin-btn-disable:hover {
-    background-color: #d97706; /* Amarillo oscuro */
+    background-color: #d97706;
 }
 
 .clientes-admin-btn-enable {
-    background-color: #10b981; /* Verde */
+    background-color: #10b981;
 }
 
 .clientes-admin-btn-enable:hover {
-    background-color: #059669; /* Verde oscuro */
+    background-color: #059669;
 }
 
 
@@ -1092,11 +1091,11 @@ nav {
     max-width: 800px;
     margin: 0 auto;
     padding: 2rem;
-    background-color: rgba(249, 249, 249, 0.85); /* Fondo con transparencia */
+    background-color: rgba(249, 249, 249, 0.85);
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     transition: all 0.3s ease-in-out;
-    font-family: 'Times New Roman', Times, serif; /* Fuente aplicada */
+    font-family: 'Times New Roman', Times, serif;
 }
 
 #mis-datos-cliente-container:hover {
@@ -1125,7 +1124,7 @@ nav {
     width: 100%;
     padding: 0.75rem;
     font-size: 1rem;
-    font-family: 'Times New Roman', Times, serif; /* Fuente aplicada */
+    font-family: 'Times New Roman', Times, serif;
     border: 1px solid #ddd;
     border-radius: 8px;
     transition: border-color 0.3s ease;
@@ -1203,8 +1202,8 @@ nav {
 }
 
 .inicio-cliente-carta {
-    flex: 1 1 calc(33.333% - 1rem); /* Para distribuir 3 cartas en una fila con espacio entre ellas */
-    min-width: 250px; /* Para un ancho mínimo en dispositivos más pequeños */
+    flex: 1 1 calc(33.333% - 1rem);
+    min-width: 250px;
 }
 
 .inicio-cliente-carta-contenedor {
@@ -1242,7 +1241,7 @@ nav {
     text-align: center;
     font-weight: 600;
     transition: background-color 0.3s ease;
-    font-family: 'Times New Roman', serif; /* Fuente actualizada */
+    font-family: 'Times New Roman', serif;
 }
 
 .inicio-cliente-carta-boton:hover {
@@ -1254,7 +1253,7 @@ nav {
 
 
 .inicio-cliente-seccion-promocion {
-    background-color: rgba(250, 247, 240, 0.8); /* El último valor (0.8) define la opacidad: 1 es opaco y 0 es totalmente transparente */
+    background-color: rgba(250, 247, 240, 0.8);
     padding: 3rem 0;
     text-align: center;
 }
@@ -1464,7 +1463,7 @@ nav {
 
 
 .servicio-selection p {
-    color: rgb(124, 106, 6); /* Cambia el color de los párrafos a rojo */
+    color: rgb(124, 106, 6);
 }
 
 
@@ -1556,7 +1555,7 @@ nav {
     background-color: #0056b3;
 }
 
-/* Día no disponible en el calendario */
+/* Día no disponible en el calendario error corregir */
 .day-no-disponible {
     background-color: #ffdddd !important;
     color: #888888;
@@ -1609,8 +1608,63 @@ nav {
 
 /* Día completo de citas en el calendario */
 .day-completo {
-    background-color: #ffcccc !important; /* Fondo rojo claro */
-    color: #ff0000 !important; /* Texto en rojo */
+    background-color: #ffcccc !important;
+    color: #ff0000 !important;
     font-weight: bold;
-    border-radius: 50%; /* Opcional: le da un aspecto circular */
+    border-radius: 50%;
+}
+
+
+
+
+.carrusel-container {
+    text-align: center;
+    position: relative;
+    width: 100%;
+    max-width: 600px;
+    margin: auto;
+}
+
+.carrusel-slide {
+    display: flex;
+    justify-content: center;
+}
+
+.fotos_fades {
+    width: 100%;
+    max-width: 400px;
+    height: auto;
+    border-radius: 8px;
+}
+
+.carrusel-button {
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    font-size: 2rem;
+    padding: 0.5rem;
+    cursor: pointer;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.carrusel-button.prev {
+    left: 10px;
+}
+
+.carrusel-button.next {
+    right: 10px;
+}
+
+
+
+
+
+/* Estilo de la sección fin_home */
+.fin_home2 {
+    background-color: #171717;
+    color: #f0f0f0;
+    padding: 50px;
+    text-align: center;
 }
