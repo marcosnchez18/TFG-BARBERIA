@@ -21,6 +21,8 @@ export default function ElegirCita() {
     const [horariosDisponibles, setHorariosDisponibles] = useState([]);
     const [disponibilidadDias, setDisponibilidadDias] = useState({});
     const today = dayjs().startOf('day');
+    const [barberos, setBarberos] = useState([]);
+
 
     const holidays = new Holidays('ES', 'AN', 'CA');
     const [saldo, setSaldo] = useState(0); // Saldo del cliente
@@ -61,6 +63,13 @@ export default function ElegirCita() {
             .catch(error => console.error("Error al obtener el saldo:", error));
     }, []);
 
+    useEffect(() => {
+        axios.get('/api/barberos')
+            .then(response => setBarberos(response.data))
+            .catch(error => console.error("Error al cargar los barberos:", error));
+    }, []);
+
+
 
 
 
@@ -81,10 +90,7 @@ export default function ElegirCita() {
         return null; // Día disponible
     };
 
-    const barberos = [
-        { id: 1, nombre: "José Ángel Sánchez Harana", imagen: "/images/jose.png" },
-        { id: 2, nombre: "Daniel Valle Vargas", imagen: "/images/hector.png" }
-    ];
+
 
     const handleSelectBarbero = (barbero) => {
         setSelectedBarbero(barbero);
@@ -273,16 +279,21 @@ export default function ElegirCita() {
                     <div className="barbero-selection">
                         <h3 className="text-2xl font-semibold text-center">¿Con quién quieres reservar la cita?</h3>
                         <div className="flex justify-around mt-6">
-                            {barberos.map(barbero => (
-                                <div
-                                    key={barbero.id}
-                                    className="barbero-card cursor-pointer hover:shadow-md transition-shadow rounded-lg p-4 text-center"
-                                    onClick={() => handleSelectBarbero(barbero)}
-                                >
-                                    <img src={barbero.imagen} alt={barbero.nombre} className="rounded-full w-32 h-32 mx-auto" />
-                                    <h4 className="text-xl mt-4">{barbero.nombre}</h4>
-                                </div>
-                            ))}
+                        {barberos.map(barbero => (
+    <div
+        key={barbero.id}
+        className="barbero-card cursor-pointer hover:shadow-md transition-shadow rounded-lg p-4 text-center"
+        onClick={() => handleSelectBarbero(barbero)}
+    >
+        <img
+            src={barbero.imagen || '/images/default-avatar.png'} // Usa una imagen predeterminada si no hay imagen
+            alt={barbero.nombre}
+            className="rounded-full w-32 h-32 mx-auto"
+        />
+        <h4 className="text-xl mt-4">{barbero.nombre}</h4>
+    </div>
+))}
+
                         </div>
                     </div>
 

@@ -125,6 +125,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/api/citas/disponibilidad', [CitaController::class, 'disponibilidad'])->name('citas.disponibilidad');
     Route::get('/api/citas/horas-reservadas', [CitaController::class, 'horasReservadas']);
     Route::get('/api/servicios', [ServicioController::class, 'index'])->name('servicios.index');
+    Route::get('/api/barberos', [AdminController::class, 'obtenerBarberos']);
+
     Route::post('/citas/reservar', [CitaController::class, 'reservar'])->name('citas.reservar');
     Route::get('/admin/user/saldo', [AdminController::class, 'getSaldo'])->name('admin.user.saldo');
 

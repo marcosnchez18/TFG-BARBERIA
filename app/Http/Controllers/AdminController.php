@@ -153,11 +153,23 @@ public function getSaldo()
 {
     $user = Auth::user();
 
-    
+
     return response()->json([
         'saldo' => (float) $user->saldo
     ], 200);
 }
+
+
+public function obtenerBarberos()
+{
+    $barberos = User::whereIn('rol', ['admin', 'trabajador'])
+        ->where('estado', 'activo')
+        ->get(['id', 'nombre', 'email', 'rol']);
+
+    return response()->json($barberos);
+}
+
+
 
 
 }
