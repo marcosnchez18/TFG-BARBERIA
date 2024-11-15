@@ -67,12 +67,18 @@ export default function ElegirCita() {
     const tileClassName = ({ date }) => {
         const dateStr = dayjs(date).format('YYYY-MM-DD');
         const dayOfWeek = dayjs(date).day();
+
+        // Marcar días festivos o domingos como no disponibles
+        if (holidays.isHoliday(date) || dayOfWeek === 0) {
+            return 'day-no-disponible'; // Clase CSS para días no disponibles
+        }
+
+        // Marcar días completos sin disponibilidad
         if (disponibilidadDias[dateStr]?.completo) {
             return 'day-sin-citas';
-        } else if (holidays.isHoliday(date) || dayOfWeek === 0) {
-            return 'day-no-disponible';
         }
-        return null;
+
+        return null; // Día disponible
     };
 
     const barberos = [
@@ -92,32 +98,47 @@ export default function ElegirCita() {
 
     const handleSelectDate = (date) => {
         setSelectedDate(date);
-        const formattedDate = dayjs(date).format('YYYY-MM-DD');
 
-        // Verifica que selectedServicio esté definido antes de hacer la solicitud
+        const formattedDate = dayjs(date).format('YYYY-MM-DD');
+        const dayOfWeek = dayjs(date).day();
+
+        // Verificar si la fecha seleccionada es un domingo o un festivo
+        if (holidays.isHoliday(date) || dayOfWeek === 0) {
+            Swal.fire({
+                title: 'Fecha no disponible',
+                text: 'No puedes reservar citas en domingos o festivos.',
+                icon: 'error',
+                confirmButtonText: 'Aceptar',
+            });
+            setHorariosDisponibles([]);
+            return; // Terminar la función
+        }
+
+        // Verifica que los parámetros sean válidos antes de hacer la solicitud
         if (!selectedBarbero || !formattedDate || !selectedServicio) {
             console.error("Faltan algunos parámetros necesarios para la solicitud.");
             return;
         }
 
-        // Realiza la solicitud solo si todos los parámetros están presentes
-        axios.get(`/api/citas/disponibilidad`, {
-            params: {
-                barbero_id: selectedBarbero.id,
-                fecha: formattedDate,
-                servicio_id: selectedServicio.id
-            }
-        })
-        .then(response => {
-            console.log("Horarios disponibles recibidos:", response.data);
-            setHorariosDisponibles(response.data);
-        })
-        .catch(error => {
-            console.error("Error al obtener disponibilidad:", error);
-            if (error.response) {
-                console.log("Detalles del error:", error.response.data); // Imprime los detalles del error
-            }
-        });
+        // Realiza la solicitud para obtener horarios disponibles
+        axios
+            .get(`/api/citas/disponibilidad`, {
+                params: {
+                    barbero_id: selectedBarbero.id,
+                    fecha: formattedDate,
+                    servicio_id: selectedServicio.id,
+                },
+            })
+            .then((response) => {
+                console.log("Horarios disponibles recibidos:", response.data);
+                setHorariosDisponibles(response.data);
+            })
+            .catch((error) => {
+                console.error("Error al obtener disponibilidad:", error);
+                if (error.response) {
+                    console.log("Detalles del error:", error.response.data);
+                }
+            });
     };
 
 

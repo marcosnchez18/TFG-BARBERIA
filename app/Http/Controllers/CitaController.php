@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Log;
 class CitaController extends Controller
 {
     /**
-     * Muestra la disponibilidad de días y horarios.
+     * Muestra la disponibilidad de días y horarios
      */
     public function disponibilidad(Request $request)
 {
@@ -38,15 +38,21 @@ class CitaController extends Controller
             return response()->json([]);
         }
 
+        // Verificar que no se permita reservar el día actual
+        $hoy = Carbon::today();
+        if (Carbon::parse($fechaSeleccionada)->isSameDay($hoy)) {
+            return response()->json([]); // Retorna lista vacía si es el día actual
+        }
+
         // Obtener la duración del servicio seleccionado
         $servicio = Servicio::findOrFail($servicioId);
         $duracionServicio = $servicio->duracion;
 
-        // Define horarios de trabajo y intervalos posibles
-        $horariosTrabajo = [
-            ['inicio' => '10:00', 'fin' => '14:00'],
-            ['inicio' => '16:00', 'fin' => '20:00']
-        ];
+        // Define horarios de trabajo y ajusta para los sábados
+        $esSabado = Carbon::parse($fechaSeleccionada)->isSaturday();
+        $horariosTrabajo = $esSabado
+            ? [['inicio' => '10:00', 'fin' => '14:00']] // Horario de sábado
+            : [['inicio' => '10:00', 'fin' => '14:00'], ['inicio' => '16:00', 'fin' => '20:00']]; // Horario normal
 
         // Obtener citas ya reservadas para ese día y barbero
         $citas = Cita::where('barbero_id', $barberoId)
@@ -94,6 +100,7 @@ class CitaController extends Controller
         return response()->json(['error' => 'Error al obtener disponibilidad'], 500);
     }
 }
+
 
 
 
@@ -300,27 +307,38 @@ class CitaController extends Controller
 
     public function modificar(Request $request, $id)
 {
-    // Validar la solicitud entrante
-    $request->validate([
-        'servicio_id' => 'required|exists:servicios,id',
-        'fecha_hora_cita' => 'required|date_format:Y-m-d H:i',
-    ]);
-
     try {
-        // Buscar la cita por su ID
+        $request->validate([
+            'servicio_id' => 'required|exists:servicios,id',
+            'fecha_hora_cita' => 'required|date_format:Y-m-d H:i',
+        ]);
+
+        // Obtener la cita actual
         $cita = Cita::findOrFail($id);
 
-        // Actualizar los datos de la cita
-        $cita->servicio_id = $request->input('servicio_id');
-        $cita->fecha_hora_cita = $request->input('fecha_hora_cita');
-        $cita->save();
+        // Eliminar la cita existente
+        $cita->delete();
 
+        // Preparar los datos para crear una nueva cita
+        $data = $request->only(['servicio_id', 'fecha_hora_cita']);
+        $data['barbero_id'] = $cita->barbero_id;
+        $data['descuento_aplicado'] = $cita->descuento_aplicado;
+        $data['precio_cita'] = $cita->precio_cita;
 
-        return response()->json(['message' => 'Cita modificada con éxito.'], 200);
+        // Llamar al método reservar
+        return $this->reservar(new Request($data));
     } catch (\Exception $e) {
-        return response()->json(['error' => 'Error al modificar la cita.'], 500);
+        Log::error('Error al modificar la cita:', [
+            'message' => $e->getMessage(),
+            'trace' => $e->getTrace()
+        ]);
+        return response()->json(['error' => 'Error interno al modificar la cita.'], 500);
     }
 }
+
+
+
+
 
 public function calificar(Request $request, $id)
 {
