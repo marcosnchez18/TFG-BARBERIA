@@ -28,9 +28,14 @@ class CitaController extends Controller
         $fechaSeleccionada = $request->input('fecha');
         $servicioId = $request->input('servicio_id');
 
-        // Validar los parámetros
+        // Si faltan parámetros, retornar una lista vacía en lugar de un error
         if (!$barberoId || !$fechaSeleccionada || !$servicioId) {
-            return response()->json(['error' => 'Faltan parámetros necesarios.'], 400);
+            Log::warning('Faltan parámetros necesarios para disponibilidad:', [
+                'barbero_id' => $barberoId,
+                'fecha' => $fechaSeleccionada,
+                'servicio_id' => $servicioId
+            ]);
+            return response()->json([]);
         }
 
         // Obtener la duración del servicio seleccionado
@@ -55,18 +60,18 @@ class CitaController extends Controller
             $inicio = Carbon::parse("{$fechaSeleccionada} {$rango['inicio']}");
             $fin = Carbon::parse("{$fechaSeleccionada} {$rango['fin']}");
 
-            while ($inicio->lessThanOrEqualTo($fin)) {
-                $esOcupado = false;
+            while ($inicio->lessThan($fin)) {
                 $finIntervalo = $inicio->copy()->addMinutes($duracionServicio);
+                $esOcupado = false;
 
-                // Verificar si el intervalo actual se solapa con una cita existente
+                // Verificar si este intervalo se solapa con alguna cita existente
                 foreach ($citas as $cita) {
                     $inicioCita = Carbon::parse($cita->fecha_hora_cita);
                     $finCita = $inicioCita->copy()->addMinutes($cita->servicio->duracion);
 
                     if (
-                        $inicio->between($inicioCita, $finCita->subMinute()) ||
-                        $finIntervalo->between($inicioCita->addMinute(), $finCita)
+                        $inicio->lessThan($finCita) &&
+                        $finIntervalo->greaterThan($inicioCita)
                     ) {
                         $esOcupado = true;
                         break;
@@ -77,7 +82,7 @@ class CitaController extends Controller
                     $horariosDisponibles[] = $inicio->format('H:i');
                 }
 
-                // Avanza al siguiente intervalo en función de la duración del servicio
+                // Avanza al siguiente intervalo de tiempo
                 $inicio->addMinutes($duracionServicio);
             }
         }
@@ -86,9 +91,10 @@ class CitaController extends Controller
 
     } catch (\Exception $e) {
         Log::error("Error en la disponibilidad: " . $e->getMessage());
-        return response()->json(['error' => 'Error al obtener disponibilidadddd'], 500);
+        return response()->json(['error' => 'Error al obtener disponibilidad'], 500);
     }
 }
+
 
 
 
