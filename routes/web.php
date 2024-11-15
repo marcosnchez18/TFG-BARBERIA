@@ -155,6 +155,11 @@ Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLink
 Route::get('/reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
 Route::post('/reset-password', [ResetPasswordController::class, 'reset'])->name('password.update');
 
+
+Route::get('/invitado', function () {
+    return Inertia::render('Invitado');
+})->name('invitado');
+
 // Rutas adicionales (públicas)
 Route::get('/sobre-nosotros', function () {
     return Inertia::render('PaginaSobreNos');
@@ -180,3 +185,5 @@ Route::get('/daniel', function () {
 Route::get('/jose', function () {
     return Inertia::render('Jose');
 })->name('jose');
+
+

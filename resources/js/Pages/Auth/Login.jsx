@@ -119,6 +119,17 @@ export default function Login() {
                     </button>
                 </form>
 
+                {/* Acceso como Invitado */}
+                <div className="mt-6 text-center">
+                    <Link
+                        href="/invitado"
+                        className="w-full inline-block font-bold py-2 px-4 rounded-md hover:opacity-90 transition duration-300"
+                        style={{ backgroundColor: '#E0E0E0', color: '#171717' }}
+                    >
+                        Acceso como invitado
+                    </Link>
+                </div>
+
                 <div className="mt-6 text-center">
                     <p className="text-gray-500" style={{ fontFamily: 'Times New Roman, serif' }}>¿No tienes cuenta?</p>
                     <Link href="/register" className="text-blue-500 hover:underline" style={{ fontFamily: 'Times New Roman, serif' }}>
