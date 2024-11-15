@@ -65,9 +65,14 @@ export default function ElegirCita() {
 
     useEffect(() => {
         axios.get('/api/barberos')
-            .then(response => setBarberos(response.data))
+            .then(response => {
+                // Filtrar solo los barberos activos
+                const barberosActivos = response.data.filter(barbero => barbero.estado === 'activo');
+                setBarberos(barberosActivos);
+            })
             .catch(error => console.error("Error al cargar los barberos:", error));
     }, []);
+
 
 
 
@@ -286,13 +291,14 @@ export default function ElegirCita() {
         onClick={() => handleSelectBarbero(barbero)}
     >
         <img
-            src={barbero.imagen || '/images/default-avatar.png'} // Usa una imagen predeterminada si no hay imagen
+            src={barbero.imagen || '/images/default-avatar.png'} // Imagen predeterminada si no tiene imagen
             alt={barbero.nombre}
             className="rounded-full w-32 h-32 mx-auto"
         />
         <h4 className="text-xl mt-4">{barbero.nombre}</h4>
     </div>
 ))}
+
 
                         </div>
                     </div>

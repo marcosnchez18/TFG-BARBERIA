@@ -162,12 +162,15 @@ public function getSaldo()
 
 public function obtenerBarberos()
 {
+    // Filtrar usuarios con roles 'admin' o 'trabajador' y que estén activos
     $barberos = User::whereIn('rol', ['admin', 'trabajador'])
-        ->where('estado', 'activo')
-        ->get(['id', 'nombre', 'email', 'rol']);
+        ->where('estado', 'activo') // Solo barberos activos
+        ->get(['id', 'nombre', 'email', 'rol', 'imagen', 'estado']); // Incluye el estado y la imagen en la respuesta
 
     return response()->json($barberos);
 }
+
+
 
 
 
