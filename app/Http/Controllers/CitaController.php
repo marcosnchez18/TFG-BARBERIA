@@ -86,7 +86,7 @@ class CitaController extends Controller
 
     } catch (\Exception $e) {
         Log::error("Error en la disponibilidad: " . $e->getMessage());
-        return response()->json(['error' => 'Error al obtener disponibilidad'], 500);
+        return response()->json(['error' => 'Error al obtener disponibilidadddd'], 500);
     }
 }
 
