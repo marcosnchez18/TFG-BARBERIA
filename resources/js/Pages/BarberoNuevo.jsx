@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { useForm } from '@inertiajs/react';
-import { Link } from '@inertiajs/react';
+import { Link, router } from '@inertiajs/react';
 import NavigationAdmin from '../Components/NavigationAdmin';
 import SobreNosotros from '../Components/Sobrenosotros';
 import Footer from '../Components/Footer';
+import Swal from 'sweetalert2';
 
 export default function BarberoNuevo({ storeUrl }) {
     const { data, setData, errors } = useForm({
@@ -58,7 +59,6 @@ export default function BarberoNuevo({ storeUrl }) {
                 formData.append('imagen', data.imagen);
             }
 
-            // Obtén el token CSRF del meta tag
             const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
 
             try {
@@ -66,7 +66,7 @@ export default function BarberoNuevo({ storeUrl }) {
                     method: 'POST',
                     body: formData,
                     headers: {
-                        'X-CSRF-TOKEN': csrfToken, // Añade el token CSRF aquí
+                        'X-CSRF-TOKEN': csrfToken, // Incluye el token CSRF para evitar errores 419
                     },
                 });
 
@@ -74,14 +74,25 @@ export default function BarberoNuevo({ storeUrl }) {
                     throw new Error('Error en el registro del barbero.');
                 }
 
-                alert('Barbero registrado exitosamente.');
+                Swal.fire({
+                    title: 'Barbero registrado',
+                    text: 'El barbero ha sido creado exitosamente.',
+                    icon: 'success',
+                    confirmButtonText: 'Aceptar',
+                }).then(() => {
+                    router.visit('/mi-gestion-admin');
+                });
             } catch (error) {
                 console.error(error);
-                alert('Hubo un problema al registrar el barbero.');
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Hubo un problema al registrar el barbero. Por favor, inténtalo de nuevo.',
+                    icon: 'error',
+                    confirmButtonText: 'Aceptar',
+                });
             }
         }
     };
-
 
     return (
         <div className="min-h-screen bg-cover bg-center relative" style={{ backgroundImage: "url('/images/barberia.jpg')" }}>
@@ -179,7 +190,7 @@ export default function BarberoNuevo({ storeUrl }) {
                     </button>
                 </form>
             </div>
-
+            <br /><br /><br /><br /><br />
             <SobreNosotros />
             <Footer />
         </div>
