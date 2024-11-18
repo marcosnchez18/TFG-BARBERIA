@@ -111,6 +111,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::delete('/admin/servicios/{id}', [ServicioController::class, 'destroy'])->name('servicios.destroy');
 
+    Route::get('/admin/barberos/create', [AdminController::class, 'createBarbero'])->name('admin.barberos.create');
+    Route::post('/admin/barberos/store', [AdminController::class, 'store'])->name('admin.barberos.store');
+
 
 
     // Rutas para el cliente (incluyendo edición de datos)

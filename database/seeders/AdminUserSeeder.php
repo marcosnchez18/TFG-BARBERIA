@@ -21,7 +21,7 @@ class AdminUserSeeder extends Seeder
                 'estado' => 'activo',
                 'numero_tarjeta_vip' => DB::raw('null'),
                 'referido_por' => DB::raw('null'),
-                'imagen' => '/images/jose.png', // Ruta inicial para la imagen
+                'imagen' => 'images/jose.png', // Ruta inicial para la imagen
                 'email_verified_at' => now(),
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -36,7 +36,7 @@ class AdminUserSeeder extends Seeder
                 'estado' => 'activo',
                 'numero_tarjeta_vip' => DB::raw('null'),
                 'referido_por' => DB::raw('null'),
-                'imagen' => '/images/hector.png', // Ruta inicial para la imagen
+                'imagen' => 'images/hector.png', // Ruta inicial para la imagen
                 'email_verified_at' => now(),
                 'created_at' => now(),
                 'updated_at' => now(),

@@ -194,76 +194,76 @@ export default function ElegirCita() {
             descuento_aplicado: descuentoAplicado,
             precio_cita: precioFinalConDescuento,
         })
-        .then(response => {
-            if (descuentoAplicado > 0) {
-                axios.patch('/admin/user/quitar-saldo', { descuento: descuentoAplicado })
-                    .then(() => console.log('Saldo descontado'))
-                    .catch(error => console.error('Error al descontar el saldo:', error));
-            }
+            .then(response => {
+                if (descuentoAplicado > 0) {
+                    axios.patch('/admin/user/quitar-saldo', { descuento: descuentoAplicado })
+                        .then(() => console.log('Saldo descontado'))
+                        .catch(error => console.error('Error al descontar el saldo:', error));
+                }
 
-            Swal.fire({
-                title: '¡Cita Reservada!',
-                html: `
+                Swal.fire({
+                    title: '¡Cita Reservada!',
+                    html: `
                     <p><strong>Barbero:</strong> ${selectedBarbero.nombre}</p>
                     <p><strong>Servicio:</strong> ${selectedServicio.nombre} - ${precioFinalConDescuento.toFixed(2)}€</p>
                     <p><strong>Fecha y Hora:</strong> ${dayjs(selectedDate).format('DD/MM/YYYY')} ${selectedTime}</p>
                 `,
-                icon: 'success',
-                confirmButtonText: 'Aceptar',
-                showCloseButton: true
-            }).then(() => {
-                Swal.fire({
-                    title: '¿Quieres pagar tu cita ahora?',
-                    html: `<div id="paypal-button-container"></div>`,
-                    showConfirmButton: false,
-                    showCloseButton: true,
-                    willOpen: () => {
-                        window.paypal.Buttons({
-                            createOrder: function(data, actions) {
-                                return actions.order.create({
-                                    purchase_units: [{
-                                        amount: { value: precioFinalConDescuento.toFixed(2) }
-                                    }]
-                                });
-                            },
-                            onApprove: function(data, actions) {
-                                return actions.order.capture().then(function(details) {
-                                    axios.patch(`/citas/${response.data.cita_id}/actualizar-metodo-pago`, { metodo_pago: 'adelantado' })
-                                    .then(() => {
-                                        Swal.fire('Pago completado', `Gracias ${details.payer.name.given_name}!`, 'success');
+                    icon: 'success',
+                    confirmButtonText: 'Aceptar',
+                    showCloseButton: true
+                }).then(() => {
+                    Swal.fire({
+                        title: '¿Quieres pagar tu cita ahora?',
+                        html: `<div id="paypal-button-container"></div>`,
+                        showConfirmButton: false,
+                        showCloseButton: true,
+                        willOpen: () => {
+                            window.paypal.Buttons({
+                                createOrder: function (data, actions) {
+                                    return actions.order.create({
+                                        purchase_units: [{
+                                            amount: { value: precioFinalConDescuento.toFixed(2) }
+                                        }]
                                     });
-                                });
-                            },
-                            onCancel: function() {
-                                axios.patch(`/citas/${response.data.cita_id}/actualizar-metodo-pago`, { metodo_pago: 'efectivo' })
-                                .then(() => {
-                                    Swal.fire('Pago cancelado', 'Puedes pagar en efectivo al llegar a la cita.', 'info');
-                                });
-                            },
-                            onError: function(err) {
-                                console.error("Error en el pago de PayPal:", err);
-                                Swal.fire('Error', 'Hubo un problema con el pago. Inténtalo de nuevo.', 'error');
-                            }
-                        }).render('#paypal-button-container');
-                    }
+                                },
+                                onApprove: function (data, actions) {
+                                    return actions.order.capture().then(function (details) {
+                                        axios.patch(`/citas/${response.data.cita_id}/actualizar-metodo-pago`, { metodo_pago: 'adelantado' })
+                                            .then(() => {
+                                                Swal.fire('Pago completado', `Gracias ${details.payer.name.given_name}!`, 'success');
+                                            });
+                                    });
+                                },
+                                onCancel: function () {
+                                    axios.patch(`/citas/${response.data.cita_id}/actualizar-metodo-pago`, { metodo_pago: 'efectivo' })
+                                        .then(() => {
+                                            Swal.fire('Pago cancelado', 'Puedes pagar en efectivo al llegar a la cita.', 'info');
+                                        });
+                                },
+                                onError: function (err) {
+                                    console.error("Error en el pago de PayPal:", err);
+                                    Swal.fire('Error', 'Hubo un problema con el pago. Inténtalo de nuevo.', 'error');
+                                }
+                            }).render('#paypal-button-container');
+                        }
+                    });
+                });
+
+                setStep(1);
+                setSelectedBarbero(null);
+                setSelectedServicio(null);
+                setSelectedDate(null);
+                setSelectedTime(null);
+            })
+            .catch(error => {
+                console.error("Error al reservar la cita:", error);
+                Swal.fire({
+                    title: 'Error',
+                    text: error.response.data.error || 'Hubo un problema al reservar la cita.',
+                    icon: 'error',
+                    confirmButtonText: 'Aceptar'
                 });
             });
-
-            setStep(1);
-            setSelectedBarbero(null);
-            setSelectedServicio(null);
-            setSelectedDate(null);
-            setSelectedTime(null);
-        })
-        .catch(error => {
-            console.error("Error al reservar la cita:", error);
-            Swal.fire({
-                title: 'Error',
-                text: error.response.data.error || 'Hubo un problema al reservar la cita.',
-                icon: 'error',
-                confirmButtonText: 'Aceptar'
-            });
-        });
     };
 
 
@@ -284,20 +284,31 @@ export default function ElegirCita() {
                     <div className="barbero-selection">
                         <h3 className="text-2xl font-semibold text-center">¿Con quién quieres reservar la cita?</h3>
                         <div className="flex justify-around mt-6">
-                        {barberos.map(barbero => (
-    <div
-        key={barbero.id}
-        className="barbero-card cursor-pointer hover:shadow-md transition-shadow rounded-lg p-4 text-center"
-        onClick={() => handleSelectBarbero(barbero)}
-    >
-        <img
-            src={barbero.imagen || '/images/default-avatar.png'} // Imagen predeterminada si no tiene imagen
-            alt={barbero.nombre}
-            className="rounded-full w-32 h-32 mx-auto"
-        />
-        <h4 className="text-xl mt-4">{barbero.nombre}</h4>
-    </div>
-))}
+                            {barberos.map(barbero => {
+                                // Asignar fotos específicas a José Ángel y Daniel Valle
+                                const imagenEspecial = barbero.nombre === 'José Ángel Sánchez Harana'
+                                    ? '/images/jose.png'
+                                    : barbero.nombre === 'Daniel Valle Vargas'
+                                        ? '/images/hector.png'
+                                        : null;
+
+                                return (
+                                    <div
+                                        key={barbero.id}
+                                        className="barbero-card cursor-pointer hover:shadow-md transition-shadow rounded-lg p-4 text-center"
+                                        onClick={() => handleSelectBarbero(barbero)}
+                                    >
+                                        <img
+                                            src={imagenEspecial || (barbero.imagen ? `/storage/${barbero.imagen}` : '/images/default-avatar.png')} // Lógica para mostrar la imagen correcta
+                                            alt={barbero.nombre}
+                                            className="rounded-full w-32 h-32 mx-auto"
+                                        />
+                                        <h4 className="text-xl mt-4">{barbero.nombre}</h4>
+                                    </div>
+                                );
+                            })}
+
+
 
 
                         </div>
@@ -356,31 +367,31 @@ export default function ElegirCita() {
                     </div>
                 )}
                 {step === 4 && (
-    <div className="confirm-cita-container text-center mt-8 p-6 bg-gray-100 rounded-lg shadow-lg">
-        <h3 className="text-3xl font-bold mb-6 text-[#A87B43]">Confirmación de la Cita</h3>
-        <div className="confirm-details text-lg text-gray-700 mb-4">
-            <p className="mb-2"><strong>Barbero:</strong> {selectedBarbero.nombre}</p>
-            <p className="mb-2"><strong>Servicio:</strong> {selectedServicio.nombre} - {selectedServicio.precio}€</p>
-            <p className="mb-2"><strong>Fecha y Hora:</strong> {dayjs(selectedDate).format('DD/MM/YYYY')} {selectedTime}</p>
+                    <div className="confirm-cita-container text-center mt-8 p-6 bg-gray-100 rounded-lg shadow-lg">
+                        <h3 className="text-3xl font-bold mb-6 text-[#A87B43]">Confirmación de la Cita</h3>
+                        <div className="confirm-details text-lg text-gray-700 mb-4">
+                            <p className="mb-2"><strong>Barbero:</strong> {selectedBarbero.nombre}</p>
+                            <p className="mb-2"><strong>Servicio:</strong> {selectedServicio.nombre} - {selectedServicio.precio}€</p>
+                            <p className="mb-2"><strong>Fecha y Hora:</strong> {dayjs(selectedDate).format('DD/MM/YYYY')} {selectedTime}</p>
 
 
-        </div>
-        <div className="button-group mt-6 flex justify-center gap-4">
-            <button
-                onClick={handleReservation}
-                 className="backer-button mt-8 bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600"
-            >
-                Confirmar
-            </button>
-            <button
-                onClick={handleBack}
-                 className="back-button mt-8 bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600"
-            >
-                Volver
-            </button>
-        </div>
-    </div>
-)}
+                        </div>
+                        <div className="button-group mt-6 flex justify-center gap-4">
+                            <button
+                                onClick={handleReservation}
+                                className="backer-button mt-8 bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600"
+                            >
+                                Confirmar
+                            </button>
+                            <button
+                                onClick={handleBack}
+                                className="back-button mt-8 bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600"
+                            >
+                                Volver
+                            </button>
+                        </div>
+                    </div>
+                )}
 
             </div>
             <br /><br /><br /><br />

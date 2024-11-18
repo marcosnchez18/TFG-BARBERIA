@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class AdminController extends Controller
 {
@@ -171,8 +172,44 @@ public function obtenerBarberos()
 }
 
 
+public function createBarbero()
+    {
+        return Inertia::render('BarberoNuevo', [
+            'storeUrl' => route('admin.barberos.store'),
+        ]);
+    }
 
 
 
+    public function store(Request $request)
+    {
+        // Validar los datos del formulario
+        $request->validate([
+            'nombre' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|confirmed|min:6', // La contraseña debe confirmarse
+            'imagen' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Validar que la imagen sea válida
+        ]);
+
+        // Manejar la imagen si existe
+        $imagenPath = null;
+        if ($request->hasFile('imagen')) {
+            $imagenPath = $request->file('imagen')->store('images', 'public');
+        }
+
+        // Crear un nuevo usuario con el rol de "trabajador"
+        User::create([
+            'nombre' => $request->nombre,
+            'email' => $request->email,
+            'password' => Hash::make($request->password), // Encriptar la contraseña
+            'rol' => 'trabajador', // Asignar el rol fijo de trabajador
+            'imagen' => $imagenPath, // Guardar la ruta de la imagen si se proporcionó
+        ]);
+
+        // Redirigir con un mensaje de éxito
+        return response()->json(['message' => 'Barbero creado exitosamente'], 201);
+    }
 
 }
+
+

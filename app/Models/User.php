@@ -27,6 +27,7 @@ class User extends Authenticatable implements MustVerifyEmail  // Implementar Mu
         'estado',
         'numero_tarjeta_vip',
         'referido_por',
+        'imagen',
     ];
 
     /**

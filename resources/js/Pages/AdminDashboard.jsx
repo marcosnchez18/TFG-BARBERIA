@@ -238,6 +238,14 @@ export default function AdminDashboard() {
 
                         </div>
 
+                        <div className="bg-[#F7E3E3] p-4 rounded-lg text-center">
+                            <p className="text-lg font-semibold">Alta Barbero</p>
+                            <br />
+                            <Link href={route('admin.barberos.create')} className="mt-2 px-4 py-2 bg-[#A87B43] text-white rounded hover:bg-[#875d34]">
+                                Crear Usuario
+                            </Link>
+                        </div>
+
 
 
                     </div>
