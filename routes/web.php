@@ -113,6 +113,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/admin/barberos/create', [AdminController::class, 'createBarbero'])->name('admin.barberos.create');
     Route::post('/admin/barberos/store', [AdminController::class, 'store'])->name('admin.barberos.store');
+    Route::get('/admin/barberos/editar', [AdminController::class, 'editarBarberos'])->name('admin.barberos.editar');
+
+
+    Route::delete('/trabajadores/{id}', [AdminController::class, 'destroy'])->name('trabajadores.destroy');
+    Route::patch('/trabajadores/{id}/habilitar', [AdminController::class, 'habilitar'])->name('trabajadores.habilitar');
+    Route::patch('/trabajadores/{id}/deshabilitar', [AdminController::class, 'deshabilitar'])->name('trabajadores.deshabilitar');
+
+    Route::patch('/trabajadores/{id}/updateField', [AdminController::class, 'updateField'])->name('trabajadores.updateField');
+    Route::post('/trabajadores/{id}/updatePhoto', [AdminController::class, 'updatePhoto'])->name('trabajadores.updatePhoto');
+
+
 
 
 
@@ -188,5 +199,3 @@ Route::get('/daniel', function () {
 Route::get('/jose', function () {
     return Inertia::render('Jose');
 })->name('jose');
-
-

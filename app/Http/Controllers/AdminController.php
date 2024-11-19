@@ -210,6 +210,117 @@ public function createBarbero()
         return response()->json(['message' => 'Barbero creado exitosamente'], 201);
     }
 
+    public function editarBarberos()
+    {
+        // Obtener todos los barberos (usuarios con rol 'trabajador')
+        $trabajadores = User::where('rol', 'trabajador')->get();
+
+        // Pasar los datos a la vista
+        return inertia('BarberosEditar', ['trabajadores' => $trabajadores]);
+    }
+
+    public function deshabilitar($id)
+{
+    $trabajador = User::findOrFail($id);
+
+    // Verificamos si el usuario es un trabajador antes de actualizar
+    if ($trabajador->rol === 'trabajador') {
+        $trabajador->update(['estado' => 'inactivo']);
+    }
+
+    return redirect()
+        ->route('admin.barberos.editar')
+        ->with('message', 'Trabajador deshabilitado con éxito.');
+}
+
+public function habilitar($id)
+{
+    $trabajador = User::findOrFail($id);
+
+    // Verificamos si el usuario es un trabajador antes de actualizar
+    if ($trabajador->rol === 'trabajador') {
+        $trabajador->update(['estado' => 'activo']);
+    }
+
+    return redirect()
+        ->route('admin.barberos.editar')
+        ->with('message', 'Trabajador habilitado con éxito.');
+}
+
+public function destroy($id)
+{
+    $trabajador = User::findOrFail($id);
+
+    // Verificamos si el usuario es un trabajador antes de eliminar
+    if ($trabajador->rol === 'trabajador') {
+        $trabajador->delete();
+    }
+
+    return redirect()
+        ->route('admin.barberos.editar')
+        ->with('message', 'Trabajador eliminado con éxito.');
+}
+
+
+
+
+
+
+public function indexTrabajadores()
+{
+    $trabajadores = User::where('rol', 'trabajador')->get();
+
+    return inertia('TrabajadoresAdmin', [
+        'trabajadores' => $trabajadores,
+    ]);
+}
+
+
+
+
+public function updateField(Request $request, $id)
+{
+    $request->validate([
+        'nombre' => 'nullable|string|max:255',
+        'email' => 'nullable|email|max:255',
+    ]);
+
+    $trabajador = User::findOrFail($id);
+
+    if ($request->has('nombre')) {
+        $trabajador->nombre = $request->nombre;
+    }
+
+    if ($request->has('email')) {
+        $trabajador->email = $request->email;
+    }
+
+    $trabajador->save();
+
+    return redirect()->back()->with('success', 'Campo actualizado con éxito.');
+}
+
+
+public function updatePhoto(Request $request, $id)
+{
+    $request->validate([
+        'imagen' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+    ]);
+
+    $trabajador = User::findOrFail($id);
+
+    if ($request->hasFile('imagen')) {
+        $path = $request->file('imagen')->store('public/trabajadores');
+        $trabajador->imagen = str_replace('public/', '', $path);
+    }
+
+    $trabajador->save();
+
+    return redirect()->back()->with('success', 'Foto actualizada con éxito.');
+}
+
+
+
 }
 
 

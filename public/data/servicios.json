@@ -61,12 +61,5 @@
         "precio": "20.00",
         "descripcion": "Un paquete completo que incluye corte de pelo, barba, cejas y lavado, perfecto para un cambio total de look.",
         "duracion": 60
-    },
-    {
-        "id": 10,
-        "nombre": "Bigote a punto",
-        "precio": "3.00",
-        "descripcion": "Cuide su bigote como los grandes se\u00f1ores de Jerez",
-        "duracion": 5
     }
 ]

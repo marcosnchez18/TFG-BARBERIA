@@ -245,6 +245,13 @@ export default function AdminDashboard() {
                                 Crear Usuario
                             </Link>
                         </div>
+                        <div className="bg-[#E3E7F7] p-4 rounded-lg text-center">
+                            <p className="text-lg font-semibold">Gestionar Trabajadores</p>
+                            <br />
+                            <Link href={route('admin.barberos.editar')} className="mt-2 px-4 py-2 bg-[#A87B43] text-white rounded hover:bg-[#875d34]">
+                                Editar
+                            </Link>
+                        </div>
 
 
 
