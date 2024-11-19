@@ -199,3 +199,7 @@ Route::get('/daniel', function () {
 Route::get('/jose', function () {
     return Inertia::render('Jose');
 })->name('jose');
+
+Route::get('/trabaja-nosotros', function () {
+    return inertia('TrabajaNosotros');
+})->name('trabajaNosotros');

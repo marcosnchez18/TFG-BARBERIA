@@ -100,6 +100,11 @@ export default function NavigationInvitado() {
                                 Equipo
                             </Link>
                         </li>
+                        <li>
+                            <Link href={route('trabajaNosotros')} className="text-lg md:text-xl text-white hover:text-gray-400">
+                                Trabaja con nosotros
+                            </Link>
+                        </li>
                     </ul>
                 </div>
 
