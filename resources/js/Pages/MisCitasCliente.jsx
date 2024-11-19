@@ -419,8 +419,7 @@ export default function MisCitasCliente() {
                                         <p><strong>Estado:</strong> <span className={getEstadoClass(cita.estado)}>{cita.estado.charAt(0).toUpperCase() + cita.estado.slice(1)}</span></p>
                                         <p><strong>Barbero:</strong> {cita.barbero?.nombre || 'No asignado'}</p>
                                         <p><strong>Precio de la Cita:</strong> {Number(cita.precio_cita || 0).toFixed(2)}€</p>
-
-
+                                        <p><strong>Duración:</strong> {cita.servicio?.duracion} minutos</p>
 
 
 
@@ -490,6 +489,8 @@ export default function MisCitasCliente() {
                                         <p><strong>Estado:</strong> <span className={getEstadoClass(cita.estado)}>{cita.estado.charAt(0).toUpperCase() + cita.estado.slice(1)}</span></p>
                                         <p><strong>Barbero:</strong> {cita.barbero?.nombre || 'No asignado'}</p>
                                         <p><strong>Precio de la Cita:</strong> {Number(cita.precio_cita || 0).toFixed(2)}€</p>
+                                        <p><strong>Duración:</strong> {cita.servicio?.duracion} minutos</p>
+
 
                                         {cita.estado === 'completada' && (
                                             <StarRating citaId={cita.id} valoracion={cita.valoracion} />

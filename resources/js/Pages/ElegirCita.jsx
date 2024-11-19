@@ -326,6 +326,8 @@ export default function ElegirCita() {
                                     onClick={() => handleSelectServicio(servicio)}
                                 >
                                     <h4 className="text-xl font-bold">{servicio.nombre}</h4>
+                                    <h5 className="text-gray-600 mt-2 text-sm">{servicio.duracion} minutos</h5>
+
                                     <p className="text-gray-600 mt-2">{servicio.precio}€</p>
                                 </div>
                             ))}

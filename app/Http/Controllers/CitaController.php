@@ -297,7 +297,7 @@ class CitaController extends Controller
 
 
         $citas = Cita::where('usuario_id', $usuarioId)
-            ->with(['barbero:id,nombre', 'servicio:id,nombre,precio'])
+            ->with(['barbero:id,nombre', 'servicio:id,nombre,precio,duracion'])
             ->get();
 
         return Inertia::render('MisCitasCliente', [
