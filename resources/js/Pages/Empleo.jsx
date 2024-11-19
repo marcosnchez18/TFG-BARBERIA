@@ -186,7 +186,7 @@ export default function Empleo({ ofertas }) {
                             type="submit"
                             className="portal-boton mt-4 text-white px-4 py-2 rounded bg-blue-500 hover:bg-blue-600"
                         >
-                            {isEditing ? 'Actualizar Oferta' : 'Publicar Oferta'}
+                            {isEditing ? 'Actualizar' : 'Publicar'}
                         </button>
                         <button
     type="button"

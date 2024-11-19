@@ -100,6 +100,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::resource('ofertas', OfertaController::class);
 
+
+
+
+
+
     Route::patch('/admin/citas/{id}/cambiar-estado', [AdminController::class, 'cambiarEstado'])->name('citas.cambiar-estado');
     Route::delete('/admin/citas/{id}/cancelar', [AdminController::class, 'cancelarCita'])->name('citas.cancelar');
     Route::get('/admin/citas-barbero', [CitaController::class, 'citasDelDia']);
@@ -207,6 +212,4 @@ Route::get('/jose', function () {
     return Inertia::render('Jose');
 })->name('jose');
 
-Route::get('/trabaja-nosotros', function () {
-    return inertia('TrabajaNosotros');
-})->name('trabajaNosotros');
+Route::get('/trabaja-nosotros', [OfertaController::class, 'trabaja'])->name('trabajaNosotros');

@@ -70,4 +70,13 @@ class OfertaController extends Controller
 
         return redirect()->route('ofertas.index')->with('success', 'Oferta eliminada con éxito.');
     }
+
+    public function trabaja()
+{
+    $ofertas = Oferta::orderBy('created_at', 'desc')->get(); // Obtener las ofertas
+    return inertia('TrabajaNosotros', ['ofertas' => $ofertas]); // Pasarlas al componente
+}
+
+
+
 }
