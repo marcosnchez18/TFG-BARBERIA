@@ -8,58 +8,65 @@ use Illuminate\Http\Request;
 class OfertaController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Muestra una lista de ofertas.
      */
     public function index()
     {
-        //
+        $ofertas = Oferta::all(); // Obtener todas las ofertas
+        return inertia('Empleo', ['ofertas' => $ofertas]); // Renderiza la página con las ofertas
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
+     * Almacena una nueva oferta en la base de datos.
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'nombre' => 'required|string|max:255',
+            'descripcion' => 'required|string',
+            'duracion_meses' => 'required|integer|min:1',
+            'numero_vacantes' => 'required|integer|min:1',
+            'inscripciones_maximas' => 'required|integer|min:1',
+        ]);
+
+        Oferta::create($request->all());
+
+        return redirect()->route('ofertas.index')->with('success', 'Oferta publicada con éxito.');
     }
 
     /**
-     * Display the specified resource.
+     * Muestra una oferta específica.
      */
     public function show(Oferta $oferta)
     {
-        //
+        return inertia('OfertaDetalle', ['oferta' => $oferta]); // Renderiza la oferta en detalle
     }
 
     /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Oferta $oferta)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
+     * Actualiza una oferta existente.
      */
     public function update(Request $request, Oferta $oferta)
     {
-        //
+        $request->validate([
+            'nombre' => 'required|string|max:255',
+            'descripcion' => 'required|string',
+            'duracion_meses' => 'required|integer|min:1',
+            'numero_vacantes' => 'required|integer|min:1',
+            'inscripciones_maximas' => 'required|integer|min:1',
+        ]);
+
+        $oferta->update($request->all());
+
+        return redirect()->route('ofertas.index')->with('success', 'Oferta actualizada con éxito.');
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Elimina una oferta.
      */
     public function destroy(Oferta $oferta)
     {
-        //
+        $oferta->delete();
+
+        return redirect()->route('ofertas.index')->with('success', 'Oferta eliminada con éxito.');
     }
 }
