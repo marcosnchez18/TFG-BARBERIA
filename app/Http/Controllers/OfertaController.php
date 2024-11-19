@@ -11,10 +11,11 @@ class OfertaController extends Controller
      * Muestra una lista de ofertas.
      */
     public function index()
-    {
-        $ofertas = Oferta::all(); // Obtener todas las ofertas
-        return inertia('Empleo', ['ofertas' => $ofertas]); // Renderiza la página con las ofertas
-    }
+{
+    $ofertas = Oferta::orderBy('created_at', 'desc')->get(); // Obtener todas las ofertas ordenadas
+    return inertia('Empleo', ['ofertas' => $ofertas]); // Pasarlas al componente
+}
+
 
     /**
      * Almacena una nueva oferta en la base de datos.

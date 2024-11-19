@@ -96,6 +96,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/empleo', function () {
         return inertia('Empleo');
     })->name('empleo');
+    Route::get('/empleo', [OfertaController::class, 'index'])->name('empleo');
 
     Route::resource('ofertas', OfertaController::class);
 

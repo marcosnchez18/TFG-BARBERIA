@@ -42,6 +42,15 @@ export default function Empleo({ ofertas }) {
         return true;
     };
 
+    const resetEditing = () => {
+        setIsEditing(false);
+        setEditingOfertaId(null);
+        reset(); // Limpia el formulario
+    };
+
+    // Llamar a resetEditing después de actualizar o cancelar
+
+
     const submit = (e) => {
         e.preventDefault();
 
@@ -68,12 +77,15 @@ export default function Empleo({ ofertas }) {
     const handleEdit = (oferta) => {
         setIsEditing(true);
         setEditingOfertaId(oferta.id);
-        setData('nombre', oferta.nombre);
-        setData('descripcion', oferta.descripcion);
-        setData('duracion_meses', oferta.duracion_meses);
-        setData('numero_vacantes', oferta.numero_vacantes);
-        setData('inscripciones_maximas', oferta.inscripciones_maximas);
+        setData({
+            nombre: oferta.nombre,
+            descripcion: oferta.descripcion,
+            duracion_meses: oferta.duracion_meses,
+            numero_vacantes: oferta.numero_vacantes,
+            inscripciones_maximas: oferta.inscripciones_maximas,
+        });
     };
+
 
     const handleDelete = (id) => {
         Swal.fire({
@@ -176,7 +188,16 @@ export default function Empleo({ ofertas }) {
                         >
                             {isEditing ? 'Actualizar Oferta' : 'Publicar Oferta'}
                         </button>
+                        <button
+    type="button"
+    onClick={resetEditing}
+    className="portal-boton-cancelar mt-4 text-white px-4 py-2 rounded bg-red-500 hover:bg-red-600"
+>
+    Cancelar
+</button>
+
                     </form>
+
                 </div>
 
                 {/* Columna derecha: Ofertas publicadas */}
