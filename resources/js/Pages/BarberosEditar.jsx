@@ -283,7 +283,7 @@ export default function TrabajadoresAdmin({ trabajadores }) {
                     </table>
                 </div>
             </div>
-            <br /><br />
+            <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
             <SobreNosotros />
             <Footer />
         </div>
