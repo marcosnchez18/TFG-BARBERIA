@@ -59,7 +59,7 @@ export default function BarberoNuevo({ storeUrl }) {
                 formData.append('imagen', data.imagen);
             }
 
-            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'); //token 
 
             try {
                 const response = await fetch(storeUrl, {

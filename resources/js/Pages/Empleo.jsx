@@ -48,9 +48,6 @@ export default function Empleo({ ofertas }) {
         reset(); // Limpia el formulario
     };
 
-    // Llamar a resetEditing después de actualizar o cancelar
-
-
     const submit = (e) => {
         e.preventDefault();
 
@@ -86,7 +83,6 @@ export default function Empleo({ ofertas }) {
         });
     };
 
-
     const handleDelete = (id) => {
         Swal.fire({
             title: '¿Estás seguro?',
@@ -112,7 +108,7 @@ export default function Empleo({ ofertas }) {
         <div
             className="portal-empleo"
             style={{
-                backgroundImage: `url('/images/barberia.jpg')`, // Fondo compartido
+                backgroundImage: `url('/images/barberia.jpg')`,
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
                 backgroundRepeat: 'no-repeat',
@@ -189,15 +185,13 @@ export default function Empleo({ ofertas }) {
                             {isEditing ? 'Actualizar' : 'Publicar'}
                         </button>
                         <button
-    type="button"
-    onClick={resetEditing}
-    className="portal-boton-cancelar mt-4 text-white px-4 py-2 rounded bg-red-500 hover:bg-red-600"
->
-    Cancelar
-</button>
-
+                            type="button"
+                            onClick={resetEditing}
+                            className="portal-boton-cancelar mt-4 text-white px-4 py-2 rounded bg-red-500 hover:bg-red-600"
+                        >
+                            Cancelar
+                        </button>
                     </form>
-
                 </div>
 
                 {/* Columna derecha: Ofertas publicadas */}
@@ -228,6 +222,13 @@ export default function Empleo({ ofertas }) {
                                     >
                                         🗑️
                                     </button>
+                                    <button
+    onClick={() => window.open(`/candidatos/${oferta.id}`, '_blank')}
+    className="portal-boton-candidatos bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mx-auto block"
+>
+    Ver Candidaturas
+</button>
+
                                 </div>
                             </div>
                         ))

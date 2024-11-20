@@ -111,7 +111,7 @@ public function consultarEstado(Request $request)
                 $mensaje = '¡Tu candidatura ha sido entregada exitosamente! Estamos revisando tu perfil.';
                 break;
             case 'denegado':
-                $mensaje = 'Lamentablemente, tu candidatura no ha sido seleccionada. Te animamos a seguir participando en nuestras ofertas futuras.';
+                $mensaje = 'Lamentablemente, tu candidatura no ha sido seleccionada. Te animamos a seguir participando en nuestras futuras ofertas.';
                 break;
             case 'en bolsa de empleo':
                 $mensaje = 'Tu perfil ha sido añadido a nuestra bolsa de empleo. ¡Recuerda estar atento a tu móvil y correo electrónico por si te contactamos para ofrecerte una entrevista!';
@@ -126,4 +126,31 @@ public function consultarEstado(Request $request)
             'mensaje' => $mensaje,
         ]);
     }
+
+    public function verCandidatos($ofertaId)
+{
+    $candidaturas = Candidatura::where('oferta_id', $ofertaId)->get();
+
+    return inertia('Candidatos', [
+        'candidaturas' => $candidaturas,
+    ]);
+}
+
+
+public function cambiarEstado(Request $request, $id)
+{
+    $request->validate([
+        'estado' => 'required|string|in:entregado,denegado,en bolsa de empleo',
+    ]);
+
+    $candidatura = Candidatura::findOrFail($id);
+    $candidatura->estado = $request->estado;
+    $candidatura->save();
+
+    return back()->with('success', 'Estado actualizado correctamente.');
+}
+
+
+
+
 }
