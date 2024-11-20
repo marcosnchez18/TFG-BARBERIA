@@ -14,9 +14,74 @@ export default function Inscripciones({ oferta }) {
     const [gmail, setGmail] = useState('');
     const [nombre, setNombre] = useState('');
     const [cvFile, setCvFile] = useState(null);
-    const [localizador, setLocalizador] = useState(null); // Guardar localizador generado
+    const [localizador, setLocalizador] = useState(null);
+
+
+    const validateGmail = () => {
+        if (!gmail.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(gmail)) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Por favor, introduce un correo electrónico válido.',
+                confirmButtonColor: '#FF5722',
+            });
+            return false;
+        }
+        return true;
+    };
+
+    const validateCV = () => {
+        if (!cvFile) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Por favor, selecciona un archivo PDF.',
+                confirmButtonColor: '#FF5722',
+            });
+            return false;
+        }
+
+        const validFileExtensions = ['pdf'];
+        const fileExtension = cvFile.name.split('.').pop().toLowerCase();
+
+        if (!validFileExtensions.includes(fileExtension)) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'El archivo debe ser un PDF.',
+                confirmButtonColor: '#FF5722',
+            });
+            return false;
+        }
+
+        if (cvFile.size > 2 * 1024 * 1024) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'El archivo no debe superar los 2 MB.',
+                confirmButtonColor: '#FF5722',
+            });
+            return false;
+        }
+        return true;
+    };
+
+    const validateNombre = () => {
+        if (!nombre.trim() || nombre.length < 3) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Por favor, introduce un nombre válido.',
+                confirmButtonColor: '#FF5722',
+            });
+            return false;
+        }
+        return true;
+    };
 
     const handleGmailSubmit = async () => {
+        if (!validateGmail()) return;
+
         try {
             const response = await axios.post('/verificar-cliente', { email: gmail });
             if (response.data.is_valid) {
@@ -47,15 +112,8 @@ export default function Inscripciones({ oferta }) {
     };
 
     const handleCvUpload = async () => {
-        if (!cvFile) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'Por favor, selecciona un archivo PDF.',
-                confirmButtonColor: '#FF5722',
-            });
-            return;
-        }
+        if (!validateCV()) return;
+        if (!isClient && !validateNombre()) return;
 
         const formData = new FormData();
         formData.append('cv', cvFile);
@@ -182,7 +240,7 @@ export default function Inscripciones({ oferta }) {
             {/* Paso 2: Subir CV */}
             {step === 2 && (
                 <div className="text-center mt-8 py-10 bg-white mx-4 rounded-lg shadow-lg">
-                    <h3 className="text-2xl font-bold text-gray-700 mb-6">
+                    <h3 className="text-2xl font-bold text-blue-500 mb-6">
                         {isClient ? 'Sube tu CV' : 'Completa tus datos y sube tu CV'}
                     </h3>
                     {!isClient && (
@@ -194,6 +252,7 @@ export default function Inscripciones({ oferta }) {
                                 className="border p-3 rounded w-1/2 mb-4 text-gray-700 shadow-md focus:outline-none focus:ring focus:ring-blue-300"
                                 placeholder="Introduce tu nombre completo"
                             />
+                            <br />
                             <input
                                 type="email"
                                 value={gmail}
@@ -201,6 +260,7 @@ export default function Inscripciones({ oferta }) {
                                 className="border p-3 rounded w-1/2 mb-4 text-gray-700 shadow-md focus:outline-none focus:ring focus:ring-blue-300"
                                 placeholder="Introduce tu Gmail"
                             />
+                            <br />
                         </>
                     )}
                     <input
@@ -209,6 +269,7 @@ export default function Inscripciones({ oferta }) {
                         onChange={(e) => setCvFile(e.target.files[0])}
                         className="border p-3 rounded w-1/2 mb-4 text-gray-700 shadow-md focus:outline-none focus:ring focus:ring-blue-300"
                     />
+                    <br /><br />
                     <div className="flex justify-center gap-4">
                         <button
                             onClick={() => setStep(isClient ? 1 : 0)}
@@ -228,39 +289,37 @@ export default function Inscripciones({ oferta }) {
 
             {/* Paso 3: Confirmación */}
             {step === 3 && (
-    <div className="text-center mt-12 py-12 bg-gradient-to-r from-green-100 to-blue-100 mx-8 rounded-xl shadow-lg border-4 border-green-500">
-        <h3 className="text-3xl font-extrabold text-green-800 mb-8">
-            ¡Candidatura Registrada!
-        </h3>
-        <p className="text-xl text-gray-800 mb-6">
-            Este es tu localizador:
-        </p>
-        <p className="text-3xl font-bold text-blue-600 bg-white inline-block px-4 py-2 rounded-lg shadow">
-            {localizador}
-        </p>
-        <p className="text-lg text-gray-700 mt-6">
-            Puedes ver el estado de tu candidatura en{' '}
-            <a
-                href="/trabaja-nosotros#consultar-estado"
-                className="text-blue-600 font-bold underline hover:text-blue-800 transition duration-300"
-            >
-                Trabaja con Nosotros
-            </a>.
-        </p>
-        <div className="mt-8">
-            <button
-                onClick={() => (window.location.href = '/trabaja-nosotros')}
-                className="bg-gradient-to-r from-blue-500 to-blue-700 text-white px-6 py-3 rounded-lg shadow-lg hover:scale-105 transition transform duration-300 font-bold"
-            >
-                Ver Estado de Mi Candidatura
-            </button>
-        </div>
-    </div>
-)}
+                <div className="text-center mt-12 py-12 bg-gradient-to-r from-green-100 to-blue-100 mx-8 rounded-xl shadow-lg border-4 border-green-500">
+                    <h3 className="text-3xl font-extrabold text-green-800 mb-8">
+                        ¡Candidatura Registrada!
+                    </h3>
+                    <p className="text-xl text-gray-800 mb-6">
+                        Este es tu localizador:
+                    </p>
+                    <p className="text-3xl font-bold text-blue-600 bg-white inline-block px-4 py-2 rounded-lg shadow">
+                        {localizador}
+                    </p>
+                    <p className="text-lg text-gray-700 mt-6">
+                        Puedes ver el estado de tu candidatura en{' '}
+                        <a
+                            href="/trabaja-nosotros#consultar-estado"
+                            className="text-blue-600 font-bold underline hover:text-blue-800 transition duration-300"
+                        >
+                            Trabaja con Nosotros
+                        </a>.
+                    </p>
+                    <div className="mt-8">
+                        <button
+                            onClick={() => (window.location.href = '/trabaja-nosotros')}
+                            className="bg-gradient-to-r from-blue-500 to-blue-700 text-white px-6 py-3 rounded-lg shadow-lg hover:scale-105 transition transform duration-300 font-bold"
+                        >
+                            Ver Estado de Mi Candidatura
+                        </button>
+                    </div>
+                </div>
+            )}
 
-            <br /><br />
             <br />
-            {/* Componentes adicionales */}
             <Localizacion />
             <SobreNosotros />
             <Footer />

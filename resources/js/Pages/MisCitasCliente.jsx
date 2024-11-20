@@ -122,9 +122,6 @@ export default function MisCitasCliente() {
         });
     };
 
-
-
-
     const handleModifyClick = (cita) => {
         setSelectedCita(cita);
         setSelectedServicio(cita.servicio);
@@ -163,25 +160,24 @@ export default function MisCitasCliente() {
             params: {
                 fecha: formattedDate,
                 barbero_id: selectedCita.barbero.id,
-                servicio_id: selectedServicio.id
+                servicio_id: selectedServicio.id,
+            },
+        })
+        .then((response) => {
+            // Asegúrate de que la respuesta sea un array de horarios
+            if (Array.isArray(response.data)) {
+                setHorariosDisponibles(response.data);
+            } else {
+                setHorariosDisponibles([]);
             }
         })
-        .then(response => {
-            // Lógica para ajustar las horas según la duración del servicio
-            const duracionServicio = selectedServicio.duracion; // En minutos
-            const horariosDisponibles = response.data.filter(horario => {
-                const horaInicio = dayjs(`${formattedDate} ${horario}`);
-                const horaFin = horaInicio.add(duracionServicio, 'minute');
-
-                // Verificar que no se solape con otros horarios reservados
-                return !response.data.some(ocupado =>
-                    dayjs(`${formattedDate} ${ocupado}`).isBetween(horaInicio, horaFin, 'minute', '[)')
-                );
-            });
-            setHorariosDisponibles(horariosDisponibles);
-        })
-        .catch(error => console.error("Error al obtener disponibilidad:", error));
+        .catch((error) => {
+            console.error("Error al obtener disponibilidad:", error);
+            Swal.fire('Error', 'No se pudo obtener la disponibilidad', 'error');
+            setHorariosDisponibles([]);
+        });
     };
+
 
 
     const handleConfirmModification = (horario) => {
@@ -444,7 +440,7 @@ export default function MisCitasCliente() {
                                                     className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
                                                     onClick={() => generarPDF(cita)}
                                                 >
-                                                <i class="fa-solid fa-file-arrow-down"></i>
+                                                <i className="fa-solid fa-file-arrow-down"></i>
                                                 </button>
                                             )}
                                         </div>

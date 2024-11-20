@@ -170,6 +170,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('/citas/{id}/modificar', [CitaController::class, 'modificar'])->name('citas.modificar');
 
 
+
     Route::patch('/citas/{id}/calificar', [CitaController::class, 'calificar'])->name('citas.calificar');
 
 
