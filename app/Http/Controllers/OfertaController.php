@@ -78,5 +78,13 @@ class OfertaController extends Controller
 }
 
 
+public function inscribirse($id)
+{
+    $oferta = Oferta::findOrFail($id); // Busca la oferta por ID
+    return inertia('Inscripciones', ['oferta' => $oferta]); // Devuelve la vista con la oferta
+}
+
+
+
 
 }

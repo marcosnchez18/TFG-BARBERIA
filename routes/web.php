@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\CandidaturaController;
 use App\Http\Controllers\NoticiaController;
 use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\CitaController;
@@ -213,3 +214,9 @@ Route::get('/jose', function () {
 })->name('jose');
 
 Route::get('/trabaja-nosotros', [OfertaController::class, 'trabaja'])->name('trabajaNosotros');
+Route::get('/inscribirse/{id}', [OfertaController::class, 'inscribirse'])->name('inscribirse');
+
+
+Route::post('/verificar-cliente', [CandidaturaController::class, 'verificarCliente']);
+Route::post('/guardar-candidatura', [CandidaturaController::class, 'guardarCandidatura']);
+Route::post('/consultar-estado', [CandidaturaController::class, 'consultarEstado']);

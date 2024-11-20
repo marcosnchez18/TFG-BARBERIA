@@ -61,5 +61,12 @@
         "precio": "20.00",
         "descripcion": "Un paquete completo que incluye corte de pelo, barba, cejas y lavado, perfecto para un cambio total de look.",
         "duracion": 60
+    },
+    {
+        "id": 10,
+        "nombre": "bigotesd",
+        "precio": "3.00",
+        "descripcion": "vsvsdfvsdv",
+        "duracion": 5
     }
 ]

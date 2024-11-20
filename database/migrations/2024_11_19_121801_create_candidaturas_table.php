@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('nombre'); // Nombre del candidato
             $table->string('email'); // Email del candidato
             $table->string('cv'); // Ruta del archivo PDF del CV
-            $table->boolean('es_cliente')->default(false); // Indica si el candidato es cliente
+            $table->enum('estado', ['entregado', 'denegado', 'en bolsa de empleo'])->default('entregado'); // Estado de la candidatura
             $table->unsignedBigInteger('user_id')->nullable(); // Relación opcional con la tabla users
             $table->unsignedBigInteger('oferta_id'); // Relación con la tabla ofertas
             $table->timestamps(); // Timestamps: created_at y updated_at
@@ -29,6 +29,7 @@ return new class extends Migration
             // Restricción única para evitar que un usuario se postule más de una vez a la misma oferta
             $table->unique(['user_id', 'oferta_id']);
         });
+
     }
 
     /**

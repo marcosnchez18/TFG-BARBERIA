@@ -18,6 +18,7 @@ class Candidatura extends Model
         'es_cliente',
         'user_id',
         'oferta_id',
+        'estado',
     ];
 
     /**
