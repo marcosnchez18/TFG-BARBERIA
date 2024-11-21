@@ -10,6 +10,7 @@ use App\Http\Controllers\NoticiaController;
 use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\CitaController;
 use App\Http\Controllers\OfertaController;
+use App\Http\Controllers\RecompensaController;
 use App\Http\Controllers\ServicioController;
 use App\Http\Controllers\ServicioUsuarioController;
 use App\Models\ServicioUsuario;
@@ -241,3 +242,19 @@ Route::get('/inscribirse/{id}', [OfertaController::class, 'inscribirse'])->name(
 Route::post('/verificar-cliente', [CandidaturaController::class, 'verificarCliente']);
 Route::post('/guardar-candidatura', [CandidaturaController::class, 'guardarCandidatura']);
 Route::post('/consultar-estado', [CandidaturaController::class, 'consultarEstado']);
+
+Route::get('/servicios-invitado', function () {
+    return Inertia::render('Huecos');
+})->name('servicios-invitado');
+
+
+Route::get('/api/public/servicios', [ServicioController::class, 'index'])->name('servicios.public.index');
+
+Route::get('/api/public/citas/disponibilidad', [RecompensaController::class, 'disponibilidad'])->name('public.citas.disponibilidad');
+
+
+Route::get('/api/public/barberos/{barberoId}/servicios', [RecompensaController::class, 'getServiciosPorBarbero'])
+    ->name('public.barberos.servicios');
+
+
+Route::get('/api/public/barberos', [AdminController::class, 'obtenerBarberos']);
