@@ -99,8 +99,20 @@ export default function ElegirCita() {
 
     const handleSelectBarbero = (barbero) => {
         setSelectedBarbero(barbero);
-        setStep(2);
+
+        // Obtener servicios del barbero seleccionado
+        axios
+            .get(`/api/barberos/${barbero.id}/servicios`)
+            .then((response) => {
+                setServicios(response.data); // Actualizar servicios disponibles
+                setStep(2); // Avanzar al siguiente paso
+            })
+            .catch((error) => {
+                console.error("Error al cargar servicios del barbero:", error);
+                Swal.fire("Error", "No se pudieron cargar los servicios del barbero.", "error");
+            });
     };
+
 
     const handleSelectServicio = (servicio) => {
         setSelectedServicio(servicio);

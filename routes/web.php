@@ -136,7 +136,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::post('/admin/asignar-servicios', [ServicioUsuarioController::class, 'asignarServicios'])
     ->name('admin.asignar-servicios');
-    
+
     Route::get('/api/barberos/{barbero}/servicios', [ServicioUsuarioController::class, 'getServiciosAsignados']);
     Route::post('/admin/desasignar-servicio', [ServicioUsuarioController::class, 'desasignarServicio']);
 
@@ -170,6 +170,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/api/citas/disponibilidad', [CitaController::class, 'disponibilidad'])->name('citas.disponibilidad');
     Route::get('/api/citas/horas-reservadas', [CitaController::class, 'horasReservadas']);
     Route::get('/api/servicios', [ServicioController::class, 'index'])->name('servicios.index');
+    Route::get('/api/barberos/{barberoId}/servicios', [AdminController::class, 'getServiciosPorBarbero'])
+    ->name('barberos.servicios');
     Route::get('/api/barberos', [AdminController::class, 'obtenerBarberos']);
 
     Route::post('/citas/reservar', [CitaController::class, 'reservar'])->name('citas.reservar');

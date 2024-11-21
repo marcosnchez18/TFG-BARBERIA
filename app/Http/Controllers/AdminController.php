@@ -320,7 +320,20 @@ public function updatePhoto(Request $request, $id)
     return redirect()->back()->with('success', 'Foto actualizada con éxito.');
 }
 
+public function getServiciosPorBarbero($barberoId)
+    {
+        $barbero = User::findOrFail($barberoId);
 
+        // Verificar que el usuario sea un barbero
+        if (!in_array($barbero->rol, ['admin', 'trabajador'])) {
+            return response()->json(['message' => 'Este usuario no es un barbero.'], 400);
+        }
+
+        // Obtener servicios asignados desde la relación en la tabla pivote
+        $servicios = $barbero->servicios()->get(['id', 'nombre', 'descripcion', 'precio', 'duracion']);
+
+        return response()->json($servicios);
+    }
 
 
 
