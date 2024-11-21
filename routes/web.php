@@ -136,6 +136,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::post('/admin/asignar-servicios', [ServicioUsuarioController::class, 'asignarServicios'])
     ->name('admin.asignar-servicios');
+    
+    Route::get('/api/barberos/{barbero}/servicios', [ServicioUsuarioController::class, 'getServiciosAsignados']);
+    Route::post('/admin/desasignar-servicio', [ServicioUsuarioController::class, 'desasignarServicio']);
+
+
 
 
 

@@ -43,4 +43,25 @@ class ServicioUsuarioController extends Controller
             'message' => 'Los servicios han sido asignados correctamente.'
         ]);
     }
+
+    public function getServiciosAsignados($barberoId)
+{
+    $barbero = User::findOrFail($barberoId);
+    $servicios = $barbero->servicios()->get();
+    return response()->json($servicios);
+}
+
+public function desasignarServicio(Request $request)
+{
+    $request->validate([
+        'barbero_id' => 'required|exists:users,id',
+        'servicio_id' => 'required|exists:servicios,id',
+    ]);
+
+    $barbero = User::findOrFail($request->barbero_id);
+    $barbero->servicios()->detach($request->servicio_id);
+
+    return response()->json(['message' => 'Servicio desasignado correctamente']);
+}
+
 }
