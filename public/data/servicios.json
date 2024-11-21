@@ -64,9 +64,16 @@
     },
     {
         "id": 10,
-        "nombre": "bigotesd",
+        "nombre": "Bigote",
         "precio": "3.00",
-        "descripcion": "vsvsdfvsdv",
+        "descripcion": "Bigote Se\u00f1orial estilo Italiano",
         "duracion": 5
+    },
+    {
+        "id": 11,
+        "nombre": "Corte de Pelo",
+        "precio": "9.00",
+        "descripcion": "Corte de Pelo al estilo Daniel",
+        "duracion": 30
     }
 ]

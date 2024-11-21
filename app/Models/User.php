@@ -114,4 +114,10 @@ class User extends Authenticatable implements MustVerifyEmail  // Implementar Mu
     {
         return $this->hasMany(Candidatura::class, 'user_id');
     }
+
+    public function servicios()
+{
+    return $this->belongsToMany(Servicio::class, 'servicio_usuario', 'usuario_id', 'servicio_id');
+}
+
 }

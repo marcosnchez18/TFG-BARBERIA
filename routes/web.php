@@ -11,6 +11,8 @@ use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\CitaController;
 use App\Http\Controllers\OfertaController;
 use App\Http\Controllers\ServicioController;
+use App\Http\Controllers\ServicioUsuarioController;
+use App\Models\ServicioUsuario;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -127,6 +129,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/admin/barberos/create', [AdminController::class, 'createBarbero'])->name('admin.barberos.create');
     Route::post('/admin/barberos/store', [AdminController::class, 'store'])->name('admin.barberos.store');
     Route::get('/admin/barberos/editar', [AdminController::class, 'editarBarberos'])->name('admin.barberos.editar');
+
+    Route::get('/admin/asignar-servicios', function () {
+        return Inertia::render('Asignar');
+    })->name('admin.asignar.servicios');
+
+    Route::post('/admin/asignar-servicios', [ServicioUsuarioController::class, 'asignarServicios'])
+    ->name('admin.asignar-servicios');
+
 
 
     Route::delete('/trabajadores/{id}', [AdminController::class, 'destroy'])->name('trabajadores.destroy');

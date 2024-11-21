@@ -13,9 +13,16 @@ class Servicio extends Model
         'duracion'
     ];
 
-   
+
     public function citas()
     {
         return $this->hasMany(Cita::class, 'servicio_id');
     }
+
+    public function barberos()
+{
+    return $this->belongsToMany(User::class, 'servicio_usuario', 'servicio_id', 'usuario_id')
+                ->whereIn('rol', ['admin', 'trabajador']);
+}
+
 }

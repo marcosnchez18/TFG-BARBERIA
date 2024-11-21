@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Cita;
+use App\Models\Servicio;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Carbon\Carbon;
@@ -318,6 +319,9 @@ public function updatePhoto(Request $request, $id)
 
     return redirect()->back()->with('success', 'Foto actualizada con éxito.');
 }
+
+
+
 
 
 
