@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from '@inertiajs/react';
 
-export default function Naviser() {
+export default function NavigationInvitado() {
     const [isOpen, setIsOpen] = useState(false);
 
     const toggleMenu = () => {
@@ -13,7 +13,7 @@ export default function Naviser() {
             <div className="container mx-auto flex justify-between items-center">
                 {/* Logo de la Barbería */}
                 <div>
-                    <Link href={route('home')}>
+                    <Link href="/">
                         <img
                             src="/images/logo.png"
                             alt="Logo Barbería"
@@ -60,27 +60,28 @@ export default function Naviser() {
                     )}
                 </button>
 
-                {/* Menú de navegación */}
+                {/* Menú de navegación en dispositivos grandes */}
                 <div
                     className={`${
                         isOpen ? 'block' : 'hidden'
                     } md:flex md:items-center md:space-x-4 w-full md:w-auto bg-neutral-900 md:bg-neutral-800 md:p-4 md:rounded-lg font-serif`}
+                    style={{ fontFamily: 'Times New Roman, serif' }}
                 >
                     <ul className="flex flex-col md:flex-row md:space-x-4 mt-4 md:mt-0 space-y-2 md:space-y-0">
-                        <li>
-                            <Link
-                                href={route('home')}
-                                className="text-lg md:text-xl text-white hover:text-gray-400"
-                            >
-                                Home
-                            </Link>
-                        </li>
                         <li>
                             <Link
                                 href={route('sobre-nosotros')}
                                 className="text-lg md:text-xl text-white hover:text-gray-400"
                             >
                                 Sobre Nosotros
+                            </Link>
+                        </li>
+                        <li>
+                            <Link
+                                href={route('servicios')}
+                                className="text-lg md:text-xl text-white hover:text-gray-400"
+                            >
+                                Servicios
                             </Link>
                         </li>
                         <li>
@@ -100,23 +101,20 @@ export default function Naviser() {
                             </Link>
                         </li>
                         <li>
-                            <Link
-                                href={route('trabajaNosotros')}
-                                className="text-lg md:text-xl text-white hover:text-gray-400"
-                            >
+                            <Link href={route('trabajaNosotros')} className="text-lg md:text-xl text-white hover:text-gray-400">
                                 Trabaja con nosotros
                             </Link>
                         </li>
                     </ul>
                 </div>
 
-                {/* Íconos de Iniciar sesión y Registrarse en dispositivos grandes */}
+                {/* Botones de Iniciar sesión y Registrarse con iconos en dispositivos grandes */}
                 <div className="hidden md:flex items-center space-x-4 font-serif">
-                    <Link href="/login" className="text-lg md:text-xl text-white hover:text-gray-400">
-                        <i className="fa-solid fa-user text-xl"></i>
+                    <Link href="/login" className="text-white hover:text-gray-400">
+                        <i className="fa-solid fa-user text-lg md:text-xl"></i>
                     </Link>
-                    <Link href="/register" className="text-lg md:text-xl text-white hover:text-gray-400">
-                        <i className="fa-solid fa-lock text-xl"></i>
+                    <Link href="/register" className="text-white hover:text-gray-400">
+                        <i className="fa-sharp-duotone fa-solid fa-lock text-lg md:text-xl"></i>
                     </Link>
                 </div>
             </div>
@@ -129,7 +127,7 @@ export default function Naviser() {
                             <i className="fa-solid fa-user text-lg"></i>
                         </Link>
                         <Link href="/register" className="text-white hover:text-gray-400">
-                            <i className="fa-solid fa-lock text-lg"></i>
+                            <i className="fa-sharp-duotone fa-solid fa-lock text-lg"></i>
                         </Link>
                     </div>
                 </div>

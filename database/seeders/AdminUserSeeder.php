@@ -19,8 +19,9 @@ class AdminUserSeeder extends Seeder
                 'saldo' => 0,
                 'contador_ausencias' => 0,
                 'estado' => 'activo',
-                'numero_tarjeta_vip' => DB::raw('null'), // Cambiado a null explícito
-                'referido_por' => DB::raw('null'), // Cambiado a null explícito
+                'numero_tarjeta_vip' => DB::raw('null'),
+                'referido_por' => DB::raw('null'),
+                'imagen' => 'images/jose.png', // Ruta inicial para la imagen
                 'email_verified_at' => now(),
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -33,12 +34,14 @@ class AdminUserSeeder extends Seeder
                 'saldo' => 0,
                 'contador_ausencias' => 0,
                 'estado' => 'activo',
-                'numero_tarjeta_vip' => DB::raw('null'), // Cambiado a null explícito
-                'referido_por' => DB::raw('null'), // Cambiado a null explícito
+                'numero_tarjeta_vip' => DB::raw('null'),
+                'referido_por' => DB::raw('null'),
+                'imagen' => 'images/hector.png', // Ruta inicial para la imagen
                 'email_verified_at' => now(),
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
         ]);
+
     }
 }

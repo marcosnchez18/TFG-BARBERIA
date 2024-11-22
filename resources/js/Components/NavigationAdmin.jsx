@@ -50,8 +50,12 @@ export default function NavigationAdmin() {
                         </button>
                         <Link href={route('mi-gestion-admin')} className="text-lg md:text-xl text-white hover:text-gray-400 nav-item-hover">Mis gestiones</Link>
                         <Link href={route('admin-citas')} className="text-lg md:text-xl text-white hover:text-gray-400 nav-item-hover">Citas de Hoy</Link>
+                        <Link href={route('citas-barberia')} className="text-lg md:text-xl text-white hover:text-gray-400 nav-item-hover">Citas Barbería</Link>
                         <Link href={route('admin-foro')} className="text-lg md:text-xl text-white hover:text-gray-400 nav-item-hover">Noticias</Link>
+                        <Link href={route('empleo')} className="text-lg md:text-xl text-white hover:text-gray-400 nav-item-hover">Empleo</Link>
                         <Link href={route('admin-clientes')} className="text-lg md:text-xl text-white hover:text-gray-400 nav-item-hover">Clientes</Link>
+                        <Link href={route('mis-datos-admin')} className="text-lg md:text-xl text-white hover:text-gray-400 nav-item-hover">Mis Datos</Link>
+
                         <button onClick={() => setShowLogoutModal(true)} className="text-lg md:text-xl text-white hover:text-gray-400 flex items-center nav-item-hover">
                             <i className="fas fa-sign-out-alt mr-2"></i> Cerrar Sesión
                         </button>

@@ -27,6 +27,7 @@ class User extends Authenticatable implements MustVerifyEmail  // Implementar Mu
         'estado',
         'numero_tarjeta_vip',
         'referido_por',
+        'imagen',
     ];
 
     /**
@@ -108,4 +109,15 @@ class User extends Authenticatable implements MustVerifyEmail  // Implementar Mu
     {
         return $this->hasMany(Recompensa::class, 'cliente_referente_id', 'numero_tarjeta_vip');
     }
+
+    public function candidaturas()
+    {
+        return $this->hasMany(Candidatura::class, 'user_id');
+    }
+
+    public function servicios()
+{
+    return $this->belongsToMany(Servicio::class, 'servicio_usuario', 'usuario_id', 'servicio_id');
+}
+
 }

@@ -5,10 +5,15 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\CandidaturaController;
 use App\Http\Controllers\NoticiaController;
 use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\CitaController;
+use App\Http\Controllers\OfertaController;
+use App\Http\Controllers\RecompensaController;
 use App\Http\Controllers\ServicioController;
+use App\Http\Controllers\ServicioUsuarioController;
+use App\Models\ServicioUsuario;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -79,6 +84,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Ruta para obtener las citas del barbero logueado
     Route::get('/admin/citas-barbero', [AdminController::class, 'citasBarbero'])->name('admin.citas-barbero');
+    Route::get('/admin/citas-barberia', [AdminController::class, 'citasBarberia'])->name('admin.citas-barberia');
 
     // Foro de noticias del administrador
     Route::get('/admin/foro', [NoticiaController::class, 'index'])->name('admin-foro');
@@ -92,6 +98,19 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('/admin/clientes/{id}/deshabilitar', [ClienteController::class, 'deshabilitar'])->name('clientes.deshabilitar');
     Route::patch('/admin/clientes/{id}/habilitar', [ClienteController::class, 'habilitar'])->name('clientes.habilitar');
 
+    Route::get('/empleo', function () {
+        return inertia('Empleo');
+    })->name('empleo');
+    Route::get('/empleo', [OfertaController::class, 'index'])->name('empleo');
+
+    Route::resource('ofertas', OfertaController::class);
+
+    Route::get('/citas-barberia', function () {
+        return Inertia::render('CitasBarberia');
+    })->name('citas-barberia');
+
+
+
 
     Route::patch('/admin/citas/{id}/cambiar-estado', [AdminController::class, 'cambiarEstado'])->name('citas.cambiar-estado');
     Route::delete('/admin/citas/{id}/cancelar', [AdminController::class, 'cancelarCita'])->name('citas.cancelar');
@@ -100,6 +119,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/admin/citas/{fecha}', [AdminController::class, 'citasPorDia']);
     Route::patch('/admin/citas/{id}/cambiar-estado', [AdminController::class, 'cambiarEstado']);
     Route::delete('/admin/citas/{id}/cancelar', [AdminController::class, 'cancelarCita']);
+    Route::patch('/admin/citas/{id}/cambiar-metodo-pago', [AdminController::class, 'cambiarMetodoPago']);
+
 
     Route::get('/admin/nuevos-servicios', [ServicioController::class, 'create'])->name('admin.servicios.create');
     Route::post('/admin/servicios', [ServicioController::class, 'store'])->name('admin.servicios.store');
@@ -110,6 +131,46 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 
     Route::delete('/admin/servicios/{id}', [ServicioController::class, 'destroy'])->name('servicios.destroy');
+
+    Route::get('/admin/barberos/create', [AdminController::class, 'createBarbero'])->name('admin.barberos.create');
+    Route::post('/admin/barberos/store', [AdminController::class, 'store'])->name('admin.barberos.store');
+    Route::get('/admin/barberos/editar', [AdminController::class, 'editarBarberos'])->name('admin.barberos.editar');
+    Route::get('/mis-datos-admin', function () {
+        return Inertia::render('MisDatosAdmin');
+    })->name('mis-datos-admin');
+
+    Route::get('/mis-datos-admin', [AdminController::class, 'misDatos'])->name('mis-datos-admin');
+
+// Ruta para actualizar datos del administrador
+Route::patch('/admin/actualizar-datos', [AdminController::class, 'actualizarDatos'])->name('admin.actualizar-datos');
+Route::post('/admin/actualizar-foto/{id}', [AdminController::class, 'actualizarFoto'])->name('admin.actualizar-foto');
+
+
+    Route::get('/admin/asignar-servicios', function () {
+        return Inertia::render('Asignar');
+    })->name('admin.asignar.servicios');
+
+    Route::post('/admin/asignar-servicios', [ServicioUsuarioController::class, 'asignarServicios'])
+    ->name('admin.asignar-servicios');
+
+    Route::get('/api/barberos/{barbero}/servicios', [ServicioUsuarioController::class, 'getServiciosAsignados']);
+    Route::post('/admin/desasignar-servicio', [ServicioUsuarioController::class, 'desasignarServicio']);
+
+
+
+
+
+    Route::delete('/trabajadores/{id}', [AdminController::class, 'destroy'])->name('trabajadores.destroy');
+    Route::patch('/trabajadores/{id}/habilitar', [AdminController::class, 'habilitar'])->name('trabajadores.habilitar');
+    Route::patch('/trabajadores/{id}/deshabilitar', [AdminController::class, 'deshabilitar'])->name('trabajadores.deshabilitar');
+
+    Route::patch('/trabajadores/{id}/updateField', [AdminController::class, 'updateField'])->name('trabajadores.updateField');
+    Route::post('/trabajadores/{id}/updatePhoto', [AdminController::class, 'updatePhoto'])->name('trabajadores.updatePhoto');
+
+    Route::get('/candidatos/{oferta}', [CandidaturaController::class, 'verCandidatos'])->name('candidatos.index');
+    Route::patch('/candidaturas/{id}/cambiar-estado', [CandidaturaController::class, 'cambiarEstado'])->name('candidaturas.cambiarEstado');
+
+
 
 
 
@@ -125,6 +186,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/api/citas/disponibilidad', [CitaController::class, 'disponibilidad'])->name('citas.disponibilidad');
     Route::get('/api/citas/horas-reservadas', [CitaController::class, 'horasReservadas']);
     Route::get('/api/servicios', [ServicioController::class, 'index'])->name('servicios.index');
+    Route::get('/api/barberos/{barberoId}/servicios', [AdminController::class, 'getServiciosPorBarbero'])
+    ->name('barberos.servicios');
+    Route::get('/api/barberos', [AdminController::class, 'obtenerBarberos']);
+
     Route::post('/citas/reservar', [CitaController::class, 'reservar'])->name('citas.reservar');
     Route::get('/admin/user/saldo', [AdminController::class, 'getSaldo'])->name('admin.user.saldo');
 
@@ -138,6 +203,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('/citas/{id}/modificar', [CitaController::class, 'modificar'])->name('citas.modificar');
 
 
+
     Route::patch('/citas/{id}/calificar', [CitaController::class, 'calificar'])->name('citas.calificar');
 
 
@@ -145,6 +211,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/mis-datos', [ClienteController::class, 'edit'])->name('mis-datos');
     Route::patch('/mis-datos', [ClienteController::class, 'update'])->name('cliente.update');
     Route::post('/cliente/eliminar', [ClienteController::class, 'eliminarCuenta'])->name('cliente.eliminar');
+    Route::patch('/cliente/actualizar-datos', [ClienteController::class, 'actualizarDatos'])->name('cliente.actualizar');
+
 });
 
 // Rutas para restablecimiento de contraseña
@@ -152,6 +220,11 @@ Route::get('/forgot-password', [ForgotPasswordController::class, 'showLinkReques
 Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
 Route::get('/reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
 Route::post('/reset-password', [ResetPasswordController::class, 'reset'])->name('password.update');
+
+
+Route::get('/invitado', function () {
+    return Inertia::render('Invitado');
+})->name('invitado');
 
 // Rutas adicionales (públicas)
 Route::get('/sobre-nosotros', function () {
@@ -178,3 +251,27 @@ Route::get('/daniel', function () {
 Route::get('/jose', function () {
     return Inertia::render('Jose');
 })->name('jose');
+
+Route::get('/trabaja-nosotros', [OfertaController::class, 'trabaja'])->name('trabajaNosotros');
+Route::get('/inscribirse/{id}', [OfertaController::class, 'inscribirse'])->name('inscribirse');
+
+
+Route::post('/verificar-cliente', [CandidaturaController::class, 'verificarCliente']);
+Route::post('/guardar-candidatura', [CandidaturaController::class, 'guardarCandidatura']);
+Route::post('/consultar-estado', [CandidaturaController::class, 'consultarEstado']);
+
+Route::get('/servicios-invitado', function () {
+    return Inertia::render('Huecos');
+})->name('servicios-invitado');
+
+
+Route::get('/api/public/servicios', [ServicioController::class, 'index'])->name('servicios.public.index');
+
+Route::get('/api/public/citas/disponibilidad', [RecompensaController::class, 'disponibilidad'])->name('public.citas.disponibilidad');
+
+
+Route::get('/api/public/barberos/{barberoId}/servicios', [RecompensaController::class, 'getServiciosPorBarbero'])
+    ->name('public.barberos.servicios');
+
+
+Route::get('/api/public/barberos', [AdminController::class, 'obtenerBarberos']);

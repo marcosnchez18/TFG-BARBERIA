@@ -47,6 +47,19 @@ export default function MisDatosCliente() {
             setTimeout(() => setCopied(false), 1500);
         });
     };
+    const handleSubmit = (field) => {
+        patch(route('cliente.actualizar'), {
+            preserveScroll: true,
+            onSuccess: () => {
+                Swal.fire('Actualizado', `${field} actualizado correctamente.`, 'success');
+                setIsEditing({ ...isEditing, [field]: false });
+            },
+            onError: () => {
+                Swal.fire('Error', `Hubo un problema al actualizar ${field}.`, 'error');
+            },
+        });
+    };
+
 
     return (
         <div>
@@ -61,7 +74,7 @@ export default function MisDatosCliente() {
                     justifyContent: 'center',
                 }}
             >
-                <br /><br /><br /><br /><br /><br /><br />
+                <br /><br /><br /><br />
                 <div id="mis-datos-cliente-container">
                     <h2 className="mis-datos-cliente-title">Mis Datos</h2>
                     <form>
@@ -169,6 +182,16 @@ export default function MisDatosCliente() {
                         >
                             Eliminar mi cuenta
                         </button>
+                        <button
+    type="button"
+    onClick={() => {
+        Inertia.visit(route('password.request'));
+    }}
+    className="mt-8 w-full py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+>
+    Restablecer Contraseña
+</button>
+
                     </form>
                 </div>
             </div>

@@ -1,44 +1,42 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Inertia } from '@inertiajs/inertia';
 import NavigationAdmin from '../Components/NavigationAdmin';
 import Footer from '../Components/Footer';
 import Swal from 'sweetalert2';
 import SobreNosotros from '@/Components/Sobrenosotros';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faScissors, faEuroSign, faClock, faPen } from '@fortawesome/free-solid-svg-icons';
+import { faScissors, faEuroSign, faClock, faPen, faUserTie } from '@fortawesome/free-solid-svg-icons';
+import axios from 'axios';
 
 export default function NuevosServicios() {
     const [nombre, setNombre] = useState('');
     const [descripcion, setDescripcion] = useState('');
     const [precio, setPrecio] = useState('');
     const [duracion, setDuracion] = useState('');
+    const [barberos, setBarberos] = useState([]);
+    const [selectedBarbero, setSelectedBarbero] = useState(''); // Selector único
+
+    useEffect(() => {
+        // Cargar los barberos desde la API
+        axios.get('/api/barberos')
+            .then(response => setBarberos(response.data))
+            .catch(error => console.error('Error al cargar barberos:', error));
+    }, []);
 
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        // Mostrar SweetAlert al hacer clic en el botón de añadir servicio
         Swal.fire({
             title: 'Añadiendo Servicio',
-            text: 'El servicio se está añadiendo. Una vez creado, estará disponible para reservas.',
+            text: 'El servicio se está añadiendo junto con el barbero seleccionado.',
             icon: 'info',
             showConfirmButton: true,
             allowOutsideClick: false,
             allowEscapeKey: false
         });
 
-        // Validaciones de los campos
-        if (!nombre || !descripcion || !precio || !duracion) {
-            Swal.fire('Campos incompletos', 'Por favor, complete todos los campos requeridos', 'warning');
-            return;
-        }
-
-        if (precio <= 0) {
-            Swal.fire('Precio inválido', 'El precio debe ser mayor que 0', 'warning');
-            return;
-        }
-
-        if (duracion <= 0) {
-            Swal.fire('Duración inválida', 'La duración debe ser mayor que 0', 'warning');
+        if (!nombre || !descripcion || !precio || !duracion || !selectedBarbero) {
+            Swal.fire('Campos incompletos', 'Por favor, complete todos los campos y seleccione un barbero.', 'warning');
             return;
         }
 
@@ -46,17 +44,19 @@ export default function NuevosServicios() {
             nombre,
             descripcion,
             precio,
-            duracion
+            duracion,
+            barbero: selectedBarbero
         }, {
             onSuccess: () => {
-                Swal.fire('Servicio añadido', 'El nuevo servicio ha sido creado exitosamente y ahora está disponible para reservar citas', 'success');
+                Swal.fire('Servicio añadido', 'El nuevo servicio y su asignación han sido creados exitosamente.', 'success');
                 setNombre('');
                 setDescripcion('');
                 setPrecio('');
                 setDuracion('');
+                setSelectedBarbero('');
             },
             onError: () => {
-                Swal.fire('Error', 'Hubo un problema al añadir el servicio', 'error');
+                Swal.fire('Error', 'Hubo un problema al añadir el servicio.', 'error');
             }
         });
     };
@@ -126,6 +126,25 @@ export default function NuevosServicios() {
                                     placeholder="Ej. 30"
                                     required
                                 />
+                            </div>
+                        </div>
+                        <div className="mb-6">
+                            <label className="block text-gray-700 font-bold mb-2">Seleccionar Barbero:</label>
+                            <div className="relative">
+                                <FontAwesomeIcon icon={faUserTie} className="absolute left-3 top-3 text-gray-500" />
+                                <select
+                                    value={selectedBarbero}
+                                    onChange={(e) => setSelectedBarbero(e.target.value)}
+                                    className="w-full pl-10 px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#A87B43] bg-white"
+                                    required
+                                >
+                                    <option value="">Seleccione un barbero</option>
+                                    {barberos.map(barbero => (
+                                        <option key={barbero.id} value={barbero.id}>
+                                            {barbero.nombre}
+                                        </option>
+                                    ))}
+                                </select>
                             </div>
                         </div>
                         <div className="text-center">

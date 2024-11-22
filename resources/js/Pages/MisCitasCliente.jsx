@@ -13,6 +13,11 @@ import NavigationCliente from '../Components/NavigationCliente';
 import WhatsAppButton from '@/Components/Wasa';
 import SobreNosotros from '../Components/Sobrenosotros';
 import Footer from '../Components/Footer';
+import isBetween from 'dayjs/plugin/isBetween';
+
+// Extender dayjs con el plugin
+dayjs.extend(isBetween);
+
 
 dayjs.locale('es');
 
@@ -27,6 +32,8 @@ export default function MisCitasCliente() {
     const holidays = new Holidays('ES', 'AN', 'CA');
     const [logoBase64, setLogoBase64] = useState('');
     const [qrBase64, setQrBase64] = useState('');
+
+
 
     useEffect(() => {
         fetch('/images/ruloo.jpg')
@@ -115,14 +122,31 @@ export default function MisCitasCliente() {
         });
     };
 
-
-
-
     const handleModifyClick = (cita) => {
         setSelectedCita(cita);
         setSelectedServicio(cita.servicio);
         setShowModificar(true);
     };
+
+    const handleDayClick = (date) => {
+        const dayOfWeek = dayjs(date).day(); // Día de la semana
+        const isHoliday = holidays.isHoliday(dayjs(date).format('YYYY-MM-DD')); // Verifica si es festivo
+
+        // Mostrar advertencia y bloquear selección para domingos y festivos
+        if (dayOfWeek === 0 || isHoliday) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Día no disponible',
+                text: 'No puedes seleccionar domingos o días festivos.',
+            });
+            setSelectedDate(null); // Limpia la fecha seleccionada
+            setHorariosDisponibles([]); // Limpia horarios disponibles
+            return;
+        }
+
+        handleSelectDate(date); // Permite seleccionar días válidos
+    };
+
 
     const handleSelectServicio = (servicio) => {
         setSelectedServicio(servicio);
@@ -130,36 +154,31 @@ export default function MisCitasCliente() {
 
     const handleSelectDate = (date) => {
         setSelectedDate(date);
-        const dayOfWeek = dayjs(date).day();
-        const isHoliday = holidays.isHoliday(date);
-        let horarios = [];
-
-        if (dayjs(date).isSame(today, 'day') || isHoliday) {
-            setHorariosDisponibles([]);
-            return;
-        } else if (dayOfWeek === 6) {
-            horarios = ["10:00", "10:45", "11:30", "12:15", "13:00"];
-        } else if (dayOfWeek === 0) {
-            setHorariosDisponibles([]);
-            return;
-        } else {
-            horarios = [
-                "10:00", "10:45", "11:30", "12:15", "13:00",
-                "16:00", "16:45", "17:30", "18:15", "19:00", "19:45", "20:30"
-            ];
-        }
-
         const formattedDate = dayjs(date).format('YYYY-MM-DD');
-        axios.get(`/api/citas/horas-reservadas`, {
-            params: { fecha: formattedDate, barbero_id: selectedCita.barbero.id }
+
+        axios.get(`/api/citas/disponibilidad`, {
+            params: {
+                fecha: formattedDate,
+                barbero_id: selectedCita.barbero.id,
+                servicio_id: selectedServicio.id,
+            },
         })
-            .then(response => {
-                const reservedTimes = response.data;
-                const availableTimes = horarios.filter(hora => !reservedTimes.includes(hora));
-                setHorariosDisponibles(availableTimes);
-            })
-            .catch(error => console.error("Error al obtener disponibilidad:", error));
+        .then((response) => {
+            // Asegúrate de que la respuesta sea un array de horarios
+            if (Array.isArray(response.data)) {
+                setHorariosDisponibles(response.data);
+            } else {
+                setHorariosDisponibles([]);
+            }
+        })
+        .catch((error) => {
+            console.error("Error al obtener disponibilidad:", error);
+            Swal.fire('Error', 'No se pudo obtener la disponibilidad', 'error');
+            setHorariosDisponibles([]);
+        });
     };
+
+
 
     const handleConfirmModification = (horario) => {
         if (!selectedServicio || !selectedDate || !selectedCita) {
@@ -168,26 +187,41 @@ export default function MisCitasCliente() {
         }
 
         const fechaHoraCita = `${dayjs(selectedDate).format('YYYY-MM-DD')} ${horario}`;
-        axios.patch(`/citas/${selectedCita.id}/modificar`, {
-            servicio_id: selectedServicio.id,
-            fecha_hora_cita: fechaHoraCita,
-        })
-            .then(() => {
-                Swal.fire({
-                    title: 'Cita modificada',
-                    text: 'Tu cita ha sido modificada con éxito.',
-                    icon: 'success',
-                    confirmButtonText: 'Aceptar'
-                }).then(() => window.location.reload());
-            })
-            .catch(error => {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: error.response?.data?.error || 'Ocurrió un error al modificar la cita',
+        const fechaHoraFormateada = dayjs(fechaHoraCita).format('D [de] MMMM [de] YYYY, HH:mm');
+
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: `¿Estás seguro de que deseas modificar tu cita?\n\n${fechaHoraFormateada}`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, modificar',
+            cancelButtonText: 'Cancelar',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                axios.patch(`/citas/${selectedCita.id}/modificar`, {
+                    servicio_id: selectedServicio.id,
+                    fecha_hora_cita: fechaHoraCita,
+                })
+                .then(() => {
+                    Swal.fire({
+                        title: 'Cita modificada',
+                        text: 'Tu cita ha sido modificada con éxito.',
+                        icon: 'success',
+                        confirmButtonText: 'Aceptar',
+                    }).then(() => window.location.reload());
+                })
+                .catch((error) => {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: error.response?.data?.error || 'Ocurrió un error al modificar la cita.',
+                    });
                 });
-            });
+            }
+        });
     };
+
+
 
     const calificarCita = (citaId, valor) => {
         axios.patch(`/citas/${citaId}/calificar`, { valoracion: valor })
@@ -233,12 +267,25 @@ export default function MisCitasCliente() {
     };
 
     const tileClassName = ({ date }) => {
-        const dayOfWeek = date.getDay();
-        if (dayOfWeek === 0 || holidays.isHoliday(date)) {
-            return 'day-no-disponible text-red-500';
+        const dayOfWeek = dayjs(date).day(); // Día de la semana (0 = domingo)
+        const dateStr = dayjs(date).format('YYYY-MM-DD'); // Fecha en formato YYYY-MM-DD
+
+        // Marcar domingos
+        if (dayOfWeek === 0) {
+            return 'day-no-disponible text-red-500'; // Clase CSS para días no disponibles
         }
-        return null;
+
+        // Marcar festivos
+        if (holidays.isHoliday(dateStr)) {
+            return 'day-no-disponible text-red-500'; // Clase CSS para festivos
+        }
+
+        return null; // Clase por defecto para días disponibles
     };
+
+
+
+
 
     const generarPDF = (cita) => {
         const doc = new jsPDF();
@@ -316,26 +363,28 @@ export default function MisCitasCliente() {
                             <div className="calendar-selection text-center mt-6">
                                 <h3 className="text-xl font-semibold">Selecciona el Día:</h3>
                                 <Calendar
-                                    onChange={handleSelectDate}
-                                    value={selectedDate}
-                                    minDate={new Date()}
-                                    tileClassName={tileClassName}
-                                    className="mx-auto"
-                                />
+    onClickDay={handleDayClick}
+    value={selectedDate}
+    minDate={new Date()}
+    tileClassName={tileClassName}
+    className="mx-auto"
+/>
+
                             </div>
                             {selectedDate && horariosDisponibles.length > 0 && (
-                                <div className="horarios-disponibles mt-4 grid grid-cols-4 gap-2 justify-center">
-                                    {horariosDisponibles.map((hora) => (
-                                        <button
-                                            key={hora}
-                                            onClick={() => handleConfirmModification(hora)}
-                                            className="horario-button px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
-                                        >
-                                            {hora}
-                                        </button>
-                                    ))}
-                                </div>
-                            )}
+    <div className="horarios-disponibles mt-4 grid grid-cols-4 gap-2 justify-center">
+        {horariosDisponibles.map((hora) => (
+            <button
+                key={hora}
+                onClick={() => handleConfirmModification(hora)}
+                className="horario-button px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+            >
+                {hora}
+            </button>
+        ))}
+    </div>
+)}
+
                             {selectedDate && horariosDisponibles.length === 0 && (
                                 <p className="text-red-500 mt-4">No hay horarios disponibles para el día seleccionado.</p>
                             )}
@@ -362,12 +411,18 @@ export default function MisCitasCliente() {
                             return (
                                 <div key={cita.id} className="p-4 border rounded-lg shadow bg-white flex justify-between items-center w-full max-w-md">
                                     <div className="text-left">
-                                        <p><strong>Método de Pago:</strong> {cita.metodo_pago === 'adelantado' ? 'PayPal' : 'Efectivo'}</p>
+                                    <p>
+                                            <strong>Método de Pago:</strong>{' '}
+                                            {cita.metodo_pago === 'efectivo'
+                                                ? 'Efectivo'
+                                                : cita.metodo_pago === 'tarjeta'
+                                                    ? 'Tarjeta'
+                                                    : 'PayPal'}
+                                        </p>
                                         <p><strong>Estado:</strong> <span className={getEstadoClass(cita.estado)}>{cita.estado.charAt(0).toUpperCase() + cita.estado.slice(1)}</span></p>
                                         <p><strong>Barbero:</strong> {cita.barbero?.nombre || 'No asignado'}</p>
                                         <p><strong>Precio de la Cita:</strong> {Number(cita.precio_cita || 0).toFixed(2)}€</p>
-
-
+                                        <p><strong>Duración:</strong> {cita.servicio?.duracion} minutos</p>
 
 
 
@@ -392,7 +447,7 @@ export default function MisCitasCliente() {
                                                     className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
                                                     onClick={() => generarPDF(cita)}
                                                 >
-                                                <i class="fa-solid fa-file-arrow-down"></i>
+                                                <i className="fa-solid fa-file-arrow-down"></i>
                                                 </button>
                                             )}
                                         </div>
@@ -437,6 +492,8 @@ export default function MisCitasCliente() {
                                         <p><strong>Estado:</strong> <span className={getEstadoClass(cita.estado)}>{cita.estado.charAt(0).toUpperCase() + cita.estado.slice(1)}</span></p>
                                         <p><strong>Barbero:</strong> {cita.barbero?.nombre || 'No asignado'}</p>
                                         <p><strong>Precio de la Cita:</strong> {Number(cita.precio_cita || 0).toFixed(2)}€</p>
+                                        <p><strong>Duración:</strong> {cita.servicio?.duracion} minutos</p>
+
 
                                         {cita.estado === 'completada' && (
                                             <StarRating citaId={cita.id} valoracion={cita.valoracion} />

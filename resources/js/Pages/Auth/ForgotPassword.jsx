@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useForm } from '@inertiajs/react';
+import Swal from 'sweetalert2';
 import Navigation from '../../Components/Navigation';
 
 export default function ForgotPassword() {
@@ -31,7 +32,23 @@ export default function ForgotPassword() {
         // Verificar validaciones del lado del cliente
         if (validateClient()) {
             post(route('password.email'), {
-                onSuccess: () => setStatus('Enlace de restablecimiento enviado, por favor, revise su correo electrónico.'),
+                onSuccess: () => {
+                    setStatus('Enlace de restablecimiento enviado, por favor, revise su correo electrónico.');
+                    Swal.fire({
+                        title: '¡Enlace Enviado!',
+                        text: 'Revisa tu correo electrónico para restablecer tu contraseña.',
+                        icon: 'success',
+                        confirmButtonText: 'Aceptar',
+                    });
+                },
+                onError: () => {
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'No pudimos enviar el enlace. Verifica tu correo electrónico e inténtalo de nuevo.',
+                        icon: 'error',
+                        confirmButtonText: 'Aceptar',
+                    });
+                },
             });
         }
     };
