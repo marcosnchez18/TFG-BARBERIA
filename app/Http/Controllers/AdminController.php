@@ -336,6 +336,62 @@ public function getServiciosPorBarbero($barberoId)
     }
 
 
+    public function citasBarberia(Request $request)
+{
+    // Obtener los filtros del request
+    $barberoId = $request->input('barbero_id');
+    $servicioId = $request->input('servicio_id');
+    $estado = $request->input('estado');
+    $fechaDia = $request->input('fecha_dia'); // Formato: YYYY-MM-DD
+    $fechaMes = $request->input('fecha_mes'); // Formato: YYYY-MM
+
+    // Construir la consulta con filtros
+    $query = Cita::with(['usuario', 'barbero', 'servicio']);
+
+    if ($barberoId) {
+        $query->where('barbero_id', $barberoId);
+    }
+    if ($servicioId) {
+        $query->where('servicio_id', $servicioId);
+    }
+    if ($estado) {
+        $query->where('estado', $estado);
+    }
+    if ($fechaDia) {
+        $query->whereDate('fecha_hora_cita', $fechaDia);
+    }
+    if ($fechaMes) {
+        $query->whereYear('fecha_hora_cita', substr($fechaMes, 0, 4))
+              ->whereMonth('fecha_hora_cita', substr($fechaMes, 5, 2));
+    }
+
+    // Obtener los resultados
+    $citas = $query->get();
+
+    return response()->json($citas);
+}
+
+
+public function cambiarMetodoPago(Request $request, $id)
+{
+    $cita = Cita::findOrFail($id);
+
+    // Validar el método de pago
+    $request->validate([
+        'metodo_pago' => ['required', 'in:efectivo,tarjeta'],
+    ]);
+
+    // Actualizar el método de pago
+    $cita->metodo_pago = $request->metodo_pago;
+    $cita->save();
+
+    return response()->json(['message' => 'Método de pago actualizado']);
+}
+
+
+
+
+
 
 
 }

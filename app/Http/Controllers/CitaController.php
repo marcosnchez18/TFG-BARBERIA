@@ -142,7 +142,7 @@ class CitaController extends Controller
             'servicio_id' => $request->servicio_id,
             'fecha_hora_cita' => $fecha_hora_cita,
             'estado' => 'pendiente',
-            'metodo_pago' => 'pendiente',
+            'metodo_pago' => 'efectivo',
             'descuento_aplicado' => $request->input('descuento_aplicado', 0),
             'precio_cita' => $precioCita,
         ]);

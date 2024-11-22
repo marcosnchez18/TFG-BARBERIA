@@ -84,6 +84,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Ruta para obtener las citas del barbero logueado
     Route::get('/admin/citas-barbero', [AdminController::class, 'citasBarbero'])->name('admin.citas-barbero');
+    Route::get('/admin/citas-barberia', [AdminController::class, 'citasBarberia'])->name('admin.citas-barberia');
 
     // Foro de noticias del administrador
     Route::get('/admin/foro', [NoticiaController::class, 'index'])->name('admin-foro');
@@ -104,7 +105,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::resource('ofertas', OfertaController::class);
 
-
+    Route::get('/citas-barberia', function () {
+        return Inertia::render('CitasBarberia');
+    })->name('citas-barberia');
 
 
 
@@ -116,6 +119,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/admin/citas/{fecha}', [AdminController::class, 'citasPorDia']);
     Route::patch('/admin/citas/{id}/cambiar-estado', [AdminController::class, 'cambiarEstado']);
     Route::delete('/admin/citas/{id}/cancelar', [AdminController::class, 'cancelarCita']);
+    Route::patch('/admin/citas/{id}/cambiar-metodo-pago', [AdminController::class, 'cambiarMetodoPago']);
+
 
     Route::get('/admin/nuevos-servicios', [ServicioController::class, 'create'])->name('admin.servicios.create');
     Route::post('/admin/servicios', [ServicioController::class, 'store'])->name('admin.servicios.store');
