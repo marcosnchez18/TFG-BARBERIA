@@ -22,6 +22,7 @@ export default function MisDatosAdmin() {
     const { data, setData, patch, errors } = useForm({
         nombre: admin.nombre,
         email: admin.email,
+        
     });
 
     // Alternar estado de edición para un campo
