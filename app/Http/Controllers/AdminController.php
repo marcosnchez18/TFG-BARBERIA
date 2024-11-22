@@ -9,7 +9,9 @@ use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class AdminController extends Controller
 {
@@ -390,8 +392,58 @@ public function cambiarMetodoPago(Request $request, $id)
 
 
 
+public function misDatos()
+    {
+        $admin = auth()->user(); // Obtiene el usuario autenticado (admin)
+
+        return Inertia::render('MisDatosAdmin', [
+            'admin' => $admin,
+        ]);
+    }
+
+    // Actualizar los datos del administrador
+    public function actualizarDatos(Request $request)
+    {
+        // Validar los datos
+        $request->validate([
+            'nombre' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:users,email,' . auth()->id(),
+        ]);
+
+        // Actualizar los datos usando Query Builder
+        DB::table('users')
+            ->where('id', auth()->id())
+            ->update([
+                'nombre' => $request->input('nombre'),
+                'email' => $request->input('email'),
+                'updated_at' => now(),
+            ]);
+
+        // Retornar respuesta compatible con Inertia
+        return back()->with('success', 'Datos actualizados correctamente.');
+    }
 
 
+    public function actualizarFoto(Request $request, $id)
+{
+    $request->validate([
+        'imagen' => 'required|image|mimes:jpg,jpeg,png|max:2048', // Valida que sea una imagen
+    ]);
+
+    $admin = User::findOrFail($id); // Encuentra al administrador por su ID
+
+    // Elimina la foto anterior si no es la predeterminada
+    if ($admin->imagen && $admin->imagen !== '/images/default-avatar.png') {
+        Storage::delete($admin->imagen);
+    }
+
+    // Guarda la nueva foto
+    $path = $request->file('imagen')->store('public/perfiles'); // Guardar en la carpeta "perfiles"
+    $admin->imagen = Storage::url($path); // Almacena la URL de acceso público en la base de datos
+    $admin->save();
+
+    return back()->with('success', 'Foto de perfil actualizada correctamente.');
+}
 
 
 }

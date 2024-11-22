@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 
 class ClienteController extends Controller
@@ -75,7 +77,7 @@ class ClienteController extends Controller
         if ($user->wasChanged('email')) {
             $user->email_verified_at = null; // Marcar email como no verificado
             $user->save();
-            $user->sendEmailVerificationNotification(); 
+            $user->sendEmailVerificationNotification();
         }
 
         return redirect()->back()->with('success', 'Datos actualizados correctamente.');
@@ -90,6 +92,31 @@ class ClienteController extends Controller
 
     return redirect('/')->with('message', 'Cuenta eliminada con éxito.');
 }
+
+
+
+public function actualizarDatos(Request $request)
+{
+    $request->validate([
+        'nombre' => 'required|string|max:255',
+        'email' => 'required|email|max:255|unique:users,email,' . auth()->id(),
+    ]);
+
+    $clienteId = auth()->id();
+
+    // Actualizar los datos usando Query Builder
+    DB::table('users')
+        ->where('id', $clienteId)
+        ->update([
+            'nombre' => $request->input('nombre'),
+            'email' => $request->input('email'),
+            'updated_at' => now(),
+        ]);
+
+    return Redirect::back()->with('success', 'Datos actualizados correctamente.');
+}
+
+
 
 
 

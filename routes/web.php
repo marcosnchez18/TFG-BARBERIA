@@ -135,6 +135,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/admin/barberos/create', [AdminController::class, 'createBarbero'])->name('admin.barberos.create');
     Route::post('/admin/barberos/store', [AdminController::class, 'store'])->name('admin.barberos.store');
     Route::get('/admin/barberos/editar', [AdminController::class, 'editarBarberos'])->name('admin.barberos.editar');
+    Route::get('/mis-datos-admin', function () {
+        return Inertia::render('MisDatosAdmin');
+    })->name('mis-datos-admin');
+
+    Route::get('/mis-datos-admin', [AdminController::class, 'misDatos'])->name('mis-datos-admin');
+
+// Ruta para actualizar datos del administrador
+Route::patch('/admin/actualizar-datos', [AdminController::class, 'actualizarDatos'])->name('admin.actualizar-datos');
+Route::post('/admin/actualizar-foto/{id}', [AdminController::class, 'actualizarFoto'])->name('admin.actualizar-foto');
+
 
     Route::get('/admin/asignar-servicios', function () {
         return Inertia::render('Asignar');
@@ -201,6 +211,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/mis-datos', [ClienteController::class, 'edit'])->name('mis-datos');
     Route::patch('/mis-datos', [ClienteController::class, 'update'])->name('cliente.update');
     Route::post('/cliente/eliminar', [ClienteController::class, 'eliminarCuenta'])->name('cliente.eliminar');
+    Route::patch('/cliente/actualizar-datos', [ClienteController::class, 'actualizarDatos'])->name('cliente.actualizar');
+
 });
 
 // Rutas para restablecimiento de contraseña

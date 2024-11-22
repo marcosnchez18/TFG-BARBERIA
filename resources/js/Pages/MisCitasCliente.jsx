@@ -411,7 +411,14 @@ export default function MisCitasCliente() {
                             return (
                                 <div key={cita.id} className="p-4 border rounded-lg shadow bg-white flex justify-between items-center w-full max-w-md">
                                     <div className="text-left">
-                                        <p><strong>Método de Pago:</strong> {cita.metodo_pago === 'adelantado' ? 'PayPal' : 'Efectivo'}</p>
+                                    <p>
+                                            <strong>Método de Pago:</strong>{' '}
+                                            {cita.metodo_pago === 'efectivo'
+                                                ? 'Efectivo'
+                                                : cita.metodo_pago === 'tarjeta'
+                                                    ? 'Tarjeta'
+                                                    : 'PayPal'}
+                                        </p>
                                         <p><strong>Estado:</strong> <span className={getEstadoClass(cita.estado)}>{cita.estado.charAt(0).toUpperCase() + cita.estado.slice(1)}</span></p>
                                         <p><strong>Barbero:</strong> {cita.barbero?.nombre || 'No asignado'}</p>
                                         <p><strong>Precio de la Cita:</strong> {Number(cita.precio_cita || 0).toFixed(2)}€</p>
