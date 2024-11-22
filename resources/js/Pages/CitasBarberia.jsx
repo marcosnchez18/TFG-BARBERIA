@@ -26,6 +26,7 @@ export default function CitasBarberia() {
         // Cargar datos de barberos y servicios para los filtros
         axios.get('/api/barberos').then((res) => setBarberos(res.data));
         axios.get('/api/servicios').then((res) => setServicios(res.data));
+        
     };
 
     const cargarCitas = () => {
@@ -77,7 +78,7 @@ export default function CitasBarberia() {
             fecha_dia: '',
             fecha_mes: '',
         });
-        cargarCitas(); // Recargar todas las citas sin filtros
+        cargarCitas();
     };
 
     const aplicarFiltros = () => {
