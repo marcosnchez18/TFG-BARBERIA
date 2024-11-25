@@ -49,6 +49,7 @@ export default function NavigationCliente() {
                     </button>
                     <Link href={route('reservar-cita')} className="text-lg md:text-xl text-white hover:text-gray-400 nav-item-hover">Reservar Cita</Link>
                     <Link href={route('mis-citas')} className="text-lg md:text-xl text-white hover:text-gray-400 nav-item-hover">Mis Citas</Link>
+                    <Link href={route('mi-ficha')} className="text-lg md:text-xl text-white hover:text-gray-400 nav-item-hover">Mi Ficha</Link>
                     <Link href={route('mis-datos')} className="text-lg md:text-xl text-white hover:text-gray-400 nav-item-hover">Mis Datos</Link>
                     <button onClick={() => setShowLogoutModal(true)} className="text-lg md:text-xl text-white hover:text-gray-400 flex items-center nav-item-hover">
                         <i className="fas fa-sign-out-alt mr-2"></i> Cerrar Sesión

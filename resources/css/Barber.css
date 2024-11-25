@@ -1669,3 +1669,8 @@ nav {
     text-align: center;
 }
 
+.clientes-admin-table-header {
+    text-align: center;
+    padding: 0.5rem; /* Asegura un padding uniforme */
+    vertical-align: middle; /* Asegura alineación vertical */
+}

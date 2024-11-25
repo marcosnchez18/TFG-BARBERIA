@@ -120,4 +120,9 @@ class User extends Authenticatable implements MustVerifyEmail  // Implementar Mu
     return $this->belongsToMany(Servicio::class, 'servicio_usuario', 'usuario_id', 'servicio_id');
 }
 
+public function fichaCliente()
+{
+    return $this->hasOne(FichaCliente::class, 'user_id');
+}
+
 }

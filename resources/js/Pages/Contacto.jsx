@@ -2,7 +2,7 @@ import React from 'react';
 import Footer from '../Components/Footer';
 import Localizacion from '../Components/Localizacion';
 import SobreNosotros from '../Components/Sobrenosotros';
-import '../../css/Barber.css'; // Asegúrate de tener este archivo CSS
+import '../../css/Barber.css';
 import Naviser from '@/Components/NavigationSer';
 import WhatsAppButton from '@/Components/Wasa'
 
