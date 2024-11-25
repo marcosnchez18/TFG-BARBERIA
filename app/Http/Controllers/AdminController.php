@@ -78,17 +78,19 @@ class AdminController extends Controller
 
     public function cambiarEstado(Request $request, $id)
 {
-    $cita = Cita::findOrFail($id);
+    $cita = Cita::with('servicio', 'usuario')->findOrFail($id);
     $nuevoEstado = $request->input('estado');
 
     if (in_array($nuevoEstado, ['completada', 'ausente', 'pendiente'])) {
         $cita->estado = $nuevoEstado;
         $cita->save();
 
-        // Añadir 0.05 € al saldo del cliente si el estado es "completada"
+        // Añadir el 2% del precio del servicio al saldo del cliente si el estado es "completada"
         if ($nuevoEstado === 'completada') {
             $cliente = $cita->usuario;
-            $cliente->saldo += 0.05;
+            $precioServicio = $cita->servicio->precio;
+            $saldoAAgregar = $precioServicio * 0.02; 
+            $cliente->saldo += $saldoAAgregar;
             $cliente->save();
         }
 
@@ -97,6 +99,7 @@ class AdminController extends Controller
 
     return response()->json(['success' => false, 'message' => 'Estado no válido'], 400);
 }
+
 
 
     public function cancelarCita($id)
