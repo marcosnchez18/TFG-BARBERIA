@@ -196,6 +196,20 @@ export default function ClientesAdmin({ clientes }) {
 
             {/* Título */}
             <h2 className="text-3xl font-bold text-yellow-600 text-center mb-6">Ficha del Cliente</h2>
+             {/* Imagen del Cliente */}
+             <div className="flex justify-center mb-6">
+                {selectedCliente?.imagen ? (
+                    <img
+                        src={`/storage/${selectedCliente.imagen}`} // Ruta completa a la imagen
+                        alt="Foto del cliente"
+                        className="w-32 h-32 rounded-full border-4 border-gray-300 object-cover"
+                    />
+                ) : (
+                    <div className="w-32 h-32 rounded-full border-4 border-gray-300 flex items-center justify-center bg-gray-200">
+                        <span className="text-gray-500">Sin imagen</span>
+                    </div>
+                )}
+            </div>
 
             {/* Contenido con filas y subfilas */}
             <div className="space-y-6">

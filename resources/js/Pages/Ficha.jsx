@@ -26,6 +26,10 @@ export default function MiFicha({ ficha, user }) {
         deseos: ficha?.deseos || '',
     });
 
+    const [isModalOpen, setIsModalOpen] = useState(false);
+const [selectedImage, setSelectedImage] = useState(null);
+
+
     useEffect(() => {
         fetch('/data/colores.json')
             .then((response) => response.json())
@@ -82,7 +86,18 @@ export default function MiFicha({ ficha, user }) {
 
         put(route('clientes.ficha.update', user.id), {
             onSuccess: () => {
-                Swal.fire('¡Éxito!', 'Ficha actualizada correctamente.', 'success');
+                Swal.fire({
+                    title: '¡Ficha actualizada correctamente!',
+                    text: '¿Quieres subir tu imagen para conocerte mejor?',
+                    icon: 'success',
+                    showCancelButton: true,
+                    confirmButtonText: 'Sí',
+                    cancelButtonText: 'No',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        setIsModalOpen(true); // Abrir el modal si elige "Sí"
+                    }
+                });
             },
             onError: (error) => {
                 Swal.fire('Error', 'Hubo un problema al guardar la ficha. Intente nuevamente.', 'error');
@@ -90,6 +105,33 @@ export default function MiFicha({ ficha, user }) {
             },
         });
     };
+
+
+    const handleImageUpload = () => {
+        if (!selectedImage) {
+            Swal.fire('Error', 'Selecciona una imagen antes de subirla.', 'error');
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('imagen', selectedImage);
+
+        axios.post(route('clientes.ficha.uploadImage', user.id), formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        })
+        .then(() => {
+            Swal.fire('¡Éxito!', 'Tu imagen se ha subido correctamente.', 'success').then(() => {
+                window.location.reload(); // Recarga la página
+            });
+        })
+        .catch(() => {
+            Swal.fire('Error', 'Hubo un problema al subir la imagen. Intenta nuevamente.', 'error');
+        });
+    };
+
+
 
 
     return (
@@ -105,6 +147,20 @@ export default function MiFicha({ ficha, user }) {
             <div className="flex justify-center items-center py-10 px-6">
                 <div className="max-w-5xl w-full bg-white bg-opacity-90 rounded-lg p-6 shadow-xl"> {/* Marco translúcido */}
                     <h2 className="mis-datos-cliente-title">Mi Ficha</h2>
+                    <div className="flex justify-center mb-6">
+    {ficha?.imagen ? (
+        <img
+            src={`/storage/${ficha.imagen}`}
+            alt="Imagen del cliente"
+            className="w-32 h-32 rounded-full border-4 border-gray-300 object-cover"
+        />
+    ) : (
+        <div className="w-32 h-32 rounded-full border-4 border-gray-300 flex items-center justify-center bg-gray-200">
+            <span className="text-gray-500">Sin imagen</span>
+        </div>
+    )}
+</div>
+
                     <form onSubmit={handleSubmit} className="space-y-4">
                         {/* Color */}
                         <div>
@@ -398,6 +454,35 @@ export default function MiFicha({ ficha, user }) {
                     </form>
 
                 </div>
+
+                {isModalOpen && (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+        <div className="bg-white rounded-lg p-6 relative w-96">
+            {/* Botón para cerrar el modal */}
+            <button
+                onClick={() => setIsModalOpen(false)}
+                className="absolute top-2 right-2 text-gray-500 hover:text-gray-800"
+            >
+                ✕
+            </button>
+            <h2 className="text-lg font-bold mb-4 text-center">Sube tu imagen</h2>
+
+            <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => setSelectedImage(e.target.files[0])}
+                className="mb-4 block w-full text-gray-700"
+            />
+            <button
+                onClick={handleImageUpload}
+                className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700"
+            >
+                Subir Imagen
+            </button>
+        </div>
+    </div>
+)}
+
             </div>
             <SobreNosotros />
             <Footer />

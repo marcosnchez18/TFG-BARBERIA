@@ -24,6 +24,7 @@ class Ficha extends Model
         'injerto_capilar',
         'estado',
         'deseos',
+        'imagen',
     ];
 
     protected $casts = [

@@ -35,6 +35,7 @@ return new class extends Migration
             $table->boolean('injerto_capilar')->default(false);
             $table->enum('estado', ['graso', 'seco', 'medio'])->nullable();
             $table->text('deseos')->nullable();
+            $table->string('imagen')->nullable();
             $table->timestamps();
         });
     }
