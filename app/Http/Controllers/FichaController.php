@@ -1,18 +1,20 @@
 <?php
 
 namespace App\Http\Controllers;
-use Barryvdh\DomPDF\Facade\Pdf;
 
-use App\Models\FichaCliente;
+use App\Models\Ficha;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
-class FichaClienteController extends Controller
+class FichaController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     */
     public function show()
     {
         // Obtiene la ficha del cliente autenticado
-        $ficha = FichaCliente::where('user_id', auth()->id())->first();
+        $ficha = Ficha::where('user_id', auth()->id())->first();
 
         // Retorna la vista con la ficha y el usuario autenticado
         return Inertia::render('Ficha', [
@@ -40,7 +42,7 @@ class FichaClienteController extends Controller
         'deseos' => 'nullable|string|max:1000',
     ]);
 
-    FichaCliente::updateOrCreate(
+    Ficha::updateOrCreate(
         ['user_id' => $id],
         [
             'color' => $request->input('color', null),
@@ -61,12 +63,4 @@ class FichaClienteController extends Controller
 
     return redirect()->back()->with('success', 'Ficha guardada correctamente.');
 }
-
-
-
-
-
-
-
 }
-

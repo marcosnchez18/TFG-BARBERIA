@@ -119,15 +119,15 @@ public function actualizarDatos(Request $request)
 public function mostrarFicha($id)
 {
     // Obtén el cliente con su ficha asociada
-    $cliente = User::with('fichaCliente')->find($id);
+    $cliente = User::with('ficha')->find($id);
 
     // Verifica si el cliente existe
-    if (!$cliente || !$cliente->fichaCliente) {
+    if (!$cliente || !$cliente->ficha) {
         return response()->json(['error' => 'Cliente o ficha no encontrado'], 404);
     }
 
     // Retorna los datos de la ficha del cliente
-    return response()->json($cliente->fichaCliente);
+    return response()->json($cliente->ficha);
 }
 
 

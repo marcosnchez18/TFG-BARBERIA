@@ -10,6 +10,7 @@ use App\Http\Controllers\NoticiaController;
 use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\CitaController;
 use App\Http\Controllers\FichaClienteController;
+use App\Http\Controllers\FichaController;
 use App\Http\Controllers\OfertaController;
 use App\Http\Controllers\RecompensaController;
 use App\Http\Controllers\ServicioController;
@@ -210,9 +211,9 @@ Route::post('/admin/actualizar-foto/{id}', [AdminController::class, 'actualizarF
 
     // Mostrar y actualizar datos del cliente en la ruta /mis-datos
     Route::get('/mis-datos', [ClienteController::class, 'edit'])->name('mis-datos');
-    Route::get('/mi-ficha', [FichaClienteController::class, 'show'])->name('mi-ficha');
+    Route::get('/mi-ficha', [FichaController::class, 'show'])->name('mi-ficha');
     Route::patch('/mis-datos', [ClienteController::class, 'update'])->name('cliente.update');
-    Route::put('/clientes/ficha/{id}', [FichaClienteController::class, 'update'])->name('clientes.ficha.update');
+    Route::put('/clientes/ficha/{id}', [FichaController::class, 'update'])->name('clientes.ficha.update');
     Route::post('/cliente/eliminar', [ClienteController::class, 'eliminarCuenta'])->name('cliente.eliminar');
     Route::patch('/cliente/actualizar-datos', [ClienteController::class, 'actualizarDatos'])->name('cliente.actualizar');
     Route::get('/clientes/{id}/ficha', [ClienteController::class, 'mostrarFicha'])->name('clientes.ficha');

@@ -261,6 +261,13 @@ export default function AdminDashboard() {
             </Link>
         </div>
 
+        <div className="herramienta-item bg-[#E3E7F7] p-4 rounded-lg text-center">
+            <p className="text-lg font-semibold">Asignar Servicios</p>
+            <br />
+            <Link href={route('admin.asignar.servicios')} className="mt-2 px-4 py-2 bg-[#A87B43] text-white rounded hover:bg-[#875d34]">
+                Asignar
+            </Link>
+        </div>
         <div className="herramienta-item bg-[#dafcd0] p-4 rounded-lg text-center">
             <p className="text-lg font-semibold">Editar Servicios</p>
             <br />
@@ -285,13 +292,6 @@ export default function AdminDashboard() {
             </Link>
         </div>
 
-        <div className="herramienta-item bg-[#E3E7F7] p-4 rounded-lg text-center">
-            <p className="text-lg font-semibold">Asignar Servicios</p>
-            <br />
-            <Link href={route('admin.asignar.servicios')} className="mt-2 px-4 py-2 bg-[#A87B43] text-white rounded hover:bg-[#875d34]">
-                Asignar
-            </Link>
-        </div>
     </div>
 </div>
 

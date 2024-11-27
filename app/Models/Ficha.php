@@ -5,11 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class FichaCliente extends Model
+class Ficha extends Model
 {
     use HasFactory;
-
-    protected $table = 'fichas_clientes';
 
     protected $fillable = [
         'user_id',
