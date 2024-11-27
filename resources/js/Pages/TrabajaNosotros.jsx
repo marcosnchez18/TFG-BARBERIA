@@ -46,33 +46,55 @@ export default function Trabaja({ ofertas }) {
             <NavigationTrab />
 
             {/* Hero Section */}
-            <section className="py-20 text-center text-black">
-                <div className="container mx-auto px-6">
-                    <h2 className="text-4xl font-bold mb-4">
-                        ¡Únete a nuestro equipo!
-                    </h2>
-                    <br />
-                    <br />
-                    <img
-                        src="/images/trabaja.jpeg"
-                        alt="Únete a nuestro equipo"
-                        className="mx-auto rounded-lg shadow-lg w-full max-w-md"
-                    />
-                    <br />
-                    <br />
-                    <p className="text-lg max-w-3xl mx-auto">
-                        En nuestra empresa, valoramos el <strong>talento</strong>, la <strong>creatividad</strong> y el <strong>compromiso</strong>.
-                        Buscamos personas apasionadas que quieran crecer con nosotros y marcar la diferencia.
-                    </p>
-                </div>
-            </section>
+            <section className="py-20 bg-gradient-to-b from-brown-900 via-gray-800 to-gray-700 text-white">
+    <div className="container mx-auto px-6 text-center">
+        <h2 className="text-5xl font-extrabold text-amber-500 mb-6">
+            ¡Únete a Nuestro Equipo!
+        </h2>
+        <p className="text-lg max-w-2xl mx-auto mb-10 text-black">
+            En nuestra empresa, valoramos el <strong className="text-amber-400">talento</strong>, la <strong className="text-amber-400">creatividad</strong> y el <strong className="text-amber-400">compromiso</strong>. Buscamos personas apasionadas que quieran crecer con nosotros y marcar la diferencia.
+        </p>
+
+        <div className="relative group">
+            <img
+                src="/images/trabaja.jpeg"
+                alt="Únete a nuestro equipo"
+                className="mx-auto rounded-lg shadow-lg w-full max-w-lg transform group-hover:scale-105 transition-transform duration-500"
+            />
+            <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center">
+                <p className="text-xl font-semibold text-amber-400">
+                    ¡Haz que tu próximo gran paso sea con nosotros!
+                </p>
+            </div>
+        </div>
+
+        <div className="mt-12 flex justify-center space-x-4">
+            <a
+                href="/register"
+                className="px-8 py-3 bg-amber-500 text-black font-semibold rounded-full shadow-md hover:bg-amber-600 transition-colors"
+                style={{ fontFamily: 'Times New Roman' }}
+            >
+                Regístrate
+            </a>
+            <a
+                href="/contacto"
+                className="px-8 py-3 bg-gray-700 text-amber-400 font-semibold rounded-full shadow-md hover:bg-gray-600 transition-colors"
+                style={{ fontFamily: 'Times New Roman' }}
+            >
+                Contáctanos
+            </a>
+        </div>
+    </div>
+</section>
+
 
             {/* Ofertas publicadas */}
             <section className="py-12 bg-white">
                 <div className="container mx-auto px-6">
-                    <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">
-                        Ofertas de Empleo Disponibles
-                    </h2>
+                <h2 className="text-5xl font-extrabold mb-8 text-center text-blue-900">
+    Ofertas de Empleo Disponibles
+</h2>
+
                     {ofertas && ofertas.length > 0 ? (
                         <div
                             className={`grid ${
