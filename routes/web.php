@@ -18,6 +18,7 @@ use App\Http\Controllers\ServicioUsuarioController;
 use App\Models\ServicioUsuario;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -191,6 +192,7 @@ Route::post('/admin/actualizar-foto/{id}', [AdminController::class, 'actualizarF
     Route::get('/api/barberos/{barberoId}/servicios', [AdminController::class, 'getServiciosPorBarbero'])
     ->name('barberos.servicios');
     Route::get('/api/barberos', [AdminController::class, 'obtenerBarberos']);
+    Route::get('/api/candidaturas', [CandidaturaController::class, 'obtenerMisCandidaturas'])->name('candidaturas.obtener');
 
     Route::post('/citas/reservar', [CitaController::class, 'reservar'])->name('citas.reservar');
     Route::get('/admin/user/saldo', [AdminController::class, 'getSaldo'])->name('admin.user.saldo');
@@ -219,8 +221,21 @@ Route::post('/admin/actualizar-foto/{id}', [AdminController::class, 'actualizarF
     Route::get('/clientes/{id}/ficha', [ClienteController::class, 'mostrarFicha'])->name('clientes.ficha');
     Route::post('/clientes/{id}/upload-image', [ClienteController::class, 'uploadImage'])->name('clientes.ficha.uploadImage');
 
+    Route::get('/miempleo', function () {
+        return Inertia::render('MiEmpleo');
+    })->name('miempleo');
 
-    
+
+    Route::get('/trabcli', [OfertaController::class, 'trabaja2'])->name('trabcli');
+    Route::get('/inscribirsecliente/{id}', [OfertaController::class, 'inscribirse2'])->name('inscribirsecliente');
+    Route::post('/guardar-candidatura-user', [CandidaturaController::class, 'guardarCandidaturalog']);
+    Route::get('/usuario-actual', function (Request $request) {
+
+        if (Auth::check()) {
+            return response()->json(Auth::user());
+        }
+        return response()->json(['error' => 'Usuario no autenticado'], 401);
+    });
 
 
 

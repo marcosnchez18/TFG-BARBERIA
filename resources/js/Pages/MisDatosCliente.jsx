@@ -93,9 +93,8 @@ export default function MisDatosCliente() {
                                     onClick={() =>
                                         isEditing.nombre ? handleSubmit('nombre') : setIsEditing({ ...isEditing, nombre: true })
                                     }
-                                    className={`ml-4 mis-datos-cliente-button ${
-                                        isEditing.nombre ? 'mis-datos-cliente-button-save' : 'mis-datos-cliente-button-edit'
-                                    }`}
+                                    className={`ml-4 mis-datos-cliente-button ${isEditing.nombre ? 'mis-datos-cliente-button-save' : 'mis-datos-cliente-button-edit'
+                                        }`}
                                 >
                                     {isEditing.nombre ? 'Guardar' : 'Editar'}
                                 </button>
@@ -118,9 +117,8 @@ export default function MisDatosCliente() {
                                     onClick={() =>
                                         isEditing.email ? handleSubmit('email') : setIsEditing({ ...isEditing, email: true })
                                     }
-                                    className={`ml-4 mis-datos-cliente-button ${
-                                        isEditing.email ? 'mis-datos-cliente-button-save' : 'mis-datos-cliente-button-edit'
-                                    }`}
+                                    className={`ml-4 mis-datos-cliente-button ${isEditing.email ? 'mis-datos-cliente-button-save' : 'mis-datos-cliente-button-edit'
+                                        }`}
                                 >
                                     {isEditing.email ? 'Guardar' : 'Editar'}
                                 </button>
@@ -177,20 +175,30 @@ export default function MisDatosCliente() {
 
                         <button
                             type="button"
+                            onClick={() => {
+                                window.open('/miempleo', '_blank'); // Abrir en nueva pestaña
+                            }}
+                            className="mt-8 w-full py-2 bg-green-600 text-white rounded hover:bg-green-700"
+                        >
+                            Ver mis candidaturas
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => {
+                                Inertia.visit(route('password.request'));
+                            }}
+                            className="mt-8 w-full py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                        >
+                            Restablecer Contraseña
+                        </button>
+                        <button
+                            type="button"
                             onClick={handleEliminarCuenta}
                             className="mt-8 w-full py-2 bg-red-600 text-white rounded hover:bg-red-700"
                         >
                             Eliminar mi cuenta
                         </button>
-                        <button
-    type="button"
-    onClick={() => {
-        Inertia.visit(route('password.request'));
-    }}
-    className="mt-8 w-full py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
->
-    Restablecer Contraseña
-</button>
+
 
                     </form>
                 </div>

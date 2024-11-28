@@ -12,6 +12,7 @@ export default function Inscripciones({ oferta }) {
     const [isClient, setIsClient] = useState(null);
     const [step, setStep] = useState(0);
     const [gmail, setGmail] = useState('');
+    const [password, setPassword] = useState('');
     const [nombre, setNombre] = useState('');
     const [cvFile, setCvFile] = useState(null);
     const [localizador, setLocalizador] = useState(null);
@@ -23,6 +24,19 @@ export default function Inscripciones({ oferta }) {
                 icon: 'error',
                 title: 'Error',
                 text: 'Por favor, introduce un correo electrónico válido.',
+                confirmButtonColor: '#FF5722',
+            });
+            return false;
+        }
+        return true;
+    };
+
+    const validatePassword = () => {
+        if (!password.trim()) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Por favor, introduce una contraseña.',
                 confirmButtonColor: '#FF5722',
             });
             return false;
@@ -80,10 +94,14 @@ export default function Inscripciones({ oferta }) {
     };
 
     const handleGmailSubmit = async () => {
-        if (!validateGmail()) return;
+        if (!validateGmail() || !validatePassword()) return;
 
         try {
-            const response = await axios.post('/verificar-cliente', { email: gmail });
+            const response = await axios.post('/verificar-cliente', {
+                email: gmail,
+                password: password,  // Enviar la contraseña al backend
+            });
+
             if (response.data.is_valid) {
                 Swal.fire({
                     icon: 'success',
@@ -92,12 +110,12 @@ export default function Inscripciones({ oferta }) {
                     confirmButtonColor: '#4CAF50',
                 });
                 setNombre(response.data.nombre);
-                setStep(2);
+                setStep(2); // Cambiar de paso
             } else {
                 Swal.fire({
                     icon: 'error',
                     title: 'Error',
-                    text: 'El Gmail ingresado no coincide con ningún cliente.',
+                    text: 'Correo o contraseña incorrectos.',
                     confirmButtonColor: '#FF5722',
                 });
             }
@@ -105,7 +123,7 @@ export default function Inscripciones({ oferta }) {
             Swal.fire({
                 icon: 'error',
                 title: 'Error',
-                text: 'Cliente no encontrado, puede inscribirse como invitado.',
+                text: 'Hubo un problema al verificar al cliente. Inténtalo de nuevo.',
                 confirmButtonColor: '#FF5722',
             });
         }
@@ -210,32 +228,47 @@ export default function Inscripciones({ oferta }) {
             )}
 
             {/* Paso 1: Verificar Gmail para clientes */}
-            {step === 1 && isClient && (
-                <div className="text-center mt-8 py-10 bg-white mx-4 rounded-lg shadow-lg">
-                    <h3 className="text-2xl font-bold text-gray-700 mb-6">Introduce tu Gmail</h3>
-                    <input
-                        type="email"
-                        value={gmail}
-                        onChange={(e) => setGmail(e.target.value)}
-                        className="border p-3 rounded w-1/2 text-gray-700 shadow-md focus:outline-none focus:ring focus:ring-blue-300"
-                        placeholder="Introduce tu Gmail"
-                    />
-                    <div className="flex justify-center gap-4 mt-6">
-                        <button
-                            onClick={() => setStep(0)}
-                            className="bg-gray-300 text-gray-700 px-6 py-2 rounded-full shadow-md hover:bg-gray-400 transition"
-                        >
-                            Volver Atrás
-                        </button>
-                        <button
-                            onClick={handleGmailSubmit}
-                            className="bg-gradient-to-r from-blue-500 to-blue-700 text-white px-6 py-3 rounded-full shadow-md transform hover:scale-105 transition duration-300"
-                        >
-                            Verificar
-                        </button>
-                    </div>
-                </div>
-            )}
+            {/* Paso 1: Verificar Gmail para clientes */}
+{step === 1 && isClient && (
+    <div className="text-center mt-8 py-10 bg-white mx-4 rounded-lg shadow-lg">
+        <h3 className="text-2xl font-bold text-gray-700 mb-6">Introduce tu Gmail</h3>
+
+        {/* Formulario en vertical */}
+        <div className="flex flex-col items-center gap-4">
+            <input
+                type="email"
+                value={gmail}
+                onChange={(e) => setGmail(e.target.value)}
+                className="border p-3 rounded w-1/2 text-gray-700 shadow-md focus:outline-none focus:ring focus:ring-blue-300"
+                placeholder="Introduce tu Gmail"
+            />
+            <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="border p-3 rounded w-1/2 text-gray-700 shadow-md focus:outline-none focus:ring focus:ring-blue-300"
+                placeholder="Contraseña"
+            />
+
+            {/* Botones */}
+            <div className="flex flex-col gap-4 mt-6">
+                <button
+                    onClick={() => setStep(0)}
+                    className="bg-gray-300 text-gray-700 px-6 py-2 rounded-full shadow-md hover:bg-gray-400 transition"
+                >
+                    Volver Atrás
+                </button>
+                <button
+                    onClick={handleGmailSubmit}
+                    className="bg-gradient-to-r from-blue-500 to-blue-700 text-white px-6 py-3 rounded-full shadow-md transform hover:scale-105 transition duration-300"
+                >
+                    Verificar
+                </button>
+            </div>
+        </div>
+    </div>
+)}
+
 
             {/* Paso 2: Subir CV */}
             {step === 2 && (
