@@ -20,7 +20,7 @@ export default function InscripcionesClientes({ oferta }) {
         const getUserData = async () => {
             try {
                 const response = await axios.get('/usuario-actual');
-                setUser(response.data);  // Establecer el usuario recibido de la API
+                setUser(response.data);
             } catch (error) {
                 console.error('Error al obtener los datos del usuario:', error);
                 Swal.fire({
@@ -32,8 +32,8 @@ export default function InscripcionesClientes({ oferta }) {
             }
         };
 
-        getUserData();  // Llamada para obtener el usuario
-    }, []);  // Se ejecuta solo una vez al montar el componente
+        getUserData();
+    }, []);
 
 
     const validateCV = () => {
@@ -60,7 +60,7 @@ export default function InscripcionesClientes({ oferta }) {
             return false;
         }
 
-        if (cvFile.size > 2 * 1024 * 1024) { // 2MB máximo
+        if (cvFile.size > 2 * 1024 * 1024) {
             Swal.fire({
                 icon: 'error',
                 title: 'Error',
@@ -95,7 +95,7 @@ export default function InscripcionesClientes({ oferta }) {
                     text: 'Tu candidatura ha sido registrada con éxito.',
                     confirmButtonColor: '#4CAF50',
                 });
-                setStep(1); // Cambiar a la siguiente fase después de un envío exitoso
+                setStep(1);
             } else if (response.data.error === 'already_applied') {
                 Swal.fire({
                     icon: 'warning',
@@ -103,7 +103,7 @@ export default function InscripcionesClientes({ oferta }) {
                     text: 'Ya te has inscrito a esta oferta.',
                     confirmButtonColor: '#FF5722',
                 });
-                setStep(1); // Mostrar el paso de confirmación aunque ya haya sido enviado
+                setStep(1);
             } else {
                 Swal.fire({
                     icon: 'error',
@@ -115,8 +115,8 @@ export default function InscripcionesClientes({ oferta }) {
         } catch (error) {
             Swal.fire({
                 icon: 'error',
-                title: 'Error',
-                text: 'Hubo un problema con la conexión. Intenta nuevamente.',
+                title: 'UPS !!',
+                text: 'Ya te has inscrito a esta oferta.',
                 confirmButtonColor: '#FF5722',
             });
         }
