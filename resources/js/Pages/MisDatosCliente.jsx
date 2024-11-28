@@ -173,15 +173,7 @@ export default function MisDatosCliente() {
                             </div>
                         )}
 
-                        <button
-                            type="button"
-                            onClick={() => {
-                                window.open('/miempleo', '_blank'); // Abrir en nueva pestaña
-                            }}
-                            className="mt-8 w-full py-2 bg-green-600 text-white rounded hover:bg-green-700"
-                        >
-                            Ver mis candidaturas
-                        </button>
+                        
                         <button
                             type="button"
                             onClick={() => {

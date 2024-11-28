@@ -179,25 +179,21 @@ export default function InscripcionesClientes({ oferta }) {
                     <p className="text-3xl font-bold text-blue-600 bg-white inline-block px-4 py-2 rounded-lg shadow">
                         {localizador}
                     </p>
-                    <p className="text-lg text-gray-700 mt-6">
-                        Puedes ver el estado de tu candidatura en{' '}
-                        <a
-                            href="/trabcli#consultar-estado"
-                            className="text-blue-600 font-bold underline hover:text-blue-800 transition duration-300"
-                        >
-                            Trabaja con Nosotros
-                        </a>.
-                    </p>
                     <div className="mt-8">
+
                         <button
-                            onClick={() => (window.location.href = '/trabcli')}
+                            type="button"
+                            onClick={() => {
+                                window.open('/miempleo', '_blank');
+                            }}
                             className="bg-gradient-to-r from-blue-500 to-blue-700 text-white px-6 py-3 rounded-lg shadow-lg hover:scale-105 transition transform duration-300 font-bold"
                         >
-                            Ver Estado de Mi Candidatura
+                            Ver mis candidaturas
                         </button>
                     </div>
                 </div>
             )}
+
 
             <br />
             <Localizacion />
