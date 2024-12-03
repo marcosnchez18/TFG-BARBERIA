@@ -20,6 +20,10 @@ export default function AdminDashboard() {
     const [selectedDate, setSelectedDate] = useState(null);
     const [citasDia, setCitasDia] = useState([]);
 
+    const [showCalendar, setShowCalendar] = useState(false); // Para mostrar el calendario
+const [selectedDates, setSelectedDates] = useState([]); // Para almacenar los días seleccionados
+
+
     const handleDateChange = (date) => {
         setSelectedDate(date);
         const formattedDate = dayjs(date).format('YYYY-MM-DD');
@@ -32,6 +36,18 @@ export default function AdminDashboard() {
                 setCitasDia([]);
             });
     };
+
+    const handleGuardarDescansos = () => {
+        axios.post('/admin/dias-descanso', { dias: selectedDates })
+            .then(() => {
+                Swal.fire('Días guardados', 'Los días de descanso se han guardado correctamente', 'success');
+                setShowCalendar(false); // Cerrar el calendario después de guardar
+            })
+            .catch(() => {
+                Swal.fire('Error', 'Hubo un problema al guardar los días de descanso', 'error');
+            });
+    };
+
 
     const handleCancelarCita = (id) => {
         Swal.fire({
@@ -129,7 +145,7 @@ export default function AdminDashboard() {
                 backgroundAttachment: 'fixed',
             }}>
             <NavigationAdmin admin={true} />
-            <br />
+            
             <div className="container mx-auto flex flex-col lg:flex-row mt-12 p-8 bg-white rounded-lg shadow-lg w-full justify-between">
 
                 {/* Columna de estadísticas rápidas a la izquierda */}
@@ -285,14 +301,63 @@ export default function AdminDashboard() {
         </div>
 
         <div className="herramienta-item bg-[#E3E7F7] p-4 rounded-lg text-center">
-            <p className="text-lg font-semibold">Gestionar Trabajadores</p>
-            <br />
-            <Link href={route('admin.barberos.editar')} className="mt-2 px-4 py-2 bg-[#A87B43] text-white rounded hover:bg-[#875d34]">
-                Editar
-            </Link>
+    <p className="text-lg font-semibold">Gestionar Días de Descanso</p>
+    <br />
+    <button
+   onClick={() => setShowCalendar(true)} // Abre el calendario al hacer clic
+   className="mt-2 px-4 py-2 bg-[#A87B43] text-white rounded hover:bg-[#875d34]">
+   Seleccionar Días
+</button>
+
+{/* Modal del Calendario */}
+{showCalendar && (
+    <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
+        <div className="bg-white p-6 rounded-lg shadow-lg max-w-lg w-full relative">
+            <button
+                onClick={() => setShowCalendar(false)} // Cerrar el modal
+                className="absolute top-2 right-2 text-xl text-gray-500 hover:text-gray-700">
+                ×
+            </button>
+            {/* Centrar el título */}
+            <h2 className="text-2xl font-semibold text-[#A87B43] mb-4 text-center">Selecciona los Días de Descanso</h2>
+            {/* Asegúrate de que el calendario esté centrado */}
+            <div className="flex justify-center mb-4">
+                <Calendar
+                    onChange={setSelectedDates}
+                    value={selectedDates}
+                    selectRange={true} // Permite seleccionar un rango de fechas
+                    className="w-full max-w-md" // Controla el tamaño del calendario
+                />
+            </div>
+            <div className="mt-4 flex justify-between">
+                <button
+                    className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+                    onClick={() => setShowCalendar(false)} // Cerrar el calendario
+                >
+                    Cancelar
+                </button>
+                <button
+                    className="px-4 py-2 bg-[#A87B43] text-white rounded hover:bg-[#875d34]"
+                    onClick={handleGuardarDescansos} // Guarda los días seleccionados
+                >
+                    Guardar Días
+                </button>
+            </div>
         </div>
+    </div>
+)}
+
+
+
+</div>
+
+
+
+
+
 
     </div>
+
 </div>
 
             </div>

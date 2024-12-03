@@ -9,6 +9,8 @@ use App\Http\Controllers\CandidaturaController;
 use App\Http\Controllers\NoticiaController;
 use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\CitaController;
+use App\Http\Controllers\DesacansoController;
+use App\Http\Controllers\DescansoController;
 use App\Http\Controllers\FichaClienteController;
 use App\Http\Controllers\FichaController;
 use App\Http\Controllers\OfertaController;
@@ -21,6 +23,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -144,9 +147,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/mis-datos-admin', [AdminController::class, 'misDatos'])->name('mis-datos-admin');
 
-// Ruta para actualizar datos del administrador
-Route::patch('/admin/actualizar-datos', [AdminController::class, 'actualizarDatos'])->name('admin.actualizar-datos');
-Route::post('/admin/actualizar-foto/{id}', [AdminController::class, 'actualizarFoto'])->name('admin.actualizar-foto');
+    // Ruta para actualizar datos del administrador
+    Route::patch('/admin/actualizar-datos', [AdminController::class, 'actualizarDatos'])->name('admin.actualizar-datos');
+    Route::post('/admin/actualizar-foto/{id}', [AdminController::class, 'actualizarFoto'])->name('admin.actualizar-foto');
 
 
     Route::get('/admin/asignar-servicios', function () {
@@ -154,10 +157,16 @@ Route::post('/admin/actualizar-foto/{id}', [AdminController::class, 'actualizarF
     })->name('admin.asignar.servicios');
 
     Route::post('/admin/asignar-servicios', [ServicioUsuarioController::class, 'asignarServicios'])
-    ->name('admin.asignar-servicios');
+        ->name('admin.asignar-servicios');
 
     Route::get('/api/barberos/{barbero}/servicios', [ServicioUsuarioController::class, 'getServiciosAsignados']);
     Route::post('/admin/desasignar-servicio', [ServicioUsuarioController::class, 'desasignarServicio']);
+
+    Route::post('/admin/descansos', [DescansoController::class, 'store'])->name('admin.descansos.store');
+
+    // routes/web.php o routes/api.php
+    Route::post('/admin/dias-descanso', [AdminController::class, 'guardarDiasDescanso'])->name('admin.diasDescanso');
+    Route::get('/descansos', [DescansoController::class, 'getDescansos']);
 
 
 
@@ -190,7 +199,7 @@ Route::post('/admin/actualizar-foto/{id}', [AdminController::class, 'actualizarF
     Route::get('/api/citas/horas-reservadas', [CitaController::class, 'horasReservadas']);
     Route::get('/api/servicios', [ServicioController::class, 'index'])->name('servicios.index');
     Route::get('/api/barberos/{barberoId}/servicios', [AdminController::class, 'getServiciosPorBarbero'])
-    ->name('barberos.servicios');
+        ->name('barberos.servicios');
     Route::get('/api/barberos', [AdminController::class, 'obtenerBarberos']);
     Route::get('/api/candidaturas', [CandidaturaController::class, 'obtenerMisCandidaturas'])->name('candidaturas.obtener');
 
@@ -236,9 +245,6 @@ Route::post('/admin/actualizar-foto/{id}', [AdminController::class, 'actualizarF
         }
         return response()->json(['error' => 'Usuario no autenticado'], 401);
     });
-
-
-
 });
 
 // Rutas para restablecimiento de contraseña
