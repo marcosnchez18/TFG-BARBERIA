@@ -27,6 +27,8 @@ export default function ElegirCita() {
     const holidays = new Holidays('ES', 'AN', 'CA');
     const [saldo, setSaldo] = useState(0); // Saldo del cliente
     const [usarSaldo, setUsarSaldo] = useState(false); // Estado del checkbox de usar saldo
+    const minDate = today.toDate();  // Fecha actual para el calculo
+    const maxDate = today.add(1, 'month').toDate();  // Mismo día del siguiente mes para el calculo
 
 
     useEffect(() => {
@@ -355,7 +357,8 @@ export default function ElegirCita() {
                             <Calendar
                                 onChange={handleSelectDate}
                                 value={selectedDate}
-                                minDate={new Date()}
+                                minDate={minDate}  // Solo permite seleccionar fechas a partir de hoy
+                                maxDate={maxDate}  // Solo permite seleccionar fechas hasta el mismo día del siguiente mes
                                 tileClassName={tileClassName}
                             />
                         </div>
