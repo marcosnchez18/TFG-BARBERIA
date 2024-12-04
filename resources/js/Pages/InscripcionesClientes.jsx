@@ -16,7 +16,6 @@ export default function InscripcionesClientes({ oferta }) {
     const [user, setUser] = useState(null);
 
     useEffect(() => {
-        // Llamada para obtener los datos del usuario
         const getUserData = async () => {
             try {
                 const response = await axios.get('/usuario-actual');
