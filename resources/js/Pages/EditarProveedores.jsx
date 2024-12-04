@@ -86,6 +86,8 @@ export default function EditarProveedores({ proveedores }) {
                                 <th className="border border-gray-300 px-4 py-2">Nombre</th>
                                 <th className="border border-gray-300 px-4 py-2">Contacto</th>
                                 <th className="border border-gray-300 px-4 py-2">Correo</th>
+                                <th className="border border-gray-300 px-4 py-2">Teléfono</th>
+                                <th className="border border-gray-300 px-4 py-2">Dirección</th>
                                 <th className="border border-gray-300 px-4 py-2">Acción</th>
 
                             </tr>
@@ -213,6 +215,93 @@ export default function EditarProveedores({ proveedores }) {
                                                         setEditableId(proveedor.id);
                                                         setEditableField('email');
                                                         setEditableValue(proveedor.email);
+                                                    }}
+                                                    className="ml-2 text-blue-500 hover:text-blue-700"
+                                                >
+                                                    ✏️
+                                                </button>
+                                            </div>
+                                        )}
+                                    </td>
+
+                                    <td className="border border-gray-300 px-4 py-2">
+                                        {editableId === proveedor.id && editableField === 'telefono' ? (
+                                            <div className="flex items-center">
+                                                <input
+                                                    type="text"
+                                                    value={editableValue}
+                                                    onChange={(e) => setEditableValue(e.target.value)}
+                                                    className="border rounded p-1"
+                                                />
+                                                <button
+                                                    onClick={() => saveFieldChange(proveedor.id)}
+                                                    className="ml-2 bg-green-500 text-white px-2 py-1 rounded"
+                                                >
+                                                    ✔️
+                                                </button>
+                                                <button
+                                                    onClick={() => {
+                                                        setEditableId(null);
+                                                        setEditableField(null);
+                                                        setEditableValue('');
+                                                    }}
+                                                    className="ml-2 bg-red-500 text-white px-2 py-1 rounded"
+                                                >
+                                                    ✖️
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <div className="flex items-center">
+                                                {proveedor.telefono}
+                                                <button
+                                                    onClick={() => {
+                                                        setEditableId(proveedor.id);
+                                                        setEditableField('telefono');
+                                                        setEditableValue(proveedor.telefono);
+                                                    }}
+                                                    className="ml-2 text-blue-500 hover:text-blue-700"
+                                                >
+                                                    ✏️
+                                                </button>
+                                            </div>
+                                        )}
+                                    </td>
+
+
+                                    <td className="border border-gray-300 px-4 py-2">
+                                        {editableId === proveedor.id && editableField === 'direccion' ? (
+                                            <div className="flex items-center">
+                                                <input
+                                                    type="text"
+                                                    value={editableValue}
+                                                    onChange={(e) => setEditableValue(e.target.value)}
+                                                    className="border rounded p-1"
+                                                />
+                                                <button
+                                                    onClick={() => saveFieldChange(proveedor.id)}
+                                                    className="ml-2 bg-green-500 text-white px-2 py-1 rounded"
+                                                >
+                                                    ✔️
+                                                </button>
+                                                <button
+                                                    onClick={() => {
+                                                        setEditableId(null);
+                                                        setEditableField(null);
+                                                        setEditableValue('');
+                                                    }}
+                                                    className="ml-2 bg-red-500 text-white px-2 py-1 rounded"
+                                                >
+                                                    ✖️
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <div className="flex items-center">
+                                                {proveedor.direccion}
+                                                <button
+                                                    onClick={() => {
+                                                        setEditableId(proveedor.id);
+                                                        setEditableField('direccion');
+                                                        setEditableValue(proveedor.direccion);
                                                     }}
                                                     className="ml-2 text-blue-500 hover:text-blue-700"
                                                 >
