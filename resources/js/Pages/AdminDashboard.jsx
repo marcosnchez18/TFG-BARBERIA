@@ -20,6 +20,10 @@ export default function AdminDashboard() {
     const [selectedDate, setSelectedDate] = useState(null);
     const [citasDia, setCitasDia] = useState([]);
 
+    const [showCalendar, setShowCalendar] = useState(false); // Para mostrar el calendario
+    const [selectedDates, setSelectedDates] = useState([]); // Para almacenar los días seleccionados
+
+
     const handleDateChange = (date) => {
         setSelectedDate(date);
         const formattedDate = dayjs(date).format('YYYY-MM-DD');
@@ -32,6 +36,18 @@ export default function AdminDashboard() {
                 setCitasDia([]);
             });
     };
+
+    const handleGuardarDescansos = () => {
+        axios.post('/admin/dias-descanso', { dias: selectedDates })
+            .then(() => {
+                Swal.fire('Días guardados', 'Los días de descanso se han guardado correctamente', 'success');
+                setShowCalendar(false); // Cerrar el calendario después de guardar
+            })
+            .catch(() => {
+                Swal.fire('Error', 'Hubo un problema al guardar los días de descanso', 'error');
+            });
+    };
+
 
     const handleCancelarCita = (id) => {
         Swal.fire({
@@ -129,7 +145,7 @@ export default function AdminDashboard() {
                 backgroundAttachment: 'fixed',
             }}>
             <NavigationAdmin admin={true} />
-            <br />
+
             <div className="container mx-auto flex flex-col lg:flex-row mt-12 p-8 bg-white rounded-lg shadow-lg w-full justify-between">
 
                 {/* Columna de estadísticas rápidas a la izquierda */}
@@ -154,6 +170,9 @@ export default function AdminDashboard() {
                                 {renderStars(valoracionMedia || 0)}
                             </div>
                         </div>
+
+
+
                     </div>
                 </div>
 
@@ -218,82 +237,28 @@ export default function AdminDashboard() {
 
                 {/* Columna de herramientas adicionales a la derecha */}
                 <div className="bg-gray-50 rounded-lg p-6 shadow-md w-full lg:max-w-xs lg:w-1/4 lg:ml-8 mb-8 lg:mb-0">
-    <h2 className="text-2xl font-semibold text-gray-700 mb-4">Herramientas Útiles</h2>
+                    <h2 className="text-2xl font-semibold text-gray-700 mb-4">Herramientas Útiles</h2>
 
-    {/* Barra de búsqueda */}
-    <div className="relative mb-4">
-        <input
-            type="text"
-            placeholder="Buscar acción..."
-            className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#A87B43]"
-            onChange={(e) => {
-                const query = e.target.value.toLowerCase();
-                const herramientas = document.querySelectorAll('.herramienta-item');
-                herramientas.forEach((herramienta) => {
-                    const texto = herramienta.textContent.toLowerCase();
-                    herramienta.style.display = texto.includes(query) ? '' : 'none';
-                });
-            }}
-        />
-        <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="absolute right-2 top-2 h-6 w-6 text-gray-400 pointer-events-none"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-        >
-            <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-            />
-        </svg>
-    </div>
 
-    {/* Herramientas */}
-    <div className="space-y-4">
-        <div className="herramienta-item bg-[#E3F7F7] p-4 rounded-lg text-center">
-            <p className="text-lg font-semibold">Nuevo Servicio</p>
-            <br />
-            <Link href={route('admin.servicios.create')} className="mt-2 px-4 py-2 bg-[#A87B43] text-white rounded hover:bg-[#875d34]">
-                Añadir
-            </Link>
-        </div>
 
-        <div className="herramienta-item bg-[#dafcd0] p-4 rounded-lg text-center">
-            <p className="text-lg font-semibold">Editar Servicios</p>
-            <br />
-            <Link href={route('admin.servicios.editar')} className="mt-2 px-4 py-2 bg-[#A87B43] text-white rounded hover:bg-[#875d34]">
-                Editar
-            </Link>
-        </div>
+                    {/* Herramientas */}
+                    <div className="space-y-4">
 
-        <div className="herramienta-item bg-[#F7E3E3] p-4 rounded-lg text-center">
-            <p className="text-lg font-semibold">Alta Barbero</p>
-            <br />
-            <Link href={route('admin.barberos.create')} className="mt-2 px-4 py-2 bg-[#A87B43] text-white rounded hover:bg-[#875d34]">
-                Crear Usuario
-            </Link>
-        </div>
+                        <div className="herramienta-item bg-[#dafcd0] p-4 rounded-lg text-center">
+                            <p className="text-lg font-semibold">Gestiona tu Barbería</p>
+                            <br />
+                            <Link href={route('opciones')} className="mt-2 px-4 py-2 bg-[#A87B43] text-white rounded hover:bg-[#875d34]">
+                                Gestionar
+                            </Link>
+                        </div>
 
-        <div className="herramienta-item bg-[#E3E7F7] p-4 rounded-lg text-center">
-            <p className="text-lg font-semibold">Gestionar Trabajadores</p>
-            <br />
-            <Link href={route('admin.barberos.editar')} className="mt-2 px-4 py-2 bg-[#A87B43] text-white rounded hover:bg-[#875d34]">
-                Editar
-            </Link>
-        </div>
 
-        <div className="herramienta-item bg-[#E3E7F7] p-4 rounded-lg text-center">
-            <p className="text-lg font-semibold">Asignar Servicios</p>
-            <br />
-            <Link href={route('admin.asignar.servicios')} className="mt-2 px-4 py-2 bg-[#A87B43] text-white rounded hover:bg-[#875d34]">
-                Asignar
-            </Link>
-        </div>
-    </div>
-</div>
+
+
+
+                    </div>
+
+                </div>
 
             </div>
             <br /><br /><br /><br />

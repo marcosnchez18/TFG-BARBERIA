@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Ficha;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class ClienteController extends Controller
@@ -115,6 +117,50 @@ public function actualizarDatos(Request $request)
 
     return Redirect::back()->with('success', 'Datos actualizados correctamente.');
 }
+
+public function mostrarFicha($id)
+{
+    // Obtén el cliente con su ficha asociada
+    $cliente = User::with('ficha')->find($id);
+
+    // Verifica si el cliente existe
+    if (!$cliente || !$cliente->ficha) {
+        return response()->json(['error' => 'Cliente o ficha no encontrado'], 404);
+    }
+
+    // Retorna los datos de la ficha del cliente
+    return response()->json($cliente->ficha);
+}
+
+
+
+public function uploadImage(Request $request, $id)
+{
+    $request->validate([
+        'imagen' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+    ]);
+
+
+    $ficha = DB::table('fichas')->where('user_id', $id)->first();
+
+    if ($request->hasFile('imagen')) {
+
+        if ($ficha && $ficha->imagen) {
+            Storage::disk('public')->delete($ficha->imagen);
+        }
+
+        $imagenPath = $request->file('imagen')->store('images', 'public');
+
+
+        DB::table('fichas')
+            ->where('user_id', $id)
+            ->update(['imagen' => $imagenPath]);
+    }
+
+    return response()->json(['message' => 'Imagen subida correctamente.']);
+}
+
+
 
 
 

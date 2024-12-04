@@ -32,8 +32,20 @@ export default function MisCitasCliente() {
     const holidays = new Holidays('ES', 'AN', 'CA');
     const [logoBase64, setLogoBase64] = useState('');
     const [qrBase64, setQrBase64] = useState('');
+    const minDate = today.toDate();  // Fecha actual para el calculo
+    const maxDate = today.add(1, 'month').toDate();  // Mismo día del siguiente mes para el calculo
+    const [descansos, setDescansos] = useState([]);
 
-
+    useEffect(() => {
+        // Llamada a la API para obtener los días de descanso
+        axios.get('/descansos')  // Asegúrate de que la URL sea la correcta
+            .then(response => {
+                setDescansos(response.data);
+            })
+            .catch(error => {
+                console.error("Error al cargar los descansos:", error);
+            });
+    }, []);
 
     useEffect(() => {
         fetch('/images/ruloo.jpg')
@@ -163,19 +175,19 @@ export default function MisCitasCliente() {
                 servicio_id: selectedServicio.id,
             },
         })
-        .then((response) => {
-            // Asegúrate de que la respuesta sea un array de horarios
-            if (Array.isArray(response.data)) {
-                setHorariosDisponibles(response.data);
-            } else {
+            .then((response) => {
+                // Asegúrate de que la respuesta sea un array de horarios
+                if (Array.isArray(response.data)) {
+                    setHorariosDisponibles(response.data);
+                } else {
+                    setHorariosDisponibles([]);
+                }
+            })
+            .catch((error) => {
+                console.error("Error al obtener disponibilidad:", error);
+                Swal.fire('Error', 'No se pudo obtener la disponibilidad', 'error');
                 setHorariosDisponibles([]);
-            }
-        })
-        .catch((error) => {
-            console.error("Error al obtener disponibilidad:", error);
-            Swal.fire('Error', 'No se pudo obtener la disponibilidad', 'error');
-            setHorariosDisponibles([]);
-        });
+            });
     };
 
 
@@ -202,21 +214,21 @@ export default function MisCitasCliente() {
                     servicio_id: selectedServicio.id,
                     fecha_hora_cita: fechaHoraCita,
                 })
-                .then(() => {
-                    Swal.fire({
-                        title: 'Cita modificada',
-                        text: 'Tu cita ha sido modificada con éxito.',
-                        icon: 'success',
-                        confirmButtonText: 'Aceptar',
-                    }).then(() => window.location.reload());
-                })
-                .catch((error) => {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: error.response?.data?.error || 'Ocurrió un error al modificar la cita.',
+                    .then(() => {
+                        Swal.fire({
+                            title: 'Cita modificada',
+                            text: 'Tu cita ha sido modificada con éxito.',
+                            icon: 'success',
+                            confirmButtonText: 'Aceptar',
+                        }).then(() => window.location.reload());
+                    })
+                    .catch((error) => {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: error.response?.data?.error || 'Ocurrió un error al modificar la cita.',
+                        });
                     });
-                });
             }
         });
     };
@@ -278,6 +290,10 @@ export default function MisCitasCliente() {
         // Marcar festivos
         if (holidays.isHoliday(dateStr)) {
             return 'day-no-disponible text-red-500'; // Clase CSS para festivos
+        }
+
+        if (descansos.includes(dateStr)) {
+            return 'day-no-disponible';  // Clase CSS para marcar el día como no disponible
         }
 
         return null; // Clase por defecto para días disponibles
@@ -342,7 +358,10 @@ export default function MisCitasCliente() {
                 <hr className="my-4 border-t-2 border-gray-300 w-full" />
 
                 {showModificar && (
-                    <div className="modify-cita-overlay fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50">
+                    <div
+                        className="modify-cita-overlay fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50"
+                        style={{ overflowY: 'auto', maxHeight: '1200vh', width: '100%' }}
+                    >
                         <div className="modify-cita p-6 bg-gray-100 rounded-lg shadow-md w-11/12 md:w-3/4 lg:w-1/2 max-w-2xl text-center">
                             <h2 className="text-3xl font-semibold mb-6">Modificar Cita</h2>
                             <div className="mb-6">
@@ -363,27 +382,46 @@ export default function MisCitasCliente() {
                             <div className="calendar-selection text-center mt-6">
                                 <h3 className="text-xl font-semibold">Selecciona el Día:</h3>
                                 <Calendar
-    onClickDay={handleDayClick}
-    value={selectedDate}
-    minDate={new Date()}
-    tileClassName={tileClassName}
-    className="mx-auto"
-/>
+                                    onClickDay={handleDayClick}
+                                    value={selectedDate}
+
+                                    tileClassName={tileClassName}
+                                    minDate={minDate}  // Solo permite seleccionar fechas a partir de hoy
+                                    maxDate={maxDate}  // Solo permite seleccionar fechas hasta el mismo día del siguiente mes
+                                    className="mx-auto"
+                                    tileDisabled={({ date }) => {
+                                        const dateStr = dayjs(date).format('YYYY-MM-DD');
+
+                                        // Deshabilitar los días que están en descansos
+                                        if (descansos.includes(dateStr)) {
+                                            return true;
+                                        }
+
+                                        // Deshabilitar domingos
+                                        const dayOfWeek = dayjs(date).day();
+                                        if (dayOfWeek === 0) {
+                                            return true;
+                                        }
+
+                                        // No deshabilitar ningún otro día
+                                        return false;
+                                    }}
+                                />
 
                             </div>
                             {selectedDate && horariosDisponibles.length > 0 && (
-    <div className="horarios-disponibles mt-4 grid grid-cols-4 gap-2 justify-center">
-        {horariosDisponibles.map((hora) => (
-            <button
-                key={hora}
-                onClick={() => handleConfirmModification(hora)}
-                className="horario-button px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
-            >
-                {hora}
-            </button>
-        ))}
-    </div>
-)}
+                                <div className="horarios-disponibles mt-4 grid grid-cols-4 gap-2 justify-center">
+                                    {horariosDisponibles.map((hora) => (
+                                        <button
+                                            key={hora}
+                                            onClick={() => handleConfirmModification(hora)}
+                                            className="horario-button px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+                                        >
+                                            {hora}
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
 
                             {selectedDate && horariosDisponibles.length === 0 && (
                                 <p className="text-red-500 mt-4">No hay horarios disponibles para el día seleccionado.</p>
@@ -408,10 +446,12 @@ export default function MisCitasCliente() {
                             const hora = fecha.format('HH:mm');
                             const año = fecha.format('YYYY');
 
+                            const esHoy = fecha.isSame(dayjs(), 'day');
+
                             return (
                                 <div key={cita.id} className="p-4 border rounded-lg shadow bg-white flex justify-between items-center w-full max-w-md">
                                     <div className="text-left">
-                                    <p>
+                                        <p>
                                             <strong>Método de Pago:</strong>{' '}
                                             {cita.metodo_pago === 'efectivo'
                                                 ? 'Efectivo'
@@ -428,18 +468,23 @@ export default function MisCitasCliente() {
 
 
                                         <div className="mt-4 flex gap-2">
-                                            <button
-                                                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-                                                onClick={() => cancelarCita(cita.id, cita.metodo_pago)}
-                                            >
-                                                <i className="fas fa-times"></i> {/* Ícono de cancelación */}
-                                            </button>
-                                            <button
-                                                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-                                                onClick={() => handleModifyClick(cita)}
-                                            >
-                                                <i className="fas fa-edit"></i> {/* Ícono de modificación */}
-                                            </button>
+                                            {!esHoy && (
+                                                <>
+                                                    <button
+                                                        className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                                                        onClick={() => cancelarCita(cita.id, cita.metodo_pago)}
+                                                    >
+                                                        <i className="fas fa-times"></i> {/* Ícono de cancelación */}
+                                                    </button>
+                                                    <button
+                                                        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                                                        onClick={() => handleModifyClick(cita)}
+                                                    >
+                                                        <i className="fas fa-edit"></i> {/* Ícono de modificación */}
+                                                    </button>
+                                                </>
+                                            )}
+
 
                                             {/* Botón de descarga para citas con pago adelantado */}
                                             {cita.metodo_pago === 'adelantado' && (
@@ -447,7 +492,7 @@ export default function MisCitasCliente() {
                                                     className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
                                                     onClick={() => generarPDF(cita)}
                                                 >
-                                                <i className="fa-solid fa-file-arrow-down"></i>
+                                                    <i className="fa-solid fa-file-arrow-down"></i>
                                                 </button>
                                             )}
                                         </div>

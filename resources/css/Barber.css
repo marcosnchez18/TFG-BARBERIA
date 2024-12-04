@@ -1618,45 +1618,69 @@ nav {
 
 
 .carrusel-container {
-    text-align: center;
+    width: 60%;
+    overflow: hidden;
     position: relative;
-    width: 100%;
-    max-width: 600px;
-    margin: auto;
+    margin-top: 20px;
 }
 
-.carrusel-slide {
+.carrusel {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+    justify-content: flex-start;
+    position: relative;
+}
+
+.carrusel-item {
+    min-width: 100%;
+    box-sizing: border-box;
     display: flex;
     justify-content: center;
+    position: relative;
 }
 
-.fotos_fades {
-    width: 100%;
-    max-width: 400px;
-    height: auto;
-    border-radius: 8px;
+.carrusel-img {
+    max-width: 100%;
 }
 
 .carrusel-button {
-    background-color: rgba(0, 0, 0, 0.5);
-    color: white;
-    border: none;
-    font-size: 2rem;
-    padding: 0.5rem;
     cursor: pointer;
     position: absolute;
     top: 50%;
-    transform: translateY(-50%);
+    font-size: 24px;
+    background: none;
+    border: none;
+    outline: none;
 }
 
-.carrusel-button.prev {
-    left: 10px;
+#carrusel-btn-anterior {
+    left: 0;
 }
 
-.carrusel-button.next {
-    right: 10px;
+#carrusel-btn-siguiente {
+    right: 0;
 }
 
+.carrusel-indicadores {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+}
+
+.carrusel-indicador {
+    width: 10px;
+    height: 10px;
+    margin: 0 5px;
+    border-radius: 50%;
+    background-color: #ccc;
+    transition: background-color 0.3s ease;
+}
+
+.carrusel-indicador.activo {
+    background-color: #333;
+}
 
 
 
@@ -1669,3 +1693,8 @@ nav {
     text-align: center;
 }
 
+.clientes-admin-table-header {
+    text-align: center;
+    padding: 0.5rem; /* Asegura un padding uniforme */
+    vertical-align: middle; /* Asegura alineación vertical */
+}

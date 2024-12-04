@@ -73,18 +73,28 @@ class OfertaController extends Controller
 
     public function trabaja()
 {
-    $ofertas = Oferta::orderBy('created_at', 'desc')->get(); // Obtener las ofertas
-    return inertia('TrabajaNosotros', ['ofertas' => $ofertas]); // Pasarlas al componente
+    $ofertas = Oferta::orderBy('created_at', 'desc')->get();
+    return inertia('TrabajaNosotros', ['ofertas' => $ofertas]);
 }
 
 
 public function inscribirse($id)
 {
-    $oferta = Oferta::findOrFail($id); // Busca la oferta por ID
-    return inertia('Inscripciones', ['oferta' => $oferta]); // Devuelve la vista con la oferta
+    $oferta = Oferta::findOrFail($id);
+    return inertia('Inscripciones', ['oferta' => $oferta]);
 }
 
 
+public function trabaja2()
+{
+    $ofertas = Oferta::orderBy('created_at', 'desc')->get();
+    return inertia('TrabajaCliente', ['ofertas' => $ofertas]);
+}
 
+public function inscribirse2($id)
+{
+    $oferta = Oferta::findOrFail($id);
+    return inertia('InscripcionesClientes', ['oferta' => $oferta]);
+}
 
 }

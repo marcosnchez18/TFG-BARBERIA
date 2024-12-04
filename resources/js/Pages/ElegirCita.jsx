@@ -22,11 +22,14 @@ export default function ElegirCita() {
     const [disponibilidadDias, setDisponibilidadDias] = useState({});
     const today = dayjs().startOf('day');
     const [barberos, setBarberos] = useState([]);
+    const [descansos, setDescansos] = useState([]);
 
 
     const holidays = new Holidays('ES', 'AN', 'CA');
     const [saldo, setSaldo] = useState(0); // Saldo del cliente
     const [usarSaldo, setUsarSaldo] = useState(false); // Estado del checkbox de usar saldo
+    const minDate = today.toDate();  // Fecha actual para el calculo
+    const maxDate = today.add(1, 'month').toDate();  // Mismo día del siguiente mes para el calculo
 
 
     useEffect(() => {
@@ -42,6 +45,18 @@ export default function ElegirCita() {
             .then(response => setServicios(response.data))
             .catch(error => console.error("Error al cargar los servicios:", error));
     }, []);
+
+    useEffect(() => {
+        // Llamada a la API para obtener los días de descanso
+        axios.get('/descansos')  // Asegúrate de que la URL sea la correcta
+            .then(response => {
+                setDescansos(response.data);
+            })
+            .catch(error => {
+                console.error("Error al cargar los descansos:", error);
+            });
+    }, []);
+
 
 
 
@@ -82,6 +97,11 @@ export default function ElegirCita() {
         const dateStr = dayjs(date).format('YYYY-MM-DD');
         const dayOfWeek = dayjs(date).day();
 
+        // Verificar si la fecha está en los descansos
+        if (descansos.includes(dateStr)) {
+            return 'day-no-disponible';  // Clase CSS para marcar el día como no disponible
+        }
+
         // Marcar días festivos o domingos como no disponibles
         if (holidays.isHoliday(date) || dayOfWeek === 0) {
             return 'day-no-disponible'; // Clase CSS para días no disponibles
@@ -89,11 +109,25 @@ export default function ElegirCita() {
 
         // Marcar días completos sin disponibilidad
         if (disponibilidadDias[dateStr]?.completo) {
-            return 'day-sin-citas';
+            return 'day-sin-citas'; // Clase CSS para días sin citas
         }
 
         return null; // Día disponible
     };
+
+    const tileDisabled = ({ date }) => {
+        const dateStr = dayjs(date).format('YYYY-MM-DD');
+
+        // Si el día está en los descansos o sin citas disponibles, deshabilitarlo
+        if (descansos.includes(dateStr) || disponibilidadDias[dateStr]?.completo) {
+            return true; // Deshabilitar el día
+        }
+
+        return false; // El día está habilitado para hacer una cita
+    };
+
+
+
 
 
 
@@ -355,8 +389,31 @@ export default function ElegirCita() {
                             <Calendar
                                 onChange={handleSelectDate}
                                 value={selectedDate}
-                                minDate={new Date()}
+                                minDate={minDate}  // Solo permite seleccionar fechas a partir de hoy
+                                maxDate={maxDate}  // Solo permite seleccionar fechas hasta el mismo día del siguiente mes
                                 tileClassName={tileClassName}
+                                tileDisabled={({ date }) => {
+                                    const dateStr = dayjs(date).format('YYYY-MM-DD');
+
+                                    // Deshabilitar los días que están en descansos
+                                    if (descansos.includes(dateStr)) {
+                                        return true;
+                                    }
+
+                                    // Deshabilitar domingos
+                                    const dayOfWeek = dayjs(date).day();
+                                    if (dayOfWeek === 0) {
+                                        return true;
+                                    }
+
+                                    // Deshabilitar los días completos sin citas disponibles
+                                    if (disponibilidadDias[dateStr]?.completo) {
+                                        return true;
+                                    }
+
+                                    // No deshabilitar ningún otro día
+                                    return false;
+                                }}
                             />
                         </div>
                         <br /><br />

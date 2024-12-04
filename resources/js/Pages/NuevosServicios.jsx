@@ -7,6 +7,7 @@ import SobreNosotros from '@/Components/Sobrenosotros';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faScissors, faEuroSign, faClock, faPen, faUserTie } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
+import { Link } from '@inertiajs/react';
 
 export default function NuevosServicios() {
     const [nombre, setNombre] = useState('');
@@ -69,7 +70,10 @@ export default function NuevosServicios() {
             }}>
             <NavigationAdmin admin={true} />
             <div className="container mx-auto p-8">
-                <div className="bg-white bg-opacity-70 p-8 rounded-lg shadow-md max-w-lg mx-auto mt-12">
+            <div className="bg-white bg-opacity-80 p-8 rounded-lg shadow-lg w-full max-w-md mx-auto mt-20 relative">
+                <div className="absolute top-2 right-2">
+                    <Link href="/opciones" className="text-black-600 text-xl font-bold hover:text-gray-400">✕</Link>
+                </div>
                     <h1 className="text-4xl font-extrabold text-center text-[#000000] mb-6">Añadir Nuevo Servicio</h1>
                     <form onSubmit={handleSubmit} className="p-8">
                         <div className="mb-6">

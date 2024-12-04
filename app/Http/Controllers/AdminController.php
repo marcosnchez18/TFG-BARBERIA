@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Cita;
+use App\Models\Descanso;
 use App\Models\Servicio;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -78,17 +79,19 @@ class AdminController extends Controller
 
     public function cambiarEstado(Request $request, $id)
 {
-    $cita = Cita::findOrFail($id);
+    $cita = Cita::with('servicio', 'usuario')->findOrFail($id);
     $nuevoEstado = $request->input('estado');
 
     if (in_array($nuevoEstado, ['completada', 'ausente', 'pendiente'])) {
         $cita->estado = $nuevoEstado;
         $cita->save();
 
-        // Añadir 0.05 € al saldo del cliente si el estado es "completada"
+        // Añadir el 2% del precio del servicio al saldo del cliente si el estado es "completada"
         if ($nuevoEstado === 'completada') {
             $cliente = $cita->usuario;
-            $cliente->saldo += 0.05;
+            $precioServicio = $cita->servicio->precio;
+            $saldoAAgregar = $precioServicio * 0.02;
+            $cliente->saldo += $saldoAAgregar;
             $cliente->save();
         }
 
@@ -97,6 +100,7 @@ class AdminController extends Controller
 
     return response()->json(['success' => false, 'message' => 'Estado no válido'], 400);
 }
+
 
 
     public function cancelarCita($id)
@@ -443,6 +447,77 @@ public function misDatos()
     $admin->save();
 
     return back()->with('success', 'Foto de perfil actualizada correctamente.');
+}
+
+
+
+
+
+
+public function guardarDiasDescanso(Request $request)
+{
+    $dias = $request->input('dias');  // Obtén los días enviados desde el frontend
+
+    // Asegúrate de que la lista de días tenga al menos 1 día seleccionado
+    if (count($dias) > 0) {
+        // Si solo hay un día seleccionado, lo guardamos directamente
+        if (count($dias) == 1) {
+            $fechaDescanso = Carbon::parse($dias[0])->addDay()->format('Y-m-d'); // Sumar 1 día al solo seleccionado
+
+            // Verificar si ya existe el día
+            $existe = Descanso::where('fecha', $fechaDescanso)->exists();
+
+            if ($existe) {
+                return response()->json(['message' => 'Este día ya está registrado como descanso', 'dia' => $fechaDescanso], 400);
+            }
+
+            // Si no existe, guardamos el día de descanso
+            Descanso::create([
+                'fecha' => $fechaDescanso,
+            ]);
+        } else {
+            // Si hay un rango de días, ordenamos las fechas y las iteramos
+            $fechaInicio = Carbon::parse($dias[0])->addDay();  // Sumamos 1 día al primer día del rango
+            $fechaFin = Carbon::parse(end($dias));  // Último día del rango
+
+            // Asegúrate de que el rango es válido (fecha de inicio menor que la de fin)
+            if ($fechaInicio->greaterThan($fechaFin)) {
+                return response()->json(['message' => 'La fecha de inicio no puede ser mayor que la de fin'], 400);
+            }
+
+            // Iteramos desde la fecha de inicio hasta la fecha final
+            while ($fechaInicio->lte($fechaFin)) {
+                $fechaDescanso = $fechaInicio->format('Y-m-d');
+
+                // Verificar si ya existe el día
+                $existe = Descanso::where('fecha', $fechaDescanso)->exists();
+
+                if ($existe) {
+                    return response()->json(['message' => 'Este día ya está registrado como descanso', 'dia' => $fechaDescanso], 400);
+                }
+
+                // Si no existe, guardamos el día de descanso
+                Descanso::create([
+                    'fecha' => $fechaDescanso,
+                ]);
+
+                // Avanzamos al siguiente día
+                $fechaInicio->addDay();  // Sumamos 1 día a cada día dentro del rango
+            }
+
+            // Asegúrate de guardar el último día del rango (fechaFin)
+            $fechaDescanso = $fechaFin->format('Y-m-d');
+            $existe = Descanso::where('fecha', $fechaDescanso)->exists();
+
+            if (!$existe) {
+                Descanso::create([
+                    'fecha' => $fechaDescanso,
+                ]);
+            }
+        }
+    }
+
+    return response()->json(['message' => 'Días guardados correctamente'], 200);
 }
 
 

@@ -93,9 +93,8 @@ export default function MisDatosCliente() {
                                     onClick={() =>
                                         isEditing.nombre ? handleSubmit('nombre') : setIsEditing({ ...isEditing, nombre: true })
                                     }
-                                    className={`ml-4 mis-datos-cliente-button ${
-                                        isEditing.nombre ? 'mis-datos-cliente-button-save' : 'mis-datos-cliente-button-edit'
-                                    }`}
+                                    className={`ml-4 mis-datos-cliente-button ${isEditing.nombre ? 'mis-datos-cliente-button-save' : 'mis-datos-cliente-button-edit'
+                                        }`}
                                 >
                                     {isEditing.nombre ? 'Guardar' : 'Editar'}
                                 </button>
@@ -118,9 +117,8 @@ export default function MisDatosCliente() {
                                     onClick={() =>
                                         isEditing.email ? handleSubmit('email') : setIsEditing({ ...isEditing, email: true })
                                     }
-                                    className={`ml-4 mis-datos-cliente-button ${
-                                        isEditing.email ? 'mis-datos-cliente-button-save' : 'mis-datos-cliente-button-edit'
-                                    }`}
+                                    className={`ml-4 mis-datos-cliente-button ${isEditing.email ? 'mis-datos-cliente-button-save' : 'mis-datos-cliente-button-edit'
+                                        }`}
                                 >
                                     {isEditing.email ? 'Guardar' : 'Editar'}
                                 </button>
@@ -175,6 +173,16 @@ export default function MisDatosCliente() {
                             </div>
                         )}
 
+                        
+                        <button
+                            type="button"
+                            onClick={() => {
+                                Inertia.visit(route('password.request'));
+                            }}
+                            className="mt-8 w-full py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                        >
+                            Restablecer Contraseña
+                        </button>
                         <button
                             type="button"
                             onClick={handleEliminarCuenta}
@@ -182,15 +190,7 @@ export default function MisDatosCliente() {
                         >
                             Eliminar mi cuenta
                         </button>
-                        <button
-    type="button"
-    onClick={() => {
-        Inertia.visit(route('password.request'));
-    }}
-    className="mt-8 w-full py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
->
-    Restablecer Contraseña
-</button>
+
 
                     </form>
                 </div>

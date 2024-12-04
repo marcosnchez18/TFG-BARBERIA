@@ -7,6 +7,8 @@ import Footer from '../Components/Footer';
 
 export default function ClientesAdmin({ clientes }) {
     const [searchTerm, setSearchTerm] = useState('');
+    const [selectedCliente, setSelectedCliente] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     const eliminarCliente = (id) => {
         Swal.fire({
@@ -28,6 +30,31 @@ export default function ClientesAdmin({ clientes }) {
             }
         });
     };
+
+
+
+    const verFicha = async (id) => {
+        try {
+            const response = await fetch(route('clientes.ficha', id));
+            if (!response.ok) {
+                throw new Error('Error al obtener la ficha del cliente');
+            }
+            const ficha = await response.json();
+            setSelectedCliente(ficha);
+            setIsModalOpen(true);
+        } catch (error) {
+            console.error(error);
+            Swal.fire('Error', 'No se pudo cargar la ficha del cliente.', 'error');
+        }
+    };
+
+
+
+    const cerrarModal = () => {
+        setSelectedCliente(null);
+        setIsModalOpen(false);
+    };
+
 
     const deshabilitarCliente = (id) => {
         Swal.fire({
@@ -96,52 +123,242 @@ export default function ClientesAdmin({ clientes }) {
 
                 <div className="clientes-admin-table-container">
                     <table className="clientes-admin-table w-full">
-                        <thead>
-                            <tr>
-                                <th className="clientes-admin-table-header">Nombre</th>
-                                <th className="clientes-admin-table-header">Correo</th>
-                                <th className="clientes-admin-table-header">Número de Tarjeta</th>
-                                <th className="clientes-admin-table-header">Saldo</th>
-                                <th className="clientes-admin-table-header">Ausencias</th>
-                                <th className="clientes-admin-table-header text-center">Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {filteredClientes.map((cliente) => (
-                                <tr key={cliente.id} className="clientes-admin-table-row">
-                                    <td className="clientes-admin-table-cell">{cliente.nombre}</td>
-                                    <td className="clientes-admin-table-cell">{cliente.email}</td>
-                                    <td className="clientes-admin-table-cell">{cliente.numero_tarjeta_vip}</td>
-                                    <td className="clientes-admin-table-cell">{cliente.saldo} €</td>
-                                    <td className="clientes-admin-table-cell text-center">{cliente.contador_ausencias}</td>
-                                    <td className="clientes-admin-table-cell text-center space-x-2">
-                                        <button
-                                            onClick={() => eliminarCliente(cliente.id)}
-                                            className="clientes-admin-btn-delete"
-                                        >
-                                            🗑️
-                                        </button>
-                                        {cliente.estado === 'activo' ? (
-                                            <button
-                                                onClick={() => deshabilitarCliente(cliente.id)}
-                                                className="clientes-admin-btn-disable"
-                                            >
-                                                Deshabilitar
-                                            </button>
-                                        ) : (
-                                            <button
-                                                onClick={() => habilitarCliente(cliente.id)}
-                                                className="clientes-admin-btn-enable"
-                                            >
-                                                Habilitar
-                                            </button>
-                                        )}
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
+                    <thead>
+                    <tr>
+        <th className="clientes-admin-table-header text-center px-4 py-2">Nombre</th>
+        <th className="clientes-admin-table-header text-center px-4 py-2">Correo</th>
+        <th className="clientes-admin-table-header text-center px-4 py-2">Número de Tarjeta</th>
+        <th className="clientes-admin-table-header text-center px-4 py-2">Saldo</th>
+        <th className="clientes-admin-table-header text-center px-4 py-2">Ausencias</th>
+        <th className="clientes-admin-table-header text-center px-4 py-2">Acciones</th>
+    </tr>
+</thead>
+<tbody>
+    {filteredClientes.map((cliente) => (
+        <tr key={cliente.id} className="clientes-admin-table-row">
+            <td className="clientes-admin-table-cell text-center">{cliente.nombre}</td>
+            <td className="clientes-admin-table-cell text-center">{cliente.email}</td>
+            <td className="clientes-admin-table-cell text-center">{cliente.numero_tarjeta_vip}</td>
+            <td className="clientes-admin-table-cell text-center">{cliente.saldo} €</td>
+            <td className="clientes-admin-table-cell text-center">{cliente.contador_ausencias}</td>
+            <td className="clientes-admin-table-cell text-center">
+                <div className="flex justify-center items-center space-x-2">
+                    <button
+                        onClick={() => verFicha(cliente.id)}
+                        className="w-10 h-10 flex items-center justify-center rounded-full bg-green-500 hover:bg-green-600 text-white shadow-md focus:outline-none focus:ring-2 focus:ring-green-400"
+                        title="Ver ficha"
+                    >
+                        <i className="fas fa-eye"></i>
+                    </button>
+                    <button
+                        onClick={() => eliminarCliente(cliente.id)}
+                        className="w-10 h-10 flex items-center justify-center rounded-full bg-red-500 hover:bg-red-600 text-white shadow-md focus:outline-none focus:ring-2 focus:ring-red-400"
+                        title="Eliminar"
+                    >
+                        <i className="fas fa-trash"></i>
+                    </button>
+                    {cliente.estado === 'activo' ? (
+                        <button
+                            onClick={() => deshabilitarCliente(cliente.id)}
+                            className="w-10 h-10 flex items-center justify-center rounded-full bg-yellow-500 hover:bg-yellow-600 text-white shadow-md focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                            title="Deshabilitar"
+                        >
+                            <i className="fas fa-ban"></i>
+                        </button>
+                    ) : (
+                        <button
+                            onClick={() => habilitarCliente(cliente.id)}
+                            className="w-10 h-10 flex items-center justify-center rounded-full bg-blue-500 hover:bg-blue-600 text-white shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                            title="Habilitar"
+                        >
+                            <i className="fas fa-check"></i>
+                        </button>
+                    )}
+                </div>
+            </td>
+        </tr>
+    ))}
+</tbody>
+
                     </table>
                 </div>
+                {isModalOpen && (
+    <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50">
+        {/* Modal Container */}
+        <div className="bg-gradient-to-br from-gray-100 to-white rounded-xl shadow-2xl w-11/12 max-w-4xl relative p-8 max-h-[90vh] overflow-y-auto">
+            {/* Botón de cierre */}
+            <button
+                onClick={cerrarModal}
+                className="absolute top-4 right-4 text-gray-500 hover:text-gray-800 focus:outline-none"
+            >
+                <i className="fas fa-times text-2xl"></i>
+            </button>
+
+            {/* Título */}
+            <h2 className="text-3xl font-bold text-yellow-600 text-center mb-6">Ficha del Cliente</h2>
+             {/* Imagen del Cliente */}
+             <div className="flex justify-center mb-6">
+                {selectedCliente?.imagen ? (
+                    <img
+                        src={`/storage/${selectedCliente.imagen}`} // Ruta completa a la imagen
+                        alt="Foto del cliente"
+                        className="w-32 h-32 rounded-full border-4 border-gray-300 object-cover"
+                    />
+                ) : (
+                    <div className="w-32 h-32 rounded-full border-4 border-gray-300 flex items-center justify-center bg-gray-200">
+                        <span className="text-gray-500">Sin imagen</span>
+                    </div>
+                )}
+            </div>
+
+            {/* Contenido con filas y subfilas */}
+            <div className="space-y-6">
+                {/* Sección de Color y Tinte */}
+                <div>
+                    <h3 className="text-lg font-semibold text-gray-700 border-b pb-2">Color y Tinte</h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+                        {/* Color */}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-600">Color:</label>
+                            <p className="text-gray-800 bg-gray-50 rounded-md p-3 border border-gray-200 shadow-inner">
+                                {selectedCliente?.color || 'No especificado'}
+                            </p>
+                        </div>
+
+                        {/* Tinte */}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-600">¿Usa tinte?</label>
+                            <p className="text-gray-800 bg-gray-50 rounded-md p-3 border border-gray-200 shadow-inner">
+                                {selectedCliente?.tinte ? 'Sí' : 'No'}
+                            </p>
+                        </div>
+
+                        {/* Colores usados */}
+                        {selectedCliente?.tinte && (
+                            <div className="sm:col-span-2">
+                                <label className="block text-sm font-medium text-gray-600">Colores usados:</label>
+                                <p className="text-gray-800 bg-gray-50 rounded-md p-3 border border-gray-200 shadow-inner">
+                                    {selectedCliente?.colores_usados?.length > 0
+                                        ? selectedCliente.colores_usados.join(', ')
+                                        : 'No especificado'}
+                                </p>
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                {/* Sección de Pelo */}
+                <div>
+                    <h3 className="text-lg font-semibold text-gray-700 border-b pb-2">Características del Pelo</h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+                        {/* Tipo de pelo */}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-600">Tipo de pelo:</label>
+                            <p className="text-gray-800 bg-gray-50 rounded-md p-3 border border-gray-200 shadow-inner">
+                                {selectedCliente?.tipo_pelo || 'No especificado'}
+                            </p>
+                        </div>
+
+                        {/* Textura */}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-600">Textura:</label>
+                            <p className="text-gray-800 bg-gray-50 rounded-md p-3 border border-gray-200 shadow-inner">
+                                {selectedCliente?.textura || 'No especificado'}
+                            </p>
+                        </div>
+
+                        {/* Canas */}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-600">Canas:</label>
+                            <p className="text-gray-800 bg-gray-50 rounded-md p-3 border border-gray-200 shadow-inner">
+                                {selectedCliente?.canas || 'No especificado'}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Sección de Barba */}
+                <div>
+                    <h3 className="text-lg font-semibold text-gray-700 border-b pb-2">Características de la Barba</h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+                        {/* Barba */}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-600">¿Tiene barba?</label>
+                            <p className="text-gray-800 bg-gray-50 rounded-md p-3 border border-gray-200 shadow-inner">
+                                {selectedCliente?.barba ? 'Sí' : 'No'}
+                            </p>
+                        </div>
+
+                        {/* Tipo de barba */}
+                        {selectedCliente?.barba && (
+                            <div>
+                                <label className="block text-sm font-medium text-gray-600">Tipo de barba:</label>
+                                <p className="text-gray-800 bg-gray-50 rounded-md p-3 border border-gray-200 shadow-inner">
+                                    {selectedCliente?.tipo_barba || 'No especificado'}
+                                </p>
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                {/* Sección de Rostro */}
+                <div>
+                    <h3 className="text-lg font-semibold text-gray-700 border-b pb-2">Características del Rostro</h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+                        {/* Tipo de rostro */}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-600">Tipo de rostro:</label>
+                            <p className="text-gray-800 bg-gray-50 rounded-md p-3 border border-gray-200 shadow-inner">
+                                {selectedCliente?.tipo_rostro || 'No especificado'}
+                            </p>
+                        </div>
+
+                        {/* Tipo de corte */}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-600">Tipo de corte:</label>
+                            <p className="text-gray-800 bg-gray-50 rounded-md p-3 border border-gray-200 shadow-inner">
+                                {selectedCliente?.tipo_corte || 'No especificado'}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Sección de Otros Detalles */}
+                <div>
+                    <h3 className="text-lg font-semibold text-gray-700 border-b pb-2">Otros Detalles</h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+                        {/* Injerto capilar */}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-600">¿Tiene injerto capilar?</label>
+                            <p className="text-gray-800 bg-gray-50 rounded-md p-3 border border-gray-200 shadow-inner">
+                                {selectedCliente?.injerto_capilar ? 'Sí' : 'No'}
+                            </p>
+                        </div>
+
+                        {/* Estado del cuero cabelludo */}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-600">Estado del cuero cabelludo:</label>
+                            <p className="text-gray-800 bg-gray-50 rounded-md p-3 border border-gray-200 shadow-inner">
+                                {selectedCliente?.estado || 'No especificado'}
+                            </p>
+                        </div>
+
+                        {/* Deseos */}
+                        <div className="sm:col-span-2">
+                            <label className="block text-sm font-medium text-gray-600">Deseos:</label>
+                            <p className="text-gray-800 bg-gray-50 rounded-md p-3 border border-gray-200 shadow-inner whitespace-pre-wrap">
+                                {selectedCliente?.deseos || 'No especificado'}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+)}
+
+
+
             </div>
             <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
             <SobreNosotros />
