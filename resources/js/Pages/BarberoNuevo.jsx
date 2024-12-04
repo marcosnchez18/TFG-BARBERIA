@@ -59,7 +59,7 @@ export default function BarberoNuevo({ storeUrl }) {
                 formData.append('imagen', data.imagen);
             }
 
-            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'); //token 
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'); //token
 
             try {
                 const response = await fetch(storeUrl, {
@@ -100,7 +100,7 @@ export default function BarberoNuevo({ storeUrl }) {
 
             <div className="bg-white bg-opacity-80 p-8 rounded-lg shadow-lg w-full max-w-md mx-auto mt-20 relative">
                 <div className="absolute top-2 right-2">
-                    <Link href="/mi-gestion-admin" className="text-black-600 text-xl font-bold hover:text-gray-400">✕</Link>
+                    <Link href="/opciones" className="text-black-600 text-xl font-bold hover:text-gray-400">✕</Link>
                 </div>
 
                 <h2 className="text-4xl text-center font-bold text-gray-800 mb-6" style={{ fontFamily: 'Times New Roman, serif' }}>

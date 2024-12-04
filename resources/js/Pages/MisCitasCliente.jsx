@@ -32,8 +32,20 @@ export default function MisCitasCliente() {
     const holidays = new Holidays('ES', 'AN', 'CA');
     const [logoBase64, setLogoBase64] = useState('');
     const [qrBase64, setQrBase64] = useState('');
+    const minDate = today.toDate();  // Fecha actual para el calculo
+    const maxDate = today.add(1, 'month').toDate();  // Mismo día del siguiente mes para el calculo
+    const [descansos, setDescansos] = useState([]);
 
-
+    useEffect(() => {
+        // Llamada a la API para obtener los días de descanso
+        axios.get('/descansos')  // Asegúrate de que la URL sea la correcta
+            .then(response => {
+                setDescansos(response.data);
+            })
+            .catch(error => {
+                console.error("Error al cargar los descansos:", error);
+            });
+    }, []);
 
     useEffect(() => {
         fetch('/images/ruloo.jpg')
@@ -280,6 +292,10 @@ export default function MisCitasCliente() {
             return 'day-no-disponible text-red-500'; // Clase CSS para festivos
         }
 
+        if (descansos.includes(dateStr)) {
+            return 'day-no-disponible';  // Clase CSS para marcar el día como no disponible
+        }
+
         return null; // Clase por defecto para días disponibles
     };
 
@@ -342,7 +358,10 @@ export default function MisCitasCliente() {
                 <hr className="my-4 border-t-2 border-gray-300 w-full" />
 
                 {showModificar && (
-                    <div className="modify-cita-overlay fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50">
+                    <div
+                    className="modify-cita-overlay fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50"
+                    style={{ overflowY: 'auto', maxHeight: '1200vh', width: '100%' }}
+                >
                         <div className="modify-cita p-6 bg-gray-100 rounded-lg shadow-md w-11/12 md:w-3/4 lg:w-1/2 max-w-2xl text-center">
                             <h2 className="text-3xl font-semibold mb-6">Modificar Cita</h2>
                             <div className="mb-6">
@@ -365,9 +384,28 @@ export default function MisCitasCliente() {
                                 <Calendar
     onClickDay={handleDayClick}
     value={selectedDate}
-    minDate={new Date()}
+
     tileClassName={tileClassName}
+    minDate={minDate}  // Solo permite seleccionar fechas a partir de hoy
+    maxDate={maxDate}  // Solo permite seleccionar fechas hasta el mismo día del siguiente mes
     className="mx-auto"
+    tileDisabled={({ date }) => {
+        const dateStr = dayjs(date).format('YYYY-MM-DD');
+
+        // Deshabilitar los días que están en descansos
+        if (descansos.includes(dateStr)) {
+            return true;
+        }
+
+        // Deshabilitar domingos
+        const dayOfWeek = dayjs(date).day();
+        if (dayOfWeek === 0) {
+            return true;
+        }
+
+        // No deshabilitar ningún otro día
+        return false;
+    }}
 />
 
                             </div>

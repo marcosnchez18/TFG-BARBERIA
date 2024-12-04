@@ -14,9 +14,11 @@ use App\Http\Controllers\DescansoController;
 use App\Http\Controllers\FichaClienteController;
 use App\Http\Controllers\FichaController;
 use App\Http\Controllers\OfertaController;
+use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\RecompensaController;
 use App\Http\Controllers\ServicioController;
 use App\Http\Controllers\ServicioUsuarioController;
+use App\Models\Proveedor;
 use App\Models\ServicioUsuario;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
@@ -83,6 +85,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Dashboard del administrador
     Route::get('/mi-gestion-admin', [AdminController::class, 'dashboard'])->name('mi-gestion-admin');
 
+    Route::get('/opciones', function () {
+        return Inertia::render('Opciones');
+    })->name('opciones');
+
     // Ruta para la vista de citas del barbero en la interfaz de administración
     Route::get('/admin/citas', function () {
         return Inertia::render('CitasAdmin');
@@ -115,6 +121,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return Inertia::render('CitasBarberia');
     })->name('citas-barberia');
 
+    Route::get('/admin/proveedores/nuevo', function () {
+        return Inertia::render('NuevoProveedor');
+    })->name('admin.proveedores.nuevo');
+
+    Route::post('/proveedores', [ProveedorController::class, 'store'])->name('proveedores.store');
+
 
 
 
@@ -141,6 +153,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/admin/barberos/create', [AdminController::class, 'createBarbero'])->name('admin.barberos.create');
     Route::post('/admin/barberos/store', [AdminController::class, 'store'])->name('admin.barberos.store');
     Route::get('/admin/barberos/editar', [AdminController::class, 'editarBarberos'])->name('admin.barberos.editar');
+    Route::get('/admin/proveedores/editar', [ProveedorController::class, 'editarProveedores'])->name('admin.proveedores.editar');
+
     Route::get('/mis-datos-admin', function () {
         return Inertia::render('MisDatosAdmin');
     })->name('mis-datos-admin');
@@ -173,6 +187,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 
     Route::delete('/trabajadores/{id}', [AdminController::class, 'destroy'])->name('trabajadores.destroy');
+
+    Route::delete('/proveedores/{id}', [ProveedorController::class, 'destroy'])->name('proveedores.destroy');
+
     Route::patch('/trabajadores/{id}/habilitar', [AdminController::class, 'habilitar'])->name('trabajadores.habilitar');
     Route::patch('/trabajadores/{id}/deshabilitar', [AdminController::class, 'deshabilitar'])->name('trabajadores.deshabilitar');
 
