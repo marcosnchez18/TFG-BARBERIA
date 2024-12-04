@@ -84,6 +84,7 @@ export default function Inscripciones({ oferta }) {
 
     const handleCvUpload = async () => {
         if (!validateCV()) return;
+        if (!validateGmail()) return;
         if (!isClient && !validateNombre()) return;
 
         const formData = new FormData();
@@ -110,7 +111,7 @@ export default function Inscripciones({ oferta }) {
                 Swal.fire({
                     icon: 'warning',
                     title: 'Ya registrado',
-                    text: 'Ya te has inscrito a esta oferta.',
+                    text: 'Ya .',
                     confirmButtonColor: '#FFC107',
                 });
             } else {

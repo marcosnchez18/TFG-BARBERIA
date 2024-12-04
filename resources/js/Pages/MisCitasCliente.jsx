@@ -468,22 +468,22 @@ export default function MisCitasCliente() {
 
 
                                         <div className="mt-4 flex gap-2">
-                                        {!esHoy && (
-                            <>
-                                <button
-                                    className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-                                    onClick={() => cancelarCita(cita.id, cita.metodo_pago)}
-                                >
-                                    <i className="fas fa-times"></i> {/* Ícono de cancelación */}
-                                </button>
-                                <button
-                                    className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-                                    onClick={() => handleModifyClick(cita)}
-                                >
-                                    <i className="fas fa-edit"></i> {/* Ícono de modificación */}
-                                </button>
-                            </>
-                        )}
+                                            {!esHoy && (
+                                                <>
+                                                    <button
+                                                        className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                                                        onClick={() => cancelarCita(cita.id, cita.metodo_pago)}
+                                                    >
+                                                        <i className="fas fa-times"></i> {/* Ícono de cancelación */}
+                                                    </button>
+                                                    <button
+                                                        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                                                        onClick={() => handleModifyClick(cita)}
+                                                    >
+                                                        <i className="fas fa-edit"></i> {/* Ícono de modificación */}
+                                                    </button>
+                                                </>
+                                            )}
 
 
                                             {/* Botón de descarga para citas con pago adelantado */}
