@@ -114,4 +114,47 @@ public function obtenerProductos()
         ->route('admin.productos.editar')
         ->with('message', 'Producto eliminado con éxito.');
 }
+
+
+public function updateField(Request $request, $id)
+{
+    // Validar los campos enviados por el formulario
+    $request->validate([
+        'nombre' => 'nullable|string|max:255',
+        'descripcion' => 'nullable|string|max:500',
+        'precio' => 'nullable|numeric|min:0',  // Asegura que el precio sea un número no negativo
+        'stock' => 'nullable|integer|min:0',   // Asegura que el stock sea un número entero no negativo
+        'proveedor_id' => 'nullable|exists:proveedores,id', // Valida que el proveedor_id exista en la tabla 'proveedores'
+    ]);
+
+    // Buscar el producto por ID
+    $producto = Producto::findOrFail($id);
+
+    // Actualizar los campos si han sido enviados
+    if ($request->has('nombre')) {
+        $producto->nombre = $request->nombre;
+    }
+
+    if ($request->has('descripcion')) {
+        $producto->descripcion = $request->descripcion;
+    }
+
+    if ($request->has('precio')) {
+        $producto->precio = $request->precio;
+    }
+
+    if ($request->has('stock')) {
+        $producto->stock = $request->stock;
+    }
+
+    if ($request->has('proveedor_id')) {
+        $producto->proveedor_id = $request->proveedor_id;
+    }
+
+    // Guardar los cambios
+    $producto->save();
+
+    // Redirigir de vuelta con un mensaje de éxito
+    return redirect()->back()->with('success', 'Producto actualizado con éxito.');
+}
 }

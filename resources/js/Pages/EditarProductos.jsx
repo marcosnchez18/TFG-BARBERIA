@@ -37,42 +37,33 @@ export default function EditarProductos({ productos }) {
         });
     };
 
-    const cambiarEstado = (id, estadoActual) => {
-        const accion = estadoActual === 'activo' ? 'deshabilitar' : 'habilitar';
-        const titulo = estadoActual === 'activo' ? '¿Deseas deshabilitar este producto?' : '¿Deseas habilitar este producto?';
 
-        Swal.fire({
-            title: titulo,
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonText: `Sí, ${accion}`,
-            cancelButtonText: 'Cancelar',
-        }).then((result) => {
-            if (result.isConfirmed) {
-                Inertia.patch(route(`productos.${accion}`, id), {
-                    onSuccess: () => {
-                        Swal.fire(
-                            accion === 'deshabilitar' ? 'Deshabilitado' : 'Habilitado',
-                            `Producto ${accion} con éxito.`,
-                            'success'
-                        );
-                    },
-                });
-            }
-        });
-    };
 
     const validarCampos = () => {
+        // Validación para campos vacíos
         if (editableValue.trim() === '') {
             Swal.fire('Error', 'Este campo no puede estar vacío.', 'error');
             return false;
         }
+
+        // Validación para precio (debe ser un número)
         if (editableField === 'precio' && isNaN(editableValue)) {
             Swal.fire('Error', 'Por favor ingresa un precio válido.', 'error');
             return false;
         }
+
+        // Validación para stock (no puede ser decimal ni negativo)
+        if (editableField === 'stock') {
+            const stockValue = parseFloat(editableValue);
+            if (isNaN(stockValue) || stockValue < 0 || stockValue % 1 !== 0) {
+                Swal.fire('Error', 'El stock debe ser un número entero positivo.', 'error');
+                return false;
+            }
+        }
+
         return true;
     };
+
 
     const saveFieldChange = (id) => {
         if (validarCampos()) {
@@ -241,7 +232,7 @@ export default function EditarProductos({ productos }) {
                                                     }}
                                                     className="ml-2 text-blue-500"
                                                 >
-                                                    Editar
+                                                    ✏️
                                                 </button>
                                             </div>
                                         )}
@@ -283,7 +274,7 @@ export default function EditarProductos({ productos }) {
                                                     }}
                                                     className="ml-2 text-blue-500"
                                                 >
-                                                    Editar
+                                                    ✏️
                                                 </button>
                                             </div>
                                         )}
@@ -325,7 +316,7 @@ export default function EditarProductos({ productos }) {
                                                     }}
                                                     className="ml-2 text-blue-500"
                                                 >
-                                                    Editar
+                                                    ✏️
                                                 </button>
                                             </div>
                                         )}
@@ -374,7 +365,7 @@ export default function EditarProductos({ productos }) {
                                                     }}
                                                     className="ml-2 text-blue-500"
                                                 >
-                                                    Editar
+                                                    ✏️
                                                 </button>
                                             </div>
                                         )}
@@ -418,7 +409,7 @@ export default function EditarProductos({ productos }) {
                                                     }}
                                                     className="ml-2 text-blue-500"
                                                 >
-                                                    Editar
+                                                    ✏️
                                                 </button>
                                             </div>
                                         )}

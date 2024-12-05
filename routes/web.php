@@ -190,7 +190,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/trabajadores/{id}', [AdminController::class, 'destroy'])->name('trabajadores.destroy');
 
     Route::delete('/proveedores/{id}', [ProveedorController::class, 'destroy'])->name('proveedores.destroy');
-    
+
     Route::delete('/productos/{id}', [ProductoController::class, 'destroy'])->name('productos.destroy');
 
     Route::patch('/trabajadores/{id}/habilitar', [AdminController::class, 'habilitar'])->name('trabajadores.habilitar');
@@ -204,6 +204,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('/candidaturas/{id}/cambiar-estado', [CandidaturaController::class, 'cambiarEstado'])->name('candidaturas.cambiarEstado');
 
     Route::patch('/proveedores/{id}/updateField', [ProveedorController::class, 'updateField'])->name('proveedores.updateField');
+
+    Route::patch('/productos/{id}/updateField', [ProductoController::class, 'updateField'])->name('productos.updateField');
 
 
     Route::get('/admin/productos/crear', function () {
