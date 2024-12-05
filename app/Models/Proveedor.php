@@ -12,10 +12,16 @@ class Proveedor extends Model
     protected $table = 'proveedores';
 
     protected $fillable = [
-        'nombre',
-        'contacto',
-        'telefono',
-        'email',
-        'direccion',
+        'nombre', 'contacto', 'telefono', 'email', 'direccion'
     ];
+
+    public function productos()
+    {
+        return $this->hasMany(Producto::class);
+    }
+
+    public function pedidosProveedores()
+    {
+        return $this->hasMany(PedidoProveedor::class);
+    }
 }

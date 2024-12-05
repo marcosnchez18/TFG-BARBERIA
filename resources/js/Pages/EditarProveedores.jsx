@@ -33,7 +33,9 @@ export default function EditarProveedores({ proveedores }) {
         });
     };
 
-    
+
+
+
 
     const saveFieldChange = (id) => {
         const data = { [editableField]: editableValue };

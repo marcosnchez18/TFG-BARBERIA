@@ -4,6 +4,7 @@ import SobreNosotros from '../Components/Sobrenosotros';
 import Footer from '../Components/Footer';
 import Swal from 'sweetalert2';
 import axios from 'axios';
+import { Link, router } from '@inertiajs/react';
 
 export default function Asignar() {
     const [activeTab, setActiveTab] = useState('asignar'); // Estado para las pestañas
@@ -85,7 +86,12 @@ export default function Asignar() {
         >
             <NavigationAdmin />
 
-            <div className="container mx-auto p-6">
+
+            <div className="min-h-screen bg-cover bg-center relative text-gray-100 bg-white bg-opacity-80 p-8 rounded-lg shadow-lg w-full max-w-3xl mx-auto mt-20">
+
+                <div className="absolute top-2 right-2">
+                    <Link href="/opciones" className="text-black text-xl font-bold hover:text-gray-900">✕</Link>
+                </div>
                 {/* Pestañas */}
                 <div className="flex justify-center mb-6">
                     <button
@@ -192,7 +198,7 @@ export default function Asignar() {
                     </div>
                 )}
             </div>
-
+                <br /><br /><br /><br /><br />
             <SobreNosotros />
             <Footer />
         </div>

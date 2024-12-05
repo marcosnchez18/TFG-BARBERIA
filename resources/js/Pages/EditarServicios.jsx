@@ -4,6 +4,7 @@ import Swal from 'sweetalert2';
 import NavigationAdmin from '../Components/NavigationAdmin';
 import SobreNosotros from '@/Components/Sobrenosotros';
 import Footer from '../Components/Footer';
+import { Link, router } from '@inertiajs/react';
 
 export default function EditarServicios({ servicios }) {
     const [searchTerm, setSearchTerm] = useState('');
@@ -106,7 +107,10 @@ export default function EditarServicios({ servicios }) {
         >
             <NavigationAdmin />
             <br /><br /><br />
-            <div className="clientes-admin-container p-6 rounded-lg" style={{ backgroundColor: 'rgba(23, 23, 23, 0.8)' }}>
+            <div className="clientes-admin-container p-6 rounded-lg relative w-full mx-auto mt-20" style={{ backgroundColor: 'rgba(23, 23, 23, 0.8)', maxWidth: '1700px' }}>
+    <div className="absolute top-4 right-4">
+        <Link href="/opciones" className="text-white text-xl font-bold hover:text-gray-300">✕</Link>
+    </div>
                 <h2 className="text-4xl font-bold mb-8 text-center text-white">Gestión de Servicios</h2>
 
                 <div className="clientes-admin-search mb-4">
@@ -220,6 +224,7 @@ export default function EditarServicios({ servicios }) {
                     </div>
                 )}
             </div>
+            <br /><br /><br /><br />
             <SobreNosotros />
             <Footer />
         </div>

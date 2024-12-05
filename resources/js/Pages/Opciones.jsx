@@ -197,6 +197,16 @@ export default function Opciones() {
                         </Link>
                     </div>
 
+                    <div className="herramienta-item bg-[#d0fce2] p-4 rounded-lg text-center">
+                        <FontAwesomeIcon icon={faEdit} className="text-[#4A7A7C] text-4xl mb-2" />
+
+                        <p className="text-lg font-semibold">Editar Proveedores</p>
+                        <br />
+                        <Link href={route('admin.proveedores.editar')} className="mt-2 px-4 py-2 bg-[#A87B43] text-white rounded hover:bg-[#875d34]">
+                            Editar
+                        </Link>
+                    </div>
+
                     <div className="herramienta-item bg-[#f0f8ff] p-4 rounded-lg text-center">
                         <FontAwesomeIcon icon={faPlusCircle} className="text-[#6c757d] text-4xl mb-2" />
 

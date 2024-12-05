@@ -125,4 +125,14 @@ public function ficha()
     return $this->hasOne(Ficha::class, 'user_id');
 }
 
+public function carritos()
+    {
+        return $this->hasMany(Carrito::class);
+    }
+
+    public function pedidos()
+    {
+        return $this->hasMany(Pedido::class);
+    }
+
 }
