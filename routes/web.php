@@ -194,12 +194,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('/trabajadores/{id}/deshabilitar', [AdminController::class, 'deshabilitar'])->name('trabajadores.deshabilitar');
 
     Route::patch('/trabajadores/{id}/updateField', [AdminController::class, 'updateField'])->name('trabajadores.updateField');
+
     Route::post('/trabajadores/{id}/updatePhoto', [AdminController::class, 'updatePhoto'])->name('trabajadores.updatePhoto');
 
     Route::get('/candidatos/{oferta}', [CandidaturaController::class, 'verCandidatos'])->name('candidatos.index');
     Route::patch('/candidaturas/{id}/cambiar-estado', [CandidaturaController::class, 'cambiarEstado'])->name('candidaturas.cambiarEstado');
 
-
+    Route::patch('/proveedores/{id}/updateField', [ProveedorController::class, 'updateField'])->name('proveedores.updateField');
 
 
 

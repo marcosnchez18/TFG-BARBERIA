@@ -65,6 +65,8 @@ public function destroy($id)
 
 
 
+
+
     public function editarProveedores()
     {
 
@@ -73,4 +75,47 @@ public function destroy($id)
         // Pasar los datos a la vista
         return inertia('EditarProveedores', ['proveedores' => $proveedores]);
     }
+
+    public function updateField(Request $request, $id)
+    {
+        // Validar los campos enviados por el formulario
+        $request->validate([
+            'nombre' => 'nullable|string|max:255',
+            'contacto' => 'nullable|string|max:255',
+            'telefono' => 'nullable|string|max:20',
+            'email' => 'nullable|email|max:255|unique:proveedores,email,' . $id,
+            'direccion' => 'nullable|string|max:500',
+        ]);
+
+        // Buscar el proveedor por ID
+        $proveedor = Proveedor::findOrFail($id);
+
+        // Actualizar los campos si han sido enviados
+        if ($request->has('nombre')) {
+            $proveedor->nombre = $request->nombre;
+        }
+
+        if ($request->has('contacto')) {
+            $proveedor->contacto = $request->contacto;
+        }
+
+        if ($request->has('telefono')) {
+            $proveedor->telefono = $request->telefono;
+        }
+
+        if ($request->has('email')) {
+            $proveedor->email = $request->email;
+        }
+
+        if ($request->has('direccion')) {
+            $proveedor->direccion = $request->direccion;
+        }
+
+        // Guardar los cambios
+        $proveedor->save();
+
+        // Redirigir de vuelta con un mensaje de éxito
+        return redirect()->back()->with('success', 'Proveedor actualizado con éxito.');
+    }
+
 }
