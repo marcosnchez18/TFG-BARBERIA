@@ -65,6 +65,14 @@ class ProductoController extends Controller
     }
 }
 
+public function obtenerProductos()
+{
+    $productos = Producto::select('productos.*', 'proveedores.nombre as proveedor_nombre')
+        ->join('proveedores', 'productos.proveedor_id', '=', 'proveedores.id')
+        ->get();
+
+    return response()->json($productos);
+}
 
 
     /**
@@ -94,8 +102,16 @@ class ProductoController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Producto $producto)
-    {
-        //
-    }
+    public function destroy($id)
+{
+    $producto = Producto::findOrFail($id);
+
+
+    $producto->delete();
+
+
+    return redirect()
+        ->route('admin.productos.editar')
+        ->with('message', 'Producto eliminado con éxito.');
+}
 }

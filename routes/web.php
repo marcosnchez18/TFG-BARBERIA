@@ -190,6 +190,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/trabajadores/{id}', [AdminController::class, 'destroy'])->name('trabajadores.destroy');
 
     Route::delete('/proveedores/{id}', [ProveedorController::class, 'destroy'])->name('proveedores.destroy');
+    
+    Route::delete('/productos/{id}', [ProductoController::class, 'destroy'])->name('productos.destroy');
 
     Route::patch('/trabajadores/{id}/habilitar', [AdminController::class, 'habilitar'])->name('trabajadores.habilitar');
     Route::patch('/trabajadores/{id}/deshabilitar', [AdminController::class, 'deshabilitar'])->name('trabajadores.deshabilitar');
@@ -210,6 +212,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::post('/admin/productos', [ProductoController::class, 'store'])->name('productos.store');
 
+    Route::get('/admin/productos/editar', function () {
+        return Inertia::render('EditarProductos');
+    })->name('admin.productos.editar');
 
 
 
@@ -231,6 +236,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/api/candidaturas', [CandidaturaController::class, 'obtenerMisCandidaturas'])->name('candidaturas.obtener');
 
     Route::get('/api/proveedores', [ProveedorController::class, 'obtenerProveedores']);
+
+    Route::get('/api/productos', [ProductoController::class, 'obtenerProductos'])->name('productos.obtener');
 
     Route::post('/citas/reservar', [CitaController::class, 'reservar'])->name('citas.reservar');
     Route::get('/admin/user/saldo', [AdminController::class, 'getSaldo'])->name('admin.user.saldo');

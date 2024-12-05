@@ -51,7 +51,10 @@ export default function Opciones() {
             <br /><br /><br />
 
             {/* Sección de Herramientas */}
-            <div className="container mx-auto p-8 bg-white rounded-lg shadow-lg w-full justify-between">
+            <div className="bg-white bg-opacity-90 p-8 rounded-lg shadow-lg w-full max-w-7xl mx-auto  mt-20 relative">
+            <div className="absolute top-2 right-2">
+                    <Link href="/mi-gestion-admin" className="text-black-600 text-xl font-bold hover:text-gray-400">✕</Link>
+                </div>
                 <h2 className="text-3xl font-semibold mb-6 text-center">Herramientas Útiles</h2>
                 <br /><br />
 
@@ -127,7 +130,7 @@ export default function Opciones() {
 
 
 
-                    <div className="herramienta-item bg-[#F7E3E3] p-4 rounded-lg text-center">
+                    <div className="herramienta-item bg-[#acc6d6] p-4 rounded-lg text-center">
                         <FontAwesomeIcon icon={faEdit} className="text-[#4A7A7C] text-4xl mb-2" />
                         <p className="text-lg font-semibold">Editar Barberos</p>
                         <br />
@@ -184,7 +187,7 @@ export default function Opciones() {
                         )}
                     </div>
 
-                    <div className="herramienta-item bg-[#dafcd0] p-4 rounded-lg text-center">
+                    <div className="herramienta-item bg-[#f0fcd0] p-4 rounded-lg text-center">
                         <FontAwesomeIcon icon={faShop} className="text-[#4A7A7C] text-4xl mb-2" />
 
                         <p className="text-lg font-semibold">Alta Proveedor</p>
@@ -199,10 +202,21 @@ export default function Opciones() {
 
                         <p className="text-lg font-semibold">Añadir Producto</p>
                         <br />
-                        <Link href={route('admin.productos.crear')} className="mt-2 px-4 py-2 bg-[#28a745] text-white rounded hover:bg-[#218838]">
+                        <Link href={route('admin.productos.crear')} className="mt-2 px-4 py-2 bg-[#A87B43] text-white rounded hover:bg-[#218838]">
                             Añadir
                         </Link>
                     </div>
+
+                    <div className="herramienta-item bg-[#fce8ff] p-4 rounded-lg text-center">
+                        <FontAwesomeIcon icon={faEdit} className="text-[#6c757d] text-4xl mb-2" />
+
+                        <p className="text-lg font-semibold">Editar Productos</p>
+                        <br />
+                        <Link href={route('admin.productos.editar')} className="mt-2 px-4 py-2 bg-[#A87B43] text-white rounded hover:bg-[#e0a800]">
+                            Editar
+                        </Link>
+                    </div>
+
 
 
 
