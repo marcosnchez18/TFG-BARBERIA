@@ -37,6 +37,9 @@ export default function EditarServicios({ servicios }) {
     };
 
     const handleSaveChanges = () => {
+        // Validación de los campos antes de proceder
+        if (!validarCampos()) return;
+
         Inertia.patch(route('servicios.update', currentService.id), {
             nombre: currentService.nombre,
             descripcion: currentService.descripcion,
@@ -60,6 +63,34 @@ export default function EditarServicios({ servicios }) {
         });
     };
 
+    const validarCampos = () => {
+        // Validar nombre
+        if (!currentService.nombre) {
+            Swal.fire('Campo obligatorio', 'El nombre del servicio es obligatorio.', 'warning');
+            return false;
+        }
+
+        // Validar descripción
+        if (!currentService.descripcion) {
+            Swal.fire('Campo obligatorio', 'La descripción es obligatoria.', 'warning');
+            return false;
+        }
+
+        // Validar precio
+        if (isNaN(currentService.precio) || currentService.precio <= 0) {
+            Swal.fire('Precio inválido', 'El precio debe ser un número positivo.', 'warning');
+            return false;
+        }
+
+        // Validar duración (entero positivo)
+        if (!Number.isInteger(Number(currentService.duracion)) || currentService.duracion <= 0) {
+            Swal.fire('Duración inválida', 'La duración debe ser un número entero positivo.', 'warning');
+            return false;
+        }
+
+        return true;
+    };
+
     const filteredServicios = servicios.filter(servicio =>
         servicio.nombre.toLowerCase().includes(searchTerm.toLowerCase())
     );
@@ -71,7 +102,6 @@ export default function EditarServicios({ servicios }) {
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
                 minHeight: '100vh',
-
             }}
         >
             <NavigationAdmin />
