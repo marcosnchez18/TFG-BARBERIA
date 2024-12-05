@@ -220,6 +220,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return Inertia::render('EditarProductos');
     })->name('admin.productos.editar');
 
+    Route::get('/barbershop', function () {
+        return Inertia::render('Shop');
+    })->name('barbershop');
+
 
 
     // Rutas para el cliente (incluyendo edición de datos)

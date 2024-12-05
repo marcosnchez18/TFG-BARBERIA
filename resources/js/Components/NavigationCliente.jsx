@@ -47,6 +47,7 @@ export default function NavigationCliente() {
                     <button onClick={() => setShowLogoutModal(true)} className="text-lg md:text-xl text-white hover:text-gray-400 flex items-center nav-item-hover">
                         Home
                     </button>
+                    <Link href={route('barbershop')} className="text-lg md:text-xl text-white hover:text-gray-400 nav-item-hover">BarberShop</Link>
                     <Link href={route('reservar-cita')} className="text-lg md:text-xl text-white hover:text-gray-400 nav-item-hover">Reservar Cita</Link>
                     <Link href={route('mis-citas')} className="text-lg md:text-xl text-white hover:text-gray-400 nav-item-hover">Mis Citas</Link>
                     <Link href={route('mi-ficha')} className="text-lg md:text-xl text-white hover:text-gray-400 nav-item-hover">Mi Ficha</Link>

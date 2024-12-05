@@ -48,7 +48,7 @@ export default function Opciones() {
                 backgroundAttachment: 'fixed',
             }}>
             <NavigationAdmin admin={true} />
-            <br /><br /><br />
+            
 
             {/* Sección de Herramientas */}
             <div className="bg-white bg-opacity-90 p-8 rounded-lg shadow-lg w-full max-w-7xl mx-auto  mt-20 relative">
