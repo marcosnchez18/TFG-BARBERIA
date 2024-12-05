@@ -21,6 +21,10 @@ export default function Huecos() {
     const [horariosDisponibles, setHorariosDisponibles] = useState([]);
     const [barberos, setBarberos] = useState([]);
     const holidays = new Holidays('ES', 'AN', 'CA');
+    const today = dayjs().startOf('day');
+    const minDate = today.toDate();  // Fecha actual para el calculo
+    const maxDate = today.add(1, 'month').toDate();
+    const [descansos, setDescansos] = useState([]);
 
     useEffect(() => {
         // Cargar barberos activos
@@ -30,6 +34,17 @@ export default function Huecos() {
                 setBarberos(barberosActivos);
             })
             .catch(error => console.error("Error al cargar los barberos:", error));
+    }, []);
+
+    useEffect(() => {
+        // Llamada a la API para obtener los días de descanso
+        axios.get('/api/public/descansos')  // Asegúrate de que la URL sea la correcta
+            .then(response => {
+                setDescansos(response.data);
+            })
+            .catch(error => {
+                console.error("Error al cargar los descansos:", error);
+            });
     }, []);
 
 
@@ -127,9 +142,13 @@ export default function Huecos() {
 
     const tileClassName = ({ date }) => {
         const dayOfWeek = dayjs(date).day();
+        const dateStr = dayjs(date).format('YYYY-MM-DD');
 
         if (holidays.isHoliday(date) || dayOfWeek === 0) {
             return 'day-no-disponible';
+        }
+        if (descansos.includes(dateStr)) {
+            return 'day-no-disponible';  // Clase CSS para marcar el día como no disponible
         }
 
         return null;
@@ -224,8 +243,26 @@ export default function Huecos() {
             <Calendar
                 onChange={handleSelectDate}
                 value={selectedDate}
-                minDate={new Date()}
+                minDate={minDate}
+                maxDate={maxDate}
                 tileClassName={tileClassName}
+                tileDisabled={({ date }) => {
+                    const dateStr = dayjs(date).format('YYYY-MM-DD');
+
+                    // Deshabilitar los días que están en descansos
+                    if (descansos.includes(dateStr)) {
+                        return true;
+                    }
+
+                    // Deshabilitar domingos
+                    const dayOfWeek = dayjs(date).day();
+                    if (dayOfWeek === 0) {
+                        return true;
+                    }
+
+                    // No deshabilitar ningún otro día
+                    return false;
+                }}
             />
         </div>
         <br /><br />

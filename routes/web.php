@@ -316,6 +316,8 @@ Route::get('/servicios-invitado', function () {
 
 Route::get('/api/public/servicios', [ServicioController::class, 'index'])->name('servicios.public.index');
 
+Route::get('/api/public/descansos', [DescansoController::class, 'getDescansos'])->name('descansos.public.dispo');
+
 Route::get('/api/public/citas/disponibilidad', [RecompensaController::class, 'disponibilidad'])->name('public.citas.disponibilidad');
 
 
