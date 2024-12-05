@@ -75,5 +75,33 @@
         "precio": "3.00",
         "descripcion": "dwfwefwef",
         "duracion": 15
+    },
+    {
+        "id": 12,
+        "nombre": "edef",
+        "precio": "34.00",
+        "descripcion": "efefeff",
+        "duracion": 3
+    },
+    {
+        "id": 13,
+        "nombre": "34",
+        "precio": "34.00",
+        "descripcion": "34",
+        "duracion": 34
+    },
+    {
+        "id": 15,
+        "nombre": "sdfsdfsdf",
+        "precio": "23.44",
+        "descripcion": "dsfdfdfsdf",
+        "duracion": 34
+    },
+    {
+        "id": 14,
+        "nombre": "lio wueno",
+        "precio": "99.88",
+        "descripcion": "ergeg",
+        "duracion": 3
     }
 ]

@@ -14,6 +14,7 @@ use App\Http\Controllers\DescansoController;
 use App\Http\Controllers\FichaClienteController;
 use App\Http\Controllers\FichaController;
 use App\Http\Controllers\OfertaController;
+use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\RecompensaController;
 use App\Http\Controllers\ServicioController;
@@ -203,6 +204,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('/proveedores/{id}/updateField', [ProveedorController::class, 'updateField'])->name('proveedores.updateField');
 
 
+    Route::get('/admin/productos/crear', function () {
+        return Inertia::render('AltaProducto');
+    })->name('admin.productos.crear');
+
+    Route::post('/admin/productos', [ProductoController::class, 'store'])->name('productos.store');
+
+
+
 
     // Rutas para el cliente (incluyendo edición de datos)
     Route::get('/reservar-cita', [NoticiaController::class, 'showNoticias'])->name('reservar-cita');
@@ -220,6 +229,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('barberos.servicios');
     Route::get('/api/barberos', [AdminController::class, 'obtenerBarberos']);
     Route::get('/api/candidaturas', [CandidaturaController::class, 'obtenerMisCandidaturas'])->name('candidaturas.obtener');
+
+    Route::get('/api/proveedores', [ProveedorController::class, 'obtenerProveedores']);
 
     Route::post('/citas/reservar', [CitaController::class, 'reservar'])->name('citas.reservar');
     Route::get('/admin/user/saldo', [AdminController::class, 'getSaldo'])->name('admin.user.saldo');

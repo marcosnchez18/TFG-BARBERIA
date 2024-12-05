@@ -62,6 +62,13 @@ public function destroy($id)
         ->with('message', 'Proveedor eliminado con éxito.');
 }
 
+public function obtenerProveedores()
+{
+
+    $proveedores = Proveedor::all();
+
+    return response()->json($proveedores);
+}
 
 
 

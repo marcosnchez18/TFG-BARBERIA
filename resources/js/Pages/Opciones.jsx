@@ -18,7 +18,8 @@ import {
     faUserPlus,
     faCalendarAlt,
     faTasks,
-    faShop
+    faShop,
+    faPlusCircle
 } from '@fortawesome/free-solid-svg-icons';
 
 dayjs.extend(localizedFormat);
@@ -193,15 +194,16 @@ export default function Opciones() {
                         </Link>
                     </div>
 
-                    <div className="herramienta-item bg-[#dafcd0] p-4 rounded-lg text-center">
-                        <FontAwesomeIcon icon={faEdit} className="text-[#4A7A7C] text-4xl mb-2" />
+                    <div className="herramienta-item bg-[#f0f8ff] p-4 rounded-lg text-center">
+                        <FontAwesomeIcon icon={faPlusCircle} className="text-[#6c757d] text-4xl mb-2" />
 
-                        <p className="text-lg font-semibold">Editar Proveedores</p>
+                        <p className="text-lg font-semibold">Añadir Producto</p>
                         <br />
-                        <Link href={route('admin.proveedores.editar')} className="mt-2 px-4 py-2 bg-[#A87B43] text-white rounded hover:bg-[#875d34]">
-                            Editar
+                        <Link href={route('admin.productos.crear')} className="mt-2 px-4 py-2 bg-[#28a745] text-white rounded hover:bg-[#218838]">
+                            Añadir
                         </Link>
                     </div>
+
 
 
                 </div>

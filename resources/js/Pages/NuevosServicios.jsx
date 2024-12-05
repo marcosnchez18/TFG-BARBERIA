@@ -124,6 +124,7 @@ export default function NuevosServicios() {
                                 <FontAwesomeIcon icon={faClock} className="absolute left-3 top-3 text-gray-500" />
                                 <input
                                     type="number"
+                                    step="1"
                                     value={duracion}
                                     onChange={(e) => setDuracion(e.target.value)}
                                     className="w-full pl-10 px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#A87B43]"
