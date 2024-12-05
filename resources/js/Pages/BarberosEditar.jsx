@@ -35,6 +35,8 @@ export default function TrabajadoresAdmin({ trabajadores }) {
         });
     };
 
+
+
     const cambiarEstado = (id, estadoActual) => {
         const accion = estadoActual === 'activo' ? 'deshabilitar' : 'habilitar';
         const titulo = estadoActual === 'activo' ? '¿Deseas deshabilitar este trabajador?' : '¿Deseas habilitar este trabajador?';
@@ -60,22 +62,42 @@ export default function TrabajadoresAdmin({ trabajadores }) {
         });
     };
 
-    const saveFieldChange = (id) => {
-        const data = { [editableField]: editableValue };
-
-        Inertia.patch(route('trabajadores.updateField', id), data, {
-            onSuccess: () => {
-                Swal.fire('Actualizado', `${editableField} actualizado con éxito.`, 'success');
-                setEditableId(null);
-                setEditableField(null);
-                setEditableValue('');
-            },
-        });
+    const validarCampos = () => {
+        if (editableValue.trim() === '') {
+            Swal.fire('Error', 'Este campo no puede estar vacío.', 'error');
+            return false;
+        }
+        if (editableField === 'email' && !/\S+@\S+\.\S+/.test(editableValue)) {
+            Swal.fire('Error', 'Por favor ingresa un correo válido.', 'error');
+            return false;
+        }
+        return true;
     };
+
+    const saveFieldChange = (id) => {
+        if (validarCampos()) {
+            const data = { [editableField]: editableValue };
+            Inertia.patch(route('trabajadores.updateField', id), data, {
+                onSuccess: () => {
+                    Swal.fire('Actualizado', `${editableField} actualizado con éxito.`, 'success');
+                    setEditableId(null);
+                    setEditableField(null);
+                    setEditableValue('');
+                },
+            });
+        }
+    };
+
 
     const handlePhotoChange = (e) => {
-        setSelectedPhoto(e.target.files[0]);
+        const file = e.target.files[0];
+        if (file && file.size > 5000000) { // 5MB máximo
+            Swal.fire('Error', 'El tamaño del archivo es demasiado grande. Máximo 5MB.', 'error');
+            return;
+        }
+        setSelectedPhoto(file);
     };
+
 
     const savePhotoChange = (id) => {
         const formData = new FormData();
@@ -112,7 +134,7 @@ export default function TrabajadoresAdmin({ trabajadores }) {
             <NavigationAdmin />
             <br /><br />
             <div className="bg-white bg-opacity-90 p-8 rounded-lg shadow-lg w-full max-w-7xl mx-auto  mt-20 relative">
-            
+
             <div className="absolute top-2 right-2">
                     <Link href="/opciones" className="text-black-600 text-xl font-bold hover:text-gray-400">✕</Link>
                 </div>

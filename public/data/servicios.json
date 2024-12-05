@@ -117,5 +117,12 @@
         "precio": "34.40",
         "descripcion": "rgrgr",
         "duracion": 45
+    },
+    {
+        "id": 18,
+        "nombre": "ggfg",
+        "precio": "45.00",
+        "descripcion": "rtrtgt",
+        "duracion": 45
     }
 ]
