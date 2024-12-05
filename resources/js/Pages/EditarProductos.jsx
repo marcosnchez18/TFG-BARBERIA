@@ -15,6 +15,7 @@ export default function EditarProductos({ productos }) {
     const [editingPhotoId, setEditingPhotoId] = useState(null);
     const [selectedPhoto, setSelectedPhoto] = useState(null);
     const [productosList, setProductosList] = useState([]);
+    const [proveedores, setProveedores] = useState([]);
 
     const eliminarProducto = (id) => {
         Swal.fire({
@@ -36,6 +37,8 @@ export default function EditarProductos({ productos }) {
             }
         });
     };
+
+
 
 
 
@@ -66,18 +69,30 @@ export default function EditarProductos({ productos }) {
 
 
     const saveFieldChange = (id) => {
+        // Verificar que los campos son válidos
         if (validarCampos()) {
+            // Crear un objeto con el campo editable y su nuevo valor
             const data = { [editableField]: editableValue };
+
+            // Enviar la solicitud de actualización utilizando Inertia
             Inertia.patch(route('productos.updateField', id), data, {
                 onSuccess: () => {
+                    // Mostrar mensaje de éxito
                     Swal.fire('Actualizado', `${editableField} actualizado con éxito.`, 'success');
+
+                    // Restablecer el estado del formulario editable
                     setEditableId(null);
                     setEditableField(null);
                     setEditableValue('');
                 },
+                onError: (errors) => {
+                    // Mostrar error en caso de que ocurra un fallo en la solicitud
+                    Swal.fire('Error', 'Ocurrió un error al actualizar el campo.', 'error');
+                }
             });
         }
     };
+
 
     useEffect(() => {
         axios.get('/api/productos')
@@ -89,6 +104,8 @@ export default function EditarProductos({ productos }) {
             });
     }, []);
 
+
+
     const handlePhotoChange = (e) => {
         const file = e.target.files[0];
         if (file && file.size > 5000000) { // 5MB máximo
@@ -97,6 +114,14 @@ export default function EditarProductos({ productos }) {
         }
         setSelectedPhoto(file);
     };
+
+    useEffect(() => {
+        // Aquí obtienes los proveedores desde una API o base de datos
+        fetch('/api/proveedores')
+            .then(response => response.json())
+            .then(data => setProveedores(data));
+    }, []);
+
 
     const savePhotoChange = (id) => {
         const formData = new FormData();
@@ -307,7 +332,7 @@ export default function EditarProductos({ productos }) {
                                             </div>
                                         ) : (
                                             <div className="flex items-center">
-                                                {producto.precio}
+                                                {producto.precio} €
                                                 <button
                                                     onClick={() => {
                                                         setEditableId(producto.id);
@@ -328,7 +353,7 @@ export default function EditarProductos({ productos }) {
                                                 <select
                                                     value={editableValue}
                                                     onChange={(e) => setEditableValue(e.target.value)}
-                                                    className="border rounded p-1"
+                                                    className="border rounded p-1 w-60"
                                                 >
                                                     {/* Aquí debes asegurarte de que 'proveedores' es un array de proveedores disponibles */}
                                                     {proveedores.map((proveedor) => (
@@ -338,7 +363,7 @@ export default function EditarProductos({ productos }) {
                                                     ))}
                                                 </select>
                                                 <button
-                                                    onClick={() => saveFieldChange(producto.id, 'proveedor_id')}
+                                                    onClick={() => saveFieldChange(producto.id)}
                                                     className="ml-2 bg-green-500 text-white px-2 py-1 rounded"
                                                 >
                                                     ✔️
@@ -356,12 +381,12 @@ export default function EditarProductos({ productos }) {
                                             </div>
                                         ) : (
                                             <div className="flex items-center">
-                                                {producto.proveedor_nombre}
+                                                {proveedores.find(proveedor => proveedor.id === producto.proveedor_id)?.nombre} {/* Mostrar el nombre del proveedor actual */}
                                                 <button
                                                     onClick={() => {
                                                         setEditableId(producto.id);
                                                         setEditableField('proveedor_id');
-                                                        setEditableValue(producto.proveedor_id);
+                                                        setEditableValue(producto.proveedor_id); // Establecer el proveedor_id actual en editableValue
                                                     }}
                                                     className="ml-2 text-blue-500"
                                                 >
@@ -429,6 +454,7 @@ export default function EditarProductos({ productos }) {
                     </table>
                 </div>
             </div>
+            <br /><br /><br /><br /><br />
             <SobreNosotros />
             <Footer />
         </div>

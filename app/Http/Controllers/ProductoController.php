@@ -115,22 +115,40 @@ public function obtenerProductos()
         ->with('message', 'Producto eliminado con éxito.');
 }
 
+public function updatePhoto(Request $request, $id)
+{
+    $request->validate([
+        'imagen' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+    ]);
+
+    $producto = Producto::findOrFail($id);
+
+    if ($request->hasFile('imagen')) {
+            $imagePath = $request->file('imagen')->store('productos', 'public');
+            $producto->imagen = $imagePath;
+        }
+
+    $producto->save();
+
+    return redirect()->back()->with('success', 'Foto actualizada con éxito.');
+}
+
 
 public function updateField(Request $request, $id)
 {
-    // Validar los campos enviados por el formulario
+
     $request->validate([
         'nombre' => 'nullable|string|max:255',
         'descripcion' => 'nullable|string|max:500',
-        'precio' => 'nullable|numeric|min:0',  // Asegura que el precio sea un número no negativo
-        'stock' => 'nullable|integer|min:0',   // Asegura que el stock sea un número entero no negativo
-        'proveedor_id' => 'nullable|exists:proveedores,id', // Valida que el proveedor_id exista en la tabla 'proveedores'
+        'precio' => 'nullable|numeric|min:0',
+        'stock' => 'nullable|integer|min:0',
+        'proveedor_id' => 'nullable|exists:proveedores,id',
     ]);
 
-    // Buscar el producto por ID
+
     $producto = Producto::findOrFail($id);
 
-    // Actualizar los campos si han sido enviados
+
     if ($request->has('nombre')) {
         $producto->nombre = $request->nombre;
     }
@@ -151,10 +169,10 @@ public function updateField(Request $request, $id)
         $producto->proveedor_id = $request->proveedor_id;
     }
 
-    // Guardar los cambios
+
     $producto->save();
 
-    // Redirigir de vuelta con un mensaje de éxito
+    
     return redirect()->back()->with('success', 'Producto actualizado con éxito.');
 }
 }

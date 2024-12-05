@@ -200,6 +200,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::post('/trabajadores/{id}/updatePhoto', [AdminController::class, 'updatePhoto'])->name('trabajadores.updatePhoto');
 
+    Route::post('/productos/{id}/updatePhoto', [ProductoController::class, 'updatePhoto'])->name('productos.updatePhoto');
+
     Route::get('/candidatos/{oferta}', [CandidaturaController::class, 'verCandidatos'])->name('candidatos.index');
     Route::patch('/candidaturas/{id}/cambiar-estado', [CandidaturaController::class, 'cambiarEstado'])->name('candidaturas.cambiarEstado');
 
