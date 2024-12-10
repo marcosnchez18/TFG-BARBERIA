@@ -13,6 +13,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\CancelacionCitaCliente;
+
 
 class AdminController extends Controller
 {
@@ -106,20 +109,22 @@ class AdminController extends Controller
 public function cancelarCita($id)
 {
     $cita = Cita::findOrFail($id);
+    $usuario = $cita->usuario;
 
     // Verifica si el método de pago es adelantado y devuelve el precio de la cita al saldo del usuario
     if ($cita->metodo_pago === 'adelantado') {
-        $usuario = $cita->usuario;
         $usuario->saldo += $cita->precio_cita;
         $usuario->save();
     }
 
     // Verifica si la cita tiene un descuento aplicado y devuelve el saldo al usuario
     if ($cita->descuento_aplicado > 0) {
-        $usuario = $cita->usuario;
         $usuario->saldo += $cita->descuento_aplicado;
         $usuario->save();
     }
+
+    // Envía un correo al cliente notificándole la cancelación
+    Mail::to($usuario->email)->send(new CancelacionCitaCliente($cita));
 
     // Elimina la cita
     $cita->delete();
