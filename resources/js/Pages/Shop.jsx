@@ -17,6 +17,71 @@ export default function TiendaPrincipal() {
     const [animarCarrito, setAnimarCarrito] = useState(false); // Estado para controlar la animación del carrito
     const [mostrarCarrito, setMostrarCarrito] = useState(false); // Estado para mostrar el carrito
 
+
+
+const agregarAlCarrito = (producto) => {
+    const productoExistente = carrito.find((item) => item.id === producto.id);
+
+    if (productoExistente) {
+        // Si el producto ya está en el carrito, aumentamos su cantidad
+        setCarrito(
+            carrito.map((item) =>
+                item.id === producto.id
+                    ? { ...item, cantidad: item.cantidad + 1 }
+                    : item
+            )
+        );
+    } else {
+        // Si el producto no está en el carrito, lo agregamos con cantidad inicial 1
+        setCarrito([...carrito, { ...producto, cantidad: 1 }]);
+    }
+
+    setAnimarCarrito(true); // Activar la animación de balanceo
+    setTimeout(() => setAnimarCarrito(false), 500); // Desactivar animación
+};
+
+// Función para disminuir la cantidad de un producto en el carrito
+const disminuirCantidad = (idProducto) => {
+    const productoExistente = carrito.find((item) => item.id === idProducto);
+
+    if (productoExistente.cantidad > 1) {
+        // Si la cantidad es mayor a 1, simplemente la disminuimos
+        setCarrito(
+            carrito.map((item) =>
+                item.id === idProducto
+                    ? { ...item, cantidad: item.cantidad - 1 }
+                    : item
+            )
+        );
+    } else {
+        // Si la cantidad es 1, eliminamos el producto del carrito
+        eliminarDelCarrito(idProducto);
+    }
+};
+
+// Función para aumentar la cantidad de un producto en el carrito
+const aumentarCantidad = (idProducto) => {
+    setCarrito(
+        carrito.map((item) =>
+            item.id === idProducto
+                ? { ...item, cantidad: item.cantidad + 1 }
+                : item
+        )
+    );
+};
+
+// Función para eliminar un producto del carrito
+const eliminarDelCarrito = (idProducto) => {
+    setCarrito(carrito.filter((item) => item.id !== idProducto));
+};
+
+// Calcular el total del carrito
+const totalCarrito = carrito.reduce(
+    (total, producto) => total + producto.precio * producto.cantidad,
+    0
+);
+
+
     // Función para obtener los productos desde la API
     useEffect(() => {
         axios.get('/api/productos')
@@ -29,41 +94,25 @@ export default function TiendaPrincipal() {
                 setCargando(false);
             });
 
-        // Después de 2 segundos, ocultamos el Hero Section
+        // Después de 4 segundos, ocultamos el Hero Section
         const timer = setTimeout(() => {
             setMostrarHero(false);
-        }, 2000);
+        }, 4000);
 
         return () => clearTimeout(timer); // Limpiamos el timer al desmontar
     }, []);
 
-    // Función para agregar un producto al carrito
-    const agregarAlCarrito = (producto) => {
-        setCarrito([...carrito, producto]);
-        setAnimarCarrito(true); // Activar la animación de balanceo
 
-        // Después de la animación, desactivamos el estado para detener la animación
-        setTimeout(() => {
-            setAnimarCarrito(false);
-        }, 500); // El tiempo de duración de la animación
-    };
-
-    // Función para eliminar un producto del carrito
-    const eliminarDelCarrito = (idProducto) => {
-        setCarrito(carrito.filter(producto => producto.id !== idProducto));
-    };
-
-    // Función para abrir el modal con el producto seleccionado
     const verProducto = (producto) => {
         setProductoSeleccionado(producto);
     };
 
-    // Función para cerrar el modal
+
     const cerrarModal = () => {
         setProductoSeleccionado(null);
     };
 
-    // Función para mostrar el carrito o lanzar alerta si está vacío
+
     const manejarCarritoClick = () => {
         if (carrito.length === 0) {
             Swal.fire({
@@ -82,7 +131,7 @@ export default function TiendaPrincipal() {
             {/* Navegación */}
             <NavigationCliente />
 
-            {/* Hero Section con animación y encima de todo */}
+           
             {mostrarHero && (
                 <section className="hero-section">
                     <div className="hero-text">
@@ -175,25 +224,65 @@ export default function TiendaPrincipal() {
             </div>
 
             {/* Mostrar productos en el carrito debajo del logo */}
-            {mostrarCarrito && (
-                <div className="carrito-contenido">
-                    {carrito.length === 0 ? (
-                        <p className="text-gray-500">Tu carrito está vacío.</p>
-                    ) : (
-                        carrito.map((producto) => (
-                            <div key={producto.id} className="flex items-center justify-between mb-2">
-                                <p>{producto.nombre}</p>
-                                <button
-                                    onClick={() => eliminarDelCarrito(producto.id)}
-                                    className="text-red-500 hover:text-red-700"
-                                >
-                                    Eliminar
-                                </button>
+{mostrarCarrito && (
+    <div className="fixed top-20 right-4 bg-white rounded-lg shadow-lg p-6 w-80 z-50">
+        <h3 className="text-lg font-semibold text-gray-800 mb-4">Tu Carrito</h3>
+        {carrito.length === 0 ? (
+            <p className="text-gray-500 text-center">Tu carrito está vacío.</p>
+        ) : (
+            <>
+                <div className="divide-y divide-gray-200 max-h-72 overflow-y-auto">
+                    {carrito.map((producto) => (
+                        <div key={producto.id} className="py-4 flex items-start">
+                            <img
+                                src={producto.imagen}
+                                alt={producto.nombre}
+                                className="w-16 h-16 object-cover rounded-md mr-4"
+                            />
+                            <div className="flex-1">
+                                <h4 className="font-semibold text-gray-800">{producto.nombre}</h4>
+                                <p className="text-gray-600">{producto.precio} €</p>
+                                <div className="flex items-center mt-2 space-x-2">
+                                    <button
+                                        onClick={() => disminuirCantidad(producto.id)}
+                                        className="px-2 py-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
+                                    >
+                                        -
+                                    </button>
+                                    <span className="px-2">{producto.cantidad}</span>
+                                    <button
+                                        onClick={() => aumentarCantidad(producto.id)}
+                                        className="px-2 py-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
+                                    >
+                                        +
+                                    </button>
+                                    <button
+                                        onClick={() => eliminarDelCarrito(producto.id)}
+                                        className="ml-auto text-red-500 hover:text-red-700"
+                                    >
+                                        Eliminar
+                                    </button>
+                                </div>
                             </div>
-                        ))
-                    )}
+                        </div>
+                    ))}
                 </div>
-            )}
+                <div className="mt-4">
+                    <p className="text-lg font-semibold text-gray-800">
+                        Total: {carrito.reduce((total, producto) => total + producto.precio * producto.cantidad, 0).toFixed(2)} €
+                    </p>
+                    <button
+                        className="w-full mt-4 bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600"
+                        onClick={() => alert('Tramitar pedido')} // Cambia esta función según la lógica de tu pedido
+                    >
+                        Tramitar Pedido
+                    </button>
+                </div>
+            </>
+        )}
+    </div>
+)}
+
 
             {/* Otros componentes */}
             <Localizacion />
