@@ -164,10 +164,11 @@ export default function TiendaPrincipal() {
                                         className="w-full h-80 object-cover rounded-md cursor-pointer"
                                         onClick={() => verProducto(producto)}
                                     />
+                                    <br />
                                     <h3 className="text-xl font-bold text-gray-700 mb-3">{producto.nombre}</h3>
                                     <p className="text-gray-600 mb-4">{producto.descripcion}</p>
                                     <p className="text-lg font-semibold text-gray-900 mb-4">{producto.precio} €</p>
-                                    <p className="text-sm text-gray-500 mb-4">Proveedor: {producto.proveedor_nombre}</p>
+
                                     <button
                                         onClick={() => agregarAlCarrito(producto)}
                                         className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"

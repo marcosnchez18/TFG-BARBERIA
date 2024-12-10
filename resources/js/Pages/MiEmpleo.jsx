@@ -14,7 +14,7 @@ export default function MisEmpleo() {
     useEffect(() => {
         axios.get('/api/candidaturas')
             .then(response => {
-                console.log(response.data);  // Verifica la estructura de la respuesta
+                console.log(response.data);  
                 setCandidaturas(response.data);
                 setLoading(false);
             })

@@ -103,9 +103,16 @@ class AdminController extends Controller
 
 
 
-    public function cancelarCita($id)
+public function cancelarCita($id)
 {
     $cita = Cita::findOrFail($id);
+
+    // Verifica si el método de pago es adelantado y devuelve el precio de la cita al saldo del usuario
+    if ($cita->metodo_pago === 'adelantado') {
+        $usuario = $cita->usuario;
+        $usuario->saldo += $cita->precio_cita;
+        $usuario->save();
+    }
 
     // Verifica si la cita tiene un descuento aplicado y devuelve el saldo al usuario
     if ($cita->descuento_aplicado > 0) {
@@ -119,6 +126,7 @@ class AdminController extends Controller
 
     return response()->json(['message' => 'Cita cancelada exitosamente.']);
 }
+
 
 
     public function citasPorDia($fecha)

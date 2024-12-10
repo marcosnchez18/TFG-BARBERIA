@@ -124,5 +124,12 @@
         "precio": "45.00",
         "descripcion": "rtrtgt",
         "duracion": 45
+    },
+    {
+        "id": 19,
+        "nombre": "Corte de Pelo",
+        "precio": "9.00",
+        "descripcion": "dfsvfdvdfvb",
+        "duracion": 30
     }
 ]
