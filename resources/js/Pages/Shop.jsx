@@ -13,76 +13,74 @@ export default function TiendaPrincipal() {
     const [carrito, setCarrito] = useState([]);
     const [cargando, setCargando] = useState(true);
     const [mostrarHero, setMostrarHero] = useState(true);
-    const [productoSeleccionado, setProductoSeleccionado] = useState(null); // Estado para el producto en el modal
-    const [animarCarrito, setAnimarCarrito] = useState(false); // Estado para controlar la animación del carrito
-    const [mostrarCarrito, setMostrarCarrito] = useState(false); // Estado para mostrar el carrito
+    const [productoSeleccionado, setProductoSeleccionado] = useState(null);
+    const [animarCarrito, setAnimarCarrito] = useState(false);
+    const [mostrarCarrito, setMostrarCarrito] = useState(false);
 
 
 
-const agregarAlCarrito = (producto) => {
-    const productoExistente = carrito.find((item) => item.id === producto.id);
+    const agregarAlCarrito = (producto) => {
+        const productoExistente = carrito.find((item) => item.id === producto.id);
 
-    if (productoExistente) {
-        // Si el producto ya está en el carrito, aumentamos su cantidad
+        if (productoExistente) {
+
+            setCarrito(
+                carrito.map((item) =>
+                    item.id === producto.id
+                        ? { ...item, cantidad: item.cantidad + 1 }
+                        : item
+                )
+            );
+        } else {
+
+            setCarrito([...carrito, { ...producto, cantidad: 1 }]);
+        }
+
+        setAnimarCarrito(true);
+        setTimeout(() => setAnimarCarrito(false), 500);
+    };
+
+
+    const disminuirCantidad = (idProducto) => {
+        const productoExistente = carrito.find((item) => item.id === idProducto);
+
+        if (productoExistente.cantidad > 1) {
+            // Si la cantidad es mayor a 1, simplemente la disminuimos
+            setCarrito(
+                carrito.map((item) =>
+                    item.id === idProducto
+                        ? { ...item, cantidad: item.cantidad - 1 }
+                        : item
+                )
+            );
+        } else {
+            // Si la cantidad es 1, eliminamos el producto del carrito
+            eliminarDelCarrito(idProducto);
+        }
+    };
+
+
+    const aumentarCantidad = (idProducto) => {
         setCarrito(
             carrito.map((item) =>
-                item.id === producto.id
+                item.id === idProducto
                     ? { ...item, cantidad: item.cantidad + 1 }
                     : item
             )
         );
-    } else {
-        // Si el producto no está en el carrito, lo agregamos con cantidad inicial 1
-        setCarrito([...carrito, { ...producto, cantidad: 1 }]);
-    }
+    };
 
-    setAnimarCarrito(true); // Activar la animación de balanceo
-    setTimeout(() => setAnimarCarrito(false), 500); // Desactivar animación
-};
 
-// Función para disminuir la cantidad de un producto en el carrito
-const disminuirCantidad = (idProducto) => {
-    const productoExistente = carrito.find((item) => item.id === idProducto);
+    const eliminarDelCarrito = (idProducto) => {
+        setCarrito(carrito.filter((item) => item.id !== idProducto));
+    };
 
-    if (productoExistente.cantidad > 1) {
-        // Si la cantidad es mayor a 1, simplemente la disminuimos
-        setCarrito(
-            carrito.map((item) =>
-                item.id === idProducto
-                    ? { ...item, cantidad: item.cantidad - 1 }
-                    : item
-            )
-        );
-    } else {
-        // Si la cantidad es 1, eliminamos el producto del carrito
-        eliminarDelCarrito(idProducto);
-    }
-};
 
-// Función para aumentar la cantidad de un producto en el carrito
-const aumentarCantidad = (idProducto) => {
-    setCarrito(
-        carrito.map((item) =>
-            item.id === idProducto
-                ? { ...item, cantidad: item.cantidad + 1 }
-                : item
-        )
+    const totalCarrito = carrito.reduce(
+        (total, producto) => total + producto.precio * producto.cantidad,
+        0
     );
-};
 
-// Función para eliminar un producto del carrito
-const eliminarDelCarrito = (idProducto) => {
-    setCarrito(carrito.filter((item) => item.id !== idProducto));
-};
-
-// Calcular el total del carrito
-const totalCarrito = carrito.reduce(
-    (total, producto) => total + producto.precio * producto.cantidad,
-    0
-);
-
-
-    // Función para obtener los productos desde la API
     useEffect(() => {
         axios.get('/api/productos')
             .then((response) => {
@@ -99,7 +97,7 @@ const totalCarrito = carrito.reduce(
             setMostrarHero(false);
         }, 4000);
 
-        return () => clearTimeout(timer); // Limpiamos el timer al desmontar
+        return () => clearTimeout(timer);
     }, []);
 
 
@@ -131,7 +129,7 @@ const totalCarrito = carrito.reduce(
             {/* Navegación */}
             <NavigationCliente />
 
-           
+
             {mostrarHero && (
                 <section className="hero-section">
                     <div className="hero-text">
@@ -148,6 +146,8 @@ const totalCarrito = carrito.reduce(
                         Productos Disponibles
                     </h2>
 
+                    <br /><br />
+
                     {cargando ? (
                         <div className="text-center text-gray-600">Cargando productos...</div>
                     ) : productos.length === 0 ? (
@@ -159,21 +159,15 @@ const totalCarrito = carrito.reduce(
                             {productos.map((producto) => (
                                 <div key={producto.id} className="bg-white p-6 rounded-lg shadow-lg">
                                     <img
-                                        src={producto.imagen}
+                                        src={`/storage/${producto.imagen}`}
                                         alt={producto.nombre}
-                                        className="w-full h-48 object-cover rounded-md cursor-pointer"
-                                        onClick={() => verProducto(producto)} // Al hacer clic, abre el modal
+                                        className="w-full h-80 object-cover rounded-md cursor-pointer"
+                                        onClick={() => verProducto(producto)}
                                     />
-                                    <h3 className="text-xl font-bold text-gray-700 mb-3">
-                                        {producto.nombre}
-                                    </h3>
+                                    <h3 className="text-xl font-bold text-gray-700 mb-3">{producto.nombre}</h3>
                                     <p className="text-gray-600 mb-4">{producto.descripcion}</p>
-                                    <p className="text-lg font-semibold text-gray-900 mb-4">
-                                        {producto.precio} €
-                                    </p>
-                                    <p className="text-sm text-gray-500 mb-4">
-                                        Proveedor: {producto.proveedor_nombre}
-                                    </p>
+                                    <p className="text-lg font-semibold text-gray-900 mb-4">{producto.precio} €</p>
+                                    <p className="text-sm text-gray-500 mb-4">Proveedor: {producto.proveedor_nombre}</p>
                                     <button
                                         onClick={() => agregarAlCarrito(producto)}
                                         className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
@@ -181,24 +175,27 @@ const totalCarrito = carrito.reduce(
                                         Agregar al carrito
                                     </button>
                                 </div>
+
                             ))}
                         </div>
                     )}
                 </div>
             </section>
 
+
             {/* Modal para ver el producto en grande */}
             {productoSeleccionado && (
-                <div className="modal active">
+                <div className={`modal ${productoSeleccionado ? 'active' : ''}`}>
                     <div className="modal-content">
                         <button className="close" onClick={cerrarModal}>×</button>
                         <img
-                            src={productoSeleccionado.imagen}
+                            src={`/storage/${productoSeleccionado.imagen}`}
                             alt={productoSeleccionado.nombre}
+                            className="w-full h-auto rounded-lg"
                         />
-                        <h3>{productoSeleccionado.nombre}</h3>
-                        <p>{productoSeleccionado.descripcion}</p>
-                        <p className="text-lg font-semibold text-gray-900">{productoSeleccionado.precio} €</p>
+                        <h3 className="text-xl font-bold text-gray-800 mt-4">{productoSeleccionado.nombre}</h3>
+                        <p className="text-gray-600 mt-2">{productoSeleccionado.descripcion}</p>
+                        <p className="text-lg font-semibold text-gray-900 mt-4">{productoSeleccionado.precio} €</p>
                         <button
                             onClick={() => agregarAlCarrito(productoSeleccionado)}
                             className="mt-4 bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600"
@@ -209,10 +206,11 @@ const totalCarrito = carrito.reduce(
                 </div>
             )}
 
+
             {/* Carrito con icono FontAwesome */}
             <div
                 className={`carrito-logo ${animarCarrito ? 'balancin' : ''}`}
-                onClick={manejarCarritoClick} // Acción para el logo del carrito
+                onClick={manejarCarritoClick}
             >
                 <i className="fas fa-shopping-cart"></i>
                 {/* Mostrar número de productos en el carrito */}
@@ -222,69 +220,84 @@ const totalCarrito = carrito.reduce(
                     </span>
                 )}
             </div>
-
             {/* Mostrar productos en el carrito debajo del logo */}
-{mostrarCarrito && (
-    <div className="fixed top-20 right-4 bg-white rounded-lg shadow-lg p-6 w-80 z-50">
-        <h3 className="text-lg font-semibold text-gray-800 mb-4">Tu Carrito</h3>
-        {carrito.length === 0 ? (
-            <p className="text-gray-500 text-center">Tu carrito está vacío.</p>
-        ) : (
-            <>
-                <div className="divide-y divide-gray-200 max-h-72 overflow-y-auto">
-                    {carrito.map((producto) => (
-                        <div key={producto.id} className="py-4 flex items-start">
-                            <img
-                                src={producto.imagen}
-                                alt={producto.nombre}
-                                className="w-16 h-16 object-cover rounded-md mr-4"
-                            />
-                            <div className="flex-1">
-                                <h4 className="font-semibold text-gray-800">{producto.nombre}</h4>
-                                <p className="text-gray-600">{producto.precio} €</p>
-                                <div className="flex items-center mt-2 space-x-2">
-                                    <button
-                                        onClick={() => disminuirCantidad(producto.id)}
-                                        className="px-2 py-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
-                                    >
-                                        -
-                                    </button>
-                                    <span className="px-2">{producto.cantidad}</span>
-                                    <button
-                                        onClick={() => aumentarCantidad(producto.id)}
-                                        className="px-2 py-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
-                                    >
-                                        +
-                                    </button>
-                                    <button
-                                        onClick={() => eliminarDelCarrito(producto.id)}
-                                        className="ml-auto text-red-500 hover:text-red-700"
-                                    >
-                                        Eliminar
-                                    </button>
-                                </div>
+            {mostrarCarrito && (
+                <div className="fixed top-10 right-4 bg-white rounded-lg shadow-lg p-6 w-80 z-50">
+                    <div className="relative">
+                        {/* Botón para cerrar el carrito */}
+                        <button
+                            onClick={() => setMostrarCarrito(false)}
+                            className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 text-2xl font-bold focus:outline-none"
+                        >
+                            ×
+                        </button>
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-800 text-center mb-4">Tu Carrito</h3>
+                    {carrito.length === 0 ? (
+                        <p className="text-gray-500 text-center">Tu carrito está vacío.</p>
+                    ) : (
+                        <>
+                            <div className="divide-y divide-gray-200 max-h-72 overflow-y-auto">
+                                {carrito.map((producto) => (
+                                    <div key={producto.id} className="py-4 flex items-start">
+                                        <img
+                                            src={`/storage/${producto.imagen}`}
+                                            alt={producto.nombre}
+                                            className="w-12 h-12 object-cover rounded-md"
+                                        />
+
+                                        <div className="flex-1">
+                                            <h4 className="font-semibold text-gray-800 text-center">{producto.nombre}</h4>
+                                            <p className="text-gray-600 text-center line-through">{(producto.precio * 1.2).toFixed(2)} €</p>
+                                            <p className="text-gray-800 text-center">{producto.precio} €</p>
+                                            <div className="flex items-center justify-center mt-2 space-x-2">
+                                                <button
+                                                    onClick={() => disminuirCantidad(producto.id)}
+                                                    className="px-2 py-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
+                                                >
+                                                    -
+                                                </button>
+                                                <span className="px-2 text-gray-700">{producto.cantidad}</span>
+                                                <button
+                                                    onClick={() => aumentarCantidad(producto.id)}
+                                                    className="px-2 py-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
+                                                >
+                                                    +
+                                                </button>
+                                                <button
+                                                    onClick={() => eliminarDelCarrito(producto.id)}
+                                                    className="ml-auto text-red-500 hover:text-red-700"
+                                                >
+                                                    <i className="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
                             </div>
-                        </div>
-                    ))}
+                            <hr className="my-4 border-t border-gray-300" />
+                            <div className="mt-4">
+                                <p className="text-lg font-semibold text-gray-800 text-center">
+                                    Total: {carrito.reduce((total, producto) => total + producto.precio * producto.cantidad, 0).toFixed(2)} €
+                                </p>
+                                <button
+                                    className="w-full mt-4 bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600"
+                                    onClick={() => alert('Tramitar pedido')}
+                                >
+                                    Tramitar Pedido
+                                </button>
+                                <button
+                                    className="w-full mt-2 bg-red-500 text-white py-2 rounded-lg hover:bg-red-600"
+                                    onClick={() => setCarrito([])}
+                                >
+                                    Vaciar Cesta
+                                </button>
+                            </div>
+                        </>
+                    )}
                 </div>
-                <div className="mt-4">
-                    <p className="text-lg font-semibold text-gray-800">
-                        Total: {carrito.reduce((total, producto) => total + producto.precio * producto.cantidad, 0).toFixed(2)} €
-                    </p>
-                    <button
-                        className="w-full mt-4 bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600"
-                        onClick={() => alert('Tramitar pedido')} // Cambia esta función según la lógica de tu pedido
-                    >
-                        Tramitar Pedido
-                    </button>
-                </div>
-            </>
-        )}
-    </div>
-)}
+            )}
 
-
-            {/* Otros componentes */}
             <Localizacion />
             <SobreNosotros />
             <Footer />
