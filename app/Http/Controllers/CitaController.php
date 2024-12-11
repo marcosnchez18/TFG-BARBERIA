@@ -297,6 +297,9 @@ class CitaController extends Controller
     return response()->json([
         'success' => 'Cita cancelada exitosamente. Se ha solicitado la devolución del importe. Será ingresado en tu cuenta de PayPal de 3 a 5 días laborables.'
     ]);
+
+
+
 }
 
 
@@ -381,4 +384,19 @@ public function citasDelDia(Request $request)
 
         return response()->json($citas);
     }
+
+
+
+    public function obtenerCitasUsuario()
+{
+    $usuario = Auth::user();
+
+    
+    $citas = Cita::where('usuario_id', $usuario->id)
+        ->orWhere('barbero_id', $usuario->id)
+        ->get(['fecha_hora_cita']);
+
+    return response()->json($citas);
+}
+
 }

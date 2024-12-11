@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { usePage } from '@inertiajs/react';
 import dayjs from 'dayjs';
 import Calendar from 'react-calendar';
@@ -22,6 +22,8 @@ export default function AdminDashboard() {
 
     const [showCalendar, setShowCalendar] = useState(false); // Para mostrar el calendario
     const [selectedDates, setSelectedDates] = useState([]); // Para almacenar los días seleccionados
+    const [highlightedDates, setHighlightedDates] = useState([]);
+
 
 
     const handleDateChange = (date) => {
@@ -36,6 +38,19 @@ export default function AdminDashboard() {
                 setCitasDia([]);
             });
     };
+
+    useEffect(() => {
+        axios.get('/api/citas-usuario')
+            .then(response => {
+                // Extraer solo las fechas y formatearlas a 'YYYY-MM-DD'
+                const dates = response.data.map(cita => dayjs(cita.fecha_hora_cita).format('YYYY-MM-DD'));
+                setHighlightedDates([...new Set(dates)]); // Elimina duplicados
+            })
+            .catch(error => {
+                console.error('Error al obtener las citas:', error);
+            });
+    }, []);
+
 
 
     const handleCancelarCita = (id) => {
@@ -174,11 +189,33 @@ export default function AdminDashboard() {
                     <div className="calendar-section mt-8 w-full flex flex-col items-center">
                         <h2 className="text-3xl font-semibold text-[#A87B43] mb-6">Calendario de Citas</h2>
                         <Calendar
-                            onChange={handleDateChange}
-                            value={selectedDate}
-                            minDate={new Date(2000, 1, 1)}
-                            className="w-full max-w-xl mx-auto"
-                        />
+    onChange={handleDateChange}
+    value={selectedDate}
+    minDate={new Date(2000, 1, 1)}
+    className="calen-admin w-full max-w-xl mx-auto"
+    tileClassName={({ date, view }) => {
+        if (view === 'month') {
+            const formattedDate = dayjs(date).format('YYYY-MM-DD');
+            return highlightedDates.includes(formattedDate) ? 'highlighted-date' : null;
+        }
+        return null;
+    }}
+/>
+<style>
+{`
+    .highlighted-date {
+        background-color: #007bff;
+        color: white;
+        border-radius: 50%;
+    }
+
+    .highlighted-date:hover {
+        background-color: #0056b3;
+    }
+`}
+</style>
+
+
                     </div>
                     <div className="citas-list mt-6 w-full max-w-2xl">
                         <h3 className="text-2xl font-semibold text-gray-700 mb-4 text-center">

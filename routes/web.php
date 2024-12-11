@@ -247,6 +247,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/api/proveedores', [ProveedorController::class, 'obtenerProveedores']);
 
+    Route::get('/api/citas-usuario', [CitaController::class, 'obtenerCitasUsuario']);   //para pintar dias
+
     Route::get('/api/productos', [ProductoController::class, 'obtenerProductos'])->name('productos.obtener');
 
     Route::post('/citas/reservar', [CitaController::class, 'reservar'])->name('citas.reservar');
