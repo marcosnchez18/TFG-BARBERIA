@@ -118,6 +118,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::resource('ofertas', OfertaController::class);
 
+    Route::delete('/api/candidaturas/{localizador}', [CandidaturaController::class, 'destroy'])->name('candidaturas.destroy');
+
     Route::get('/citas-barberia', function () {
         return Inertia::render('CitasBarberia');
     })->name('citas-barberia');

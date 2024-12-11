@@ -126,7 +126,7 @@ export default function TiendaPrincipal() {
 
     return (
         <div className="min-h-screen bg-gray-100">
-            {/* Navegación */}
+            
             <NavigationCliente />
 
 
@@ -208,13 +208,13 @@ export default function TiendaPrincipal() {
             )}
 
 
-            {/* Carrito con icono FontAwesome */}
+            {/* Carrito con icono */}
             <div
                 className={`carrito-logo ${animarCarrito ? 'balancin' : ''}`}
                 onClick={manejarCarritoClick}
             >
                 <i className="fas fa-shopping-cart"></i>
-                {/* Mostrar número de productos en el carrito */}
+                {/* número de productos en el carrito */}
                 {carrito.length > 0 && (
                     <span className="cantidad-carrito">
                         {carrito.length}
@@ -225,7 +225,7 @@ export default function TiendaPrincipal() {
             {mostrarCarrito && (
                 <div className="fixed top-10 right-4 bg-white rounded-lg shadow-lg p-6 w-80 z-50">
                     <div className="relative">
-                        {/* Botón para cerrar el carrito */}
+
                         <button
                             onClick={() => setMostrarCarrito(false)}
                             className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 text-2xl font-bold focus:outline-none"

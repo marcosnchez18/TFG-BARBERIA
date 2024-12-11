@@ -37,17 +37,6 @@ export default function AdminDashboard() {
             });
     };
 
-    const handleGuardarDescansos = () => {
-        axios.post('/admin/dias-descanso', { dias: selectedDates })
-            .then(() => {
-                Swal.fire('Días guardados', 'Los días de descanso se han guardado correctamente', 'success');
-                setShowCalendar(false); // Cerrar el calendario después de guardar
-            })
-            .catch(() => {
-                Swal.fire('Error', 'Hubo un problema al guardar los días de descanso', 'error');
-            });
-    };
-
 
     const handleCancelarCita = (id) => {
         Swal.fire({

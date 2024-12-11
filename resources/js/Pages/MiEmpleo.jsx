@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import Swal from 'sweetalert2';
 import NavigationCliente from '../Components/NavigationCliente';
 import WhatsAppButton from '@/Components/Wasa';
 import SobreNosotros from '@/Components/Sobrenosotros';
@@ -14,7 +15,7 @@ export default function MisEmpleo() {
     useEffect(() => {
         axios.get('/api/candidaturas')
             .then(response => {
-                console.log(response.data);  
+                console.log(response.data);
                 setCandidaturas(response.data);
                 setLoading(false);
             })
@@ -27,17 +28,42 @@ export default function MisEmpleo() {
 
     // Manejar la eliminación de una candidatura
     const handleDelete = (localizador) => {
-        axios.delete(`/api/candidaturas/${localizador}`)
-            .then(() => {
-                // Filtrar las candidaturas eliminadas
-                setCandidaturas(candidaturas.filter(c => c.localizador !== localizador));
-                alert("Candidatura eliminada correctamente.");
-            })
-            .catch((error) => {
-                console.error("Error al eliminar la candidatura:", error);
-                alert("Hubo un problema al eliminar la candidatura.");
-            });
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: 'No podrás recuperar esta candidatura si la eliminas.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                axios.delete(`/api/candidaturas/${localizador}`)
+                    .then(() => {
+                        setCandidaturas(candidaturas.filter((c) => c.localizador !== localizador));
+                        Swal.fire('Eliminada', 'La candidatura ha sido eliminada exitosamente.', 'success');
+                    })
+                    .catch((error) => {
+                        console.error('Error al eliminar la candidatura:', error);
+                        Swal.fire('Error', 'Hubo un problema al eliminar la candidatura.', 'error');
+                    });
+            }
+        });
     };
+
+    const getEstadoClass = (estado) => {
+        switch (estado.toLowerCase()) {
+            case 'entregado':
+                return 'text-blue-600 font-bold';
+            case 'denegado':
+                return 'text-red-600 font-bold';
+            case 'bolsa de empleo':
+                return 'text-green-600 font-bold';
+            default:
+                return 'text-gray-700'; // Clase predeterminada
+        }
+    };
+
+
 
     return (
         <div>
@@ -55,7 +81,7 @@ export default function MisEmpleo() {
             >
                 <br /><br /><br /><br />
                 <div className="max-w-7xl mx-auto p-8 bg-white bg-opacity-80 rounded-xl shadow-lg">
-                <h2 className="mis-datos-cliente-title">Mis Candidaturas</h2>
+                    <h2 className="mis-datos-cliente-title">Mis Candidaturas</h2>
 
                     {/* Mostrar error si existe */}
                     {error && (
@@ -88,31 +114,28 @@ export default function MisEmpleo() {
                                 ) : (
                                     candidaturas.map(candidatura => (
                                         <tr key={candidatura.localizador} className="border-b hover:bg-gray-50 transition">
-                                            <td className="py-4 px-6 text-gray-700">{candidatura.oferta_nombre}</td>
-                                            <td className="py-4 px-6 text-gray-700">{candidatura.localizador}</td>
-                                            <td className="py-4 px-6 text-gray-700">{candidatura.estado}</td>
+                                            <td className="py-4 px-6 text-black-700">{candidatura.oferta_nombre}</td>
+                                            <td className="py-4 px-6 text-green-700">{candidatura.localizador}</td>
+                                            <td className={`py-4 px-6 ${getEstadoClass(candidatura.estado)}`}>
+                                                {candidatura.estado}
+                                            </td>
                                             <td className="py-4 px-6 text-gray-700">
-                                                {/* Convertir la fecha de inscripción */}
                                                 {new Date(candidatura.created_at).toLocaleDateString()}
                                             </td>
                                             <td className="py-4 px-6">
-                                                <a
-                                                    href={`/mis-candidaturas/${candidatura.localizador}`}
-                                                    className="text-blue-600 hover:underline mr-4"
-                                                >
-                                                </a>
-                                                {/* Botón de eliminar candidatura */}
                                                 <button
                                                     onClick={() => handleDelete(candidatura.localizador)}
                                                     className="text-red-600 hover:text-red-800 font-semibold"
                                                 >
-                                                    Eliminar
+                                                    <i className="fas fa-trash-alt"></i> {/* Icono de papelera */}
                                                 </button>
+
                                             </td>
                                         </tr>
                                     ))
                                 )}
                             </tbody>
+
                         </table>
                     )}
                 </div>
