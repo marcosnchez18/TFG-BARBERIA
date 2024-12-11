@@ -23,6 +23,8 @@ export default function ElegirCita() {
     const today = dayjs().startOf('day');
     const [barberos, setBarberos] = useState([]);
     const [descansos, setDescansos] = useState([]);
+    const [highlightedDates, setHighlightedDates] = useState([]);
+
 
 
     const holidays = new Holidays('ES', 'AN', 'CA');
@@ -88,6 +90,16 @@ export default function ElegirCita() {
             .catch(error => console.error("Error al cargar los barberos:", error));
     }, []);
 
+    useEffect(() => {
+        axios.get('/api/citas-usuario')
+            .then(response => {
+                const dates = response.data.map(cita => dayjs(cita.fecha_hora_cita).format('YYYY-MM-DD'));
+                setHighlightedDates([...new Set(dates)]); // Elimina duplicados
+            })
+            .catch(error => console.error('Error al obtener las citas:', error));
+    }, []);
+
+
 
 
 
@@ -107,13 +119,14 @@ export default function ElegirCita() {
             return 'day-no-disponible'; // Clase CSS para días no disponibles
         }
 
-        // Marcar días completos sin disponibilidad
-        if (disponibilidadDias[dateStr]?.completo) {
-            return 'day-sin-citas'; // Clase CSS para días sin citas
+        // Resaltar días con citas
+        if (highlightedDates.includes(dateStr)) {
+            return 'day-con-cita'; // Clase CSS para días con citas
         }
 
         return null; // Día disponible
     };
+
 
     const tileDisabled = ({ date }) => {
         const dateStr = dayjs(date).format('YYYY-MM-DD');
@@ -125,6 +138,7 @@ export default function ElegirCita() {
 
         return false; // El día está habilitado para hacer una cita
     };
+
 
 
 
@@ -386,36 +400,35 @@ export default function ElegirCita() {
                         <h3 className="text-2xl font-semibold">Selecciona el día:</h3>
                         <br /><br />
                         <div className="calendar-container mt-6 flex flex-col items-center">
-                            <Calendar
-                                onChange={handleSelectDate}
-                                value={selectedDate}
-                                minDate={minDate}  // Solo permite seleccionar fechas a partir de hoy
-                                maxDate={maxDate}  // Solo permite seleccionar fechas hasta el mismo día del siguiente mes
-                                tileClassName={tileClassName}
-                                tileDisabled={({ date }) => {
-                                    const dateStr = dayjs(date).format('YYYY-MM-DD');
+                        <Calendar
+    onChange={handleSelectDate}
+    value={selectedDate}
+    minDate={minDate}  // Solo permite seleccionar fechas a partir de hoy
+    maxDate={maxDate}  // Solo permite seleccionar fechas hasta el mismo día del siguiente mes
+    tileClassName={tileClassName} // Resalta días con citas
+    tileDisabled={tileDisabled} // Deshabilita días no disponibles
+/><style>
+{`
 
-                                    // Deshabilitar los días que están en descansos
-                                    if (descansos.includes(dateStr)) {
-                                        return true;
-                                    }
 
-                                    // Deshabilitar domingos
-                                    const dayOfWeek = dayjs(date).day();
-                                    if (dayOfWeek === 0) {
-                                        return true;
-                                    }
+    .day-con-cita {
+        background-color: #007bff !important;
+        color: white !important;
+        border-radius: 50% !important;
+    }
 
-                                    // Deshabilitar los días completos sin citas disponibles
-                                    if (disponibilidadDias[dateStr]?.completo) {
-                                        return true;
-                                    }
+    .day-con-cita:hover {
+        background-color: #0056b3 !important;
+    }
+`}
+</style>
 
-                                    // No deshabilitar ningún otro día
-                                    return false;
-                                }}
-                            />
+
                         </div>
+                        <br /><br /><br />
+                        <p className="mt-6 text-gray-600 text-sm">
+            Los días marcados en <span className="font-bold text-blue-600">🔵</span> tienen citas reservadas, y los días marcados en <span className="font-bold text-red-600">🟥</span> son festivos o días de descanso.
+        </p>
                         <br /><br />
                         {selectedDate && horariosDisponibles.length > 0 && (
                             <div className="horarios-container mt-4 grid grid-cols-4 gap-2">

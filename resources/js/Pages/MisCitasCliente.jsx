@@ -1,8 +1,8 @@
+import React, { useState, useEffect } from 'react';
 
 import { usePage } from '@inertiajs/react';
 import Swal from 'sweetalert2';
 import axios from 'axios';
-import React, { useState, useEffect } from 'react';
 import { jsPDF } from 'jspdf';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
@@ -35,6 +35,8 @@ export default function MisCitasCliente() {
     const minDate = today.toDate();  // Fecha actual para el calculo
     const maxDate = today.add(1, 'month').toDate();  // Mismo día del siguiente mes para el calculo
     const [descansos, setDescansos] = useState([]);
+    const [highlightedDates, setHighlightedDates] = useState([]);
+
 
     useEffect(() => {
         // Llamada a la API para obtener los días de descanso
@@ -46,6 +48,16 @@ export default function MisCitasCliente() {
                 console.error("Error al cargar los descansos:", error);
             });
     }, []);
+
+    useEffect(() => {
+        axios.get('/api/citas-usuario')
+            .then(response => {
+                const dates = response.data.map(cita => dayjs(cita.fecha_hora_cita).format('YYYY-MM-DD'));
+                setHighlightedDates([...new Set(dates)]); // Elimina duplicados
+            })
+            .catch(error => console.error('Error al obtener las citas:', error));
+    }, []);
+
 
     useEffect(() => {
         fetch('/images/ruloo.jpg')
@@ -279,25 +291,32 @@ export default function MisCitasCliente() {
     };
 
     const tileClassName = ({ date }) => {
-        const dayOfWeek = dayjs(date).day(); // Día de la semana (0 = domingo)
+        const dayOfWeek = dayjs(date).day(); // Día de la semana
         const dateStr = dayjs(date).format('YYYY-MM-DD'); // Fecha en formato YYYY-MM-DD
 
-        // Marcar domingos
+        // Marcar domingos como no disponibles
         if (dayOfWeek === 0) {
-            return 'day-no-disponible text-red-500'; // Clase CSS para días no disponibles
+            return 'day-no-disponible text-red-500';
         }
 
         // Marcar festivos
         if (holidays.isHoliday(dateStr)) {
-            return 'day-no-disponible text-red-500'; // Clase CSS para festivos
+            return 'day-no-disponible text-red-500';
         }
 
+        // Marcar días con citas
+        if (highlightedDates.includes(dateStr)) {
+            return 'day-con-cita bg-blue-500 text-white'; // Clase CSS para días con citas
+        }
+
+        // Marcar días de descanso
         if (descansos.includes(dateStr)) {
-            return 'day-no-disponible';  // Clase CSS para marcar el día como no disponible
+            return 'day-no-disponible';
         }
 
-        return null; // Clase por defecto para días disponibles
+        return null; // Clase predeterminada
     };
+
 
 
 
@@ -384,8 +403,7 @@ export default function MisCitasCliente() {
                                 <Calendar
                                     onClickDay={handleDayClick}
                                     value={selectedDate}
-
-                                    tileClassName={tileClassName}
+                                    tileClassName={tileClassName} // Resalta los días con citas
                                     minDate={minDate}  // Solo permite seleccionar fechas a partir de hoy
                                     maxDate={maxDate}  // Solo permite seleccionar fechas hasta el mismo día del siguiente mes
                                     className="mx-auto"
@@ -403,12 +421,32 @@ export default function MisCitasCliente() {
                                             return true;
                                         }
 
-                                        // No deshabilitar ningún otro día
-                                        return false;
+                                        return false; // El día está habilitado para citas
                                     }}
-                                />
+                                /><style>
+                                    {`
+
+
+    .day-con-cita {
+        background-color: #007bff !important;
+        color: white !important;
+        border-radius: 50% !important;
+    }
+
+    .day-con-cita:hover {
+        background-color: #0056b3 !important;
+    }
+`}
+                                </style>
+
+
 
                             </div>
+                            <br /><br /><br />
+                            <p className="mt-4 text-gray-600 text-sm">
+                                Los días marcados en <span className="font-bold text-blue-600">🔵</span> tienen citas reservadas, y los días marcados en <span className="font-bold text-red-600">🟥</span> son festivos o días de descanso.
+                            </p>
+                            <br /><br />
                             {selectedDate && horariosDisponibles.length > 0 && (
                                 <div className="horarios-disponibles mt-4 grid grid-cols-4 gap-2 justify-center">
                                     {horariosDisponibles.map((hora) => (
