@@ -36,6 +36,45 @@ export default function MisCitasCliente() {
     const maxDate = today.add(1, 'month').toDate();  // Mismo día del siguiente mes para el calculo
     const [descansos, setDescansos] = useState([]);
     const [highlightedDates, setHighlightedDates] = useState([]);
+    const [diasSinCitas, setDiasSinCitas] = useState([]);
+    const [isLoadingCalendar, setIsLoadingCalendar] = useState(true);
+
+
+
+    const verificarDisponibilidadMensual = async () => {
+        setIsLoadingCalendar(true); // Inicia la carga del calendario
+        const fechas = [];
+        for (let i = 0; i <= 30; i++) {
+            const dia = dayjs().add(i, 'day').format('YYYY-MM-DD');
+            fechas.push(dia);
+        }
+
+        const diasSinCitas = [];
+
+        await Promise.all(
+            fechas.map(async (fecha) => {
+                try {
+                    const response = await axios.get('/api/citas/disponibilidad', {
+                        params: {
+                            fecha,
+                            barbero_id: selectedCita.barbero.id,
+                            servicio_id: selectedServicio.id,
+                        },
+                    });
+                    if (response.data.length === 0) {
+                        diasSinCitas.push(fecha);
+                    }
+                } catch (error) {
+                    console.error(`Error comprobando disponibilidad para ${fecha}:`, error);
+                }
+            })
+        );
+
+        setDiasSinCitas(diasSinCitas); // Actualiza los días sin citas disponibles
+        setIsLoadingCalendar(false); // Finaliza la carga del calendario
+    };
+
+
 
 
     useEffect(() => {
@@ -81,6 +120,13 @@ export default function MisCitasCliente() {
             })
             .catch(error => console.error("Error al cargar el QR:", error));
     }, []);
+
+    useEffect(() => {
+        if (selectedCita && selectedServicio) {
+            verificarDisponibilidadMensual();
+        }
+    }, [selectedCita, selectedServicio]);
+
 
 
     const citasOrdenadas = citas
@@ -309,6 +355,11 @@ export default function MisCitasCliente() {
             return 'day-con-cita bg-blue-500 text-white'; // Clase CSS para días con citas
         }
 
+         // Marcar días sin citas disponibles
+    if (diasSinCitas.includes(dateStr)) {
+        return 'day-sin-citas text-gray-500'; // Clase CSS para días sin citas
+    }
+
         // Marcar días de descanso
         if (descansos.includes(dateStr)) {
             return 'day-no-disponible';
@@ -400,6 +451,10 @@ export default function MisCitasCliente() {
                             </div>
                             <div className="calendar-selection text-center mt-6">
                                 <h3 className="text-xl font-semibold">Selecciona el Día:</h3>
+                                <br /><br />
+                                {isLoadingCalendar ? (
+        <p className="text-gray-500 text-xl">Cargando calendario...</p>
+    ) : (
                                 <Calendar
                                     onClickDay={handleDayClick}
                                     value={selectedDate}
@@ -423,7 +478,7 @@ export default function MisCitasCliente() {
 
                                         return false; // El día está habilitado para citas
                                     }}
-                                /><style>
+                                />)}<style>
                                     {`
 
 
@@ -435,6 +490,16 @@ export default function MisCitasCliente() {
 
     .day-con-cita:hover {
         background-color: #0056b3 !important;
+    }
+
+    .day-sin-citas {
+        background-color: #e0e0e0 !important;
+        color: #808080 !important;
+        border-radius: 50% !important;
+    }
+
+    .day-sin-citas:hover {
+        background-color: #d6d6d6 !important;
     }
 `}
                                 </style>
