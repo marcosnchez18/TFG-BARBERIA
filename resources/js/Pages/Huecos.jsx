@@ -266,9 +266,14 @@ export default function Huecos() {
             />
         </div>
         <br /><br /><br />
-        <p className="mt-4 text-gray-600 text-sm">
-            Los días marcados en <span className="font-bold text-red-600">🟥</span> son festivos o días de descanso.
-        </p>
+
+<p className="mt-2 text-gray-600 text-sm">
+    Los días marcados en <span className="font-bold text-red-600">🟥</span>  son festivos o días de descanso.
+</p>
+<p className="mt-2 text-gray-600 text-sm">
+    Los días marcados en <span className="font-bold text-gray-600">🔘</span>  no quedan citas disponibles.
+</p>
+
         <br /><br />
         {selectedDate && (
     <div className="horarios-disponibles mt-4">

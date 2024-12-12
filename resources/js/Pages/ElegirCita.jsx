@@ -25,6 +25,12 @@ export default function ElegirCita() {
     const [descansos, setDescansos] = useState([]);
     const [highlightedDates, setHighlightedDates] = useState([]);
 
+    const [diasSinCitas, setDiasSinCitas] = useState([]);
+
+    const [isLoadingCalendar, setIsLoadingCalendar] = useState(true);
+
+
+
 
 
     const holidays = new Holidays('ES', 'AN', 'CA');
@@ -58,6 +64,41 @@ export default function ElegirCita() {
                 console.error("Error al cargar los descansos:", error);
             });
     }, []);
+
+    const verificarDisponibilidadMensual = async () => {
+        setIsLoadingCalendar(true); // Inicia el estado de carga
+        const diasSinCitasArray = [];
+
+        const fechas = [];
+        for (let i = 0; i <= 30; i++) {
+            const dia = dayjs().add(i, 'day').format('YYYY-MM-DD');
+            fechas.push(dia);
+        }
+
+        await Promise.all(
+            fechas.map(async (fecha) => {
+                try {
+                    const response = await axios.get('/api/citas/disponibilidad', {
+                        params: {
+                            barbero_id: selectedBarbero.id,
+                            servicio_id: selectedServicio.id,
+                            fecha: fecha,
+                        },
+                    });
+                    if (response.data.length === 0) {
+                        diasSinCitasArray.push(fecha); // Agrega días sin citas al array
+                    }
+                } catch (error) {
+                    console.error(`Error comprobando disponibilidad para ${fecha}:`, error);
+                }
+            })
+        );
+
+        setDiasSinCitas(diasSinCitasArray); // Actualiza el estado
+        setIsLoadingCalendar(false); // Finaliza la carga
+    };
+
+
 
 
 
@@ -100,6 +141,14 @@ export default function ElegirCita() {
     }, []);
 
 
+    useEffect(() => {
+        if (selectedBarbero && selectedServicio) {
+            verificarDisponibilidadMensual();
+        }
+    }, [selectedBarbero, selectedServicio]);
+
+
+
 
 
 
@@ -122,6 +171,10 @@ export default function ElegirCita() {
         // Resaltar días con citas
         if (highlightedDates.includes(dateStr)) {
             return 'day-con-cita'; // Clase CSS para días con citas
+        }
+
+        if (diasSinCitas.includes(dateStr)) {
+            return 'day-sin-citas'; // Clase CSS para días sin citas
         }
 
         return null; // Día disponible
@@ -409,6 +462,10 @@ export default function ElegirCita() {
                         <h3 className="text-2xl font-semibold">Selecciona el día:</h3>
                         <br /><br />
                         <div className="calendar-container mt-6 flex flex-col items-center">
+                        {isLoadingCalendar ? (
+                <p className="text-center text-xl text-gray-500">Cargando calendario...</p>
+            ) : (
+
                         <Calendar
     onChange={handleSelectDate}
     value={selectedDate}
@@ -416,7 +473,10 @@ export default function ElegirCita() {
     maxDate={maxDate}  // Solo permite seleccionar fechas hasta el mismo día del siguiente mes
     tileClassName={tileClassName} // Resalta días con citas
     tileDisabled={tileDisabled} // Deshabilita días no disponibles
-/><style>
+/>
+)}
+
+<style>
 {`
 
 
@@ -429,6 +489,17 @@ export default function ElegirCita() {
     .day-con-cita:hover {
         background-color: #0056b3 !important;
     }
+
+    .day-sin-citas {
+    background-color: #6c757d !important; /* Gris oscuro */
+    color: white !important;
+    border-radius: 50% !important;
+}
+.day-sin-citas:hover {
+    background-color: #5a6268 !important; /* Gris más oscuro al pasar el cursor */
+}
+
+
 `}
 </style>
 
@@ -436,8 +507,15 @@ export default function ElegirCita() {
                         </div>
                         <br /><br /><br />
                         <p className="mt-6 text-gray-600 text-sm">
-            Los días marcados en <span className="font-bold text-blue-600">🔵</span> tienen citas reservadas, y los días marcados en <span className="font-bold text-red-600">🟥</span> son festivos o días de descanso.
-        </p>
+    Los días marcados en <span className="font-bold text-blue-600">🔵</span> tienen citas reservadas.
+</p>
+<p className="mt-2 text-gray-600 text-sm">
+    Los días marcados en <span className="font-bold text-red-600">🟥</span>  son festivos o días de descanso.
+</p>
+<p className="mt-2 text-gray-600 text-sm">
+    Los días marcados en <span className="font-bold text-gray-600">🔘</span>  no quedan citas disponibles.
+</p>
+
                         <br /><br />
                         {selectedDate && horariosDisponibles.length > 0 && (
                             <div className="horarios-container mt-4 grid grid-cols-4 gap-2">

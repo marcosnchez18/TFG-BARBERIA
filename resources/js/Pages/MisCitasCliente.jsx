@@ -443,9 +443,16 @@ export default function MisCitasCliente() {
 
                             </div>
                             <br /><br /><br />
-                            <p className="mt-4 text-gray-600 text-sm">
-                                Los días marcados en <span className="font-bold text-blue-600">🔵</span> tienen citas reservadas, y los días marcados en <span className="font-bold text-red-600">🟥</span> son festivos o días de descanso.
-                            </p>
+                            <p className="mt-6 text-gray-600 text-sm">
+    Los días marcados en <span className="font-bold text-blue-600">🔵</span> tienen citas reservadas.
+</p>
+<p className="mt-2 text-gray-600 text-sm">
+    Los días marcados en <span className="font-bold text-red-600">🟥</span>  son festivos o días de descanso.
+</p>
+<p className="mt-2 text-gray-600 text-sm">
+    Los días marcados en <span className="font-bold text-gray-600">🔘</span>  no quedan citas disponibles.
+</p>
+
                             <br /><br />
                             {selectedDate && horariosDisponibles.length > 0 && (
                                 <div className="horarios-disponibles mt-4 grid grid-cols-4 gap-2 justify-center">
