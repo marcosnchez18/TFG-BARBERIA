@@ -134,4 +134,17 @@ public function carritos()
         return $this->hasMany(Pedido::class);
     }
 
+
+public function obtenerCitasCompletadas()
+{
+    return $this->hasMany(Cita::class, 'usuario_id')->where('estado', 'completada');
+}
+
+
+public function obtenerCitasAusentes()
+{
+    return $this->hasMany(Cita::class, 'usuario_id')->where('estado', 'ausente');
+}
+
+
 }
