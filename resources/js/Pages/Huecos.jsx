@@ -25,6 +25,9 @@ export default function Huecos() {
     const minDate = today.toDate();  // Fecha actual para el calculo
     const maxDate = today.add(1, 'month').toDate();
     const [descansos, setDescansos] = useState([]);
+    const [isLoadingCalendar, setIsLoadingCalendar] = useState(false); // Indica si el calendario está cargando
+const [diasSinCitas, setDiasSinCitas] = useState([]); // Días sin citas disponibles
+
 
     useEffect(() => {
         // Cargar barberos activos
@@ -66,11 +69,16 @@ export default function Huecos() {
             });
     };
 
+
+
     const handleSelectServicio = (servicio) => {
         console.log("Servicio seleccionado:", servicio);
-        setSelectedServicio(servicio); // Guardar el objeto completo por si es necesario
-        setSelectedServicioId(servicio.id || servicio.servicio_id); // Guardar solo el ID
-        setStep(3); // Avanzar al siguiente paso
+        setSelectedServicio(servicio);
+        setSelectedServicioId(servicio.id || servicio.servicio_id);
+        setStep(3);
+
+        // Llamar a la función de disponibilidad
+        verificarDisponibilidadMensual();
     };
 
 
@@ -137,6 +145,46 @@ export default function Huecos() {
             });
     };
 
+    const verificarDisponibilidadMensual = async () => {
+        setIsLoadingCalendar(true); // Indica que se está cargando el calendario
+
+        const fechas = [];
+        for (let i = 0; i <= 30; i++) {
+            const dia = dayjs().add(i, 'day').format('YYYY-MM-DD');
+            fechas.push(dia);
+        }
+
+        const diasSinCitasTemp = [];
+
+        await Promise.all(
+            fechas.map(async (fecha) => {
+                try {
+                    const response = await axios.get('/api/public/citas/disponibilidad', {
+                        params: {
+                            barbero_id: selectedBarbero.id,
+                            servicio_id: selectedServicioId,
+                            fecha: fecha,
+                        },
+                    });
+
+                    // Si no hay horarios disponibles para ese día, lo agregamos
+                    if (!response.data || response.data.length === 0) {
+                        diasSinCitasTemp.push(fecha);
+                    }
+                } catch (error) {
+                    console.error(`Error comprobando disponibilidad para ${fecha}:`, error);
+                }
+            })
+        );
+
+        console.log("Días sin citas después de la verificación:", diasSinCitasTemp); // Depura los días sin citas
+        setDiasSinCitas(diasSinCitasTemp);
+        setIsLoadingCalendar(false); // Finaliza la carga
+    };
+
+
+
+
 
 
 
@@ -149,6 +197,10 @@ export default function Huecos() {
         }
         if (descansos.includes(dateStr)) {
             return 'day-no-disponible';  // Clase CSS para marcar el día como no disponible
+        }
+
+        if (diasSinCitas.includes(dateStr)) {
+            return 'day-sin-citas'; // Días sin citas
         }
 
         return null;
@@ -240,6 +292,9 @@ export default function Huecos() {
         <h3 className="text-2xl font-semibold">Selecciona el día:</h3>
         <br /><br />
         <div className="calendar-container mt-6 flex flex-col items-center">
+        {isLoadingCalendar ? (
+                <p className="text-gray-500 text-xl">Cargando calendario...</p>
+            ) : (
             <Calendar
                 onChange={handleSelectDate}
                 value={selectedDate}
@@ -263,7 +318,22 @@ export default function Huecos() {
                     // No deshabilitar ningún otro día
                     return false;
                 }}
-            />
+            />)}
+            <style>
+    {`
+    
+
+    .day-sin-citas {
+        background-color: #d6d8d9 !important;
+        color: #6c757d !important;
+        border-radius: 50% !important;
+    }
+    .day-sin-citas:hover {
+        background-color: #c6c8ca !important;
+    }
+    `}
+</style>
+
         </div>
         <br /><br /><br />
 
