@@ -21,7 +21,15 @@ class ProveedorController extends Controller
             'telefono' => 'required|string|max:20',
             'email' => 'required|email|unique:proveedores,email',
             'direccion' => 'required|string',
+            'cif' => 'nullable|string|max:9',
+            'nif' => 'nullable|string|max:9',
         ]);
+
+        $validator->after(function ($validator) use ($request) {
+            if (!$request->cif && !$request->nif) {
+                $validator->errors()->add('cif_nif', 'Debe proporcionar al menos un CIF o un NIF.');
+            }
+        });
 
         if ($validator->fails()) {
             return response()->json([
@@ -35,6 +43,8 @@ class ProveedorController extends Controller
             'telefono' => $request->telefono,
             'email' => $request->email,
             'direccion' => $request->direccion,
+            'cif' => $request->cif,
+            'nif' => $request->nif,
         ]);
 
         return response()->json([
@@ -46,6 +56,7 @@ class ProveedorController extends Controller
         return response()->json(['message' => 'Ocurrió un error en el servidor.'], 500);
     }
 }
+
 
 
 
@@ -84,45 +95,79 @@ public function obtenerProveedores()
     }
 
     public function updateField(Request $request, $id)
-    {
-        // Validar los campos enviados por el formulario
-        $request->validate([
-            'nombre' => 'nullable|string|max:255',
-            'contacto' => 'nullable|string|max:255',
-            'telefono' => 'nullable|string|max:20',
-            'email' => 'nullable|email|max:255|unique:proveedores,email,' . $id,
-            'direccion' => 'nullable|string|max:500',
-        ]);
+{
+    // Validar los campos enviados por el formulario
+    $request->validate([
+        'nombre' => 'nullable|string|max:255',
+        'contacto' => 'nullable|string|max:255',
+        'telefono' => 'nullable|string|max:20',
+        'email' => 'nullable|email|max:255|unique:proveedores,email,' . $id,
+        'direccion' => 'nullable|string|max:500',
+        'nif' => [
+            'nullable',
+            'regex:/^\d{8}[A-Z]$/',
+            function ($attribute, $value, $fail) {
+                $letras = 'TRWAGMYFPDXBNJZSQVHLCKE';
+                $numero = substr($value, 0, -1);
+                $letra = substr($value, -1);
+                if (strlen($numero) !== 8 || !is_numeric($numero) || $letras[$numero % 23] !== $letra) {
+                    $fail('El NIF introducido no es válido.');
+                }
+            },
+        ],
+        'cif' => [
+            'nullable',
+            'regex:/^[ABCDEFGHJKLMNPQRSUVW]\d{7}[A-J0-9]$/',
+            function ($attribute, $value, $fail) {
+                $letras = 'JABCDEFGHI';
+                $letra = $value[0];
+                $numeros = substr($value, 1, 7);
+                $control = substr($value, -1);
 
-        // Buscar el proveedor por ID
-        $proveedor = Proveedor::findOrFail($id);
+                $sumaPar = 0;
+                $sumaImpar = 0;
 
-        // Actualizar los campos si han sido enviados
-        if ($request->has('nombre')) {
-            $proveedor->nombre = $request->nombre;
+                for ($i = 0; $i < strlen($numeros); $i++) {
+                    $digito = (int)$numeros[$i];
+                    if ($i % 2 === 0) {
+                        $doble = $digito * 2;
+                        $sumaImpar += floor($doble / 10) + ($doble % 10);
+                    } else {
+                        $sumaPar += $digito;
+                    }
+                }
+
+                $sumaTotal = $sumaPar + $sumaImpar;
+                $digitoControl = (10 - ($sumaTotal % 10)) % 10;
+
+                if (ctype_alpha($control)) {
+                    if ($letras[$digitoControl] !== $control) {
+                        $fail('El CIF introducido no es válido.');
+                    }
+                } elseif ($digitoControl != $control) {
+                    $fail('El CIF introducido no es válido.');
+                }
+            },
+        ],
+    ]);
+
+    // Buscar el proveedor por ID
+    $proveedor = Proveedor::findOrFail($id);
+
+    // Actualizar los campos dinámicamente
+    foreach ($request->all() as $key => $value) {
+        if ($value !== null && in_array($key, ['nombre', 'contacto', 'telefono', 'email', 'direccion', 'nif', 'cif'])) {
+            $proveedor->$key = $value;
         }
-
-        if ($request->has('contacto')) {
-            $proveedor->contacto = $request->contacto;
-        }
-
-        if ($request->has('telefono')) {
-            $proveedor->telefono = $request->telefono;
-        }
-
-        if ($request->has('email')) {
-            $proveedor->email = $request->email;
-        }
-
-        if ($request->has('direccion')) {
-            $proveedor->direccion = $request->direccion;
-        }
-
-        // Guardar los cambios
-        $proveedor->save();
-
-        // Redirigir de vuelta con un mensaje de éxito
-        return redirect()->back()->with('success', 'Proveedor actualizado con éxito.');
     }
+
+    // Guardar los cambios
+    $proveedor->save();
+
+    // Redirigir con un mensaje de éxito
+    return redirect()->back()->with('success', 'Proveedor actualizado con éxito.');
+}
+
+
 
 }

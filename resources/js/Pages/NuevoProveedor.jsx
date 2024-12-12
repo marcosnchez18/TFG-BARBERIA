@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { useForm } from '@inertiajs/react';  // Importar solo useForm
-import { router } from '@inertiajs/react';  // Importar router
+import { useForm } from '@inertiajs/react'; // Importar useForm
+import { router } from '@inertiajs/react'; // Importar router
 import { Link } from '@inertiajs/react';
 import NavigationAdmin from '../Components/NavigationAdmin';
 import SobreNosotros from '../Components/Sobrenosotros';
@@ -14,6 +14,8 @@ export default function NuevoProveedor({ storeUrl }) {
         telefono: '',
         email: '',
         direccion: '',
+        cif: '',
+        nif: '',
     });
 
     const [clientErrors, setClientErrors] = useState({});
@@ -21,6 +23,59 @@ export default function NuevoProveedor({ storeUrl }) {
     const validateClient = () => {
         const newErrors = {};
 
+        const validateNIF = (nif) => {
+            if (!/^\d{8}[A-Z]$/.test(nif)) return false;
+
+            const letras = 'TRWAGMYFPDXBNJZSQVHLCKE';
+            const numero = parseInt(nif.slice(0, -1), 10);
+            const letraCalculada = letras[numero % 23];
+            return letraCalculada === nif.slice(-1);
+        };
+
+        const validateCIF = (cif) => {
+            if (!/^[ABCDEFGHJKLMNPQRSUVW]\d{7}[A-J0-9]$/.test(cif)) return false;
+
+            const letras = 'JABCDEFGHI';
+            const letra = cif.charAt(0);
+            const numeros = cif.slice(1, -1);
+            const control = cif.slice(-1);
+
+            let sumaPar = 0;
+            let sumaImpar = 0;
+
+            for (let i = 0; i < numeros.length; i++) {
+                const digito = parseInt(numeros[i], 10);
+                if (i % 2 === 0) { // Posiciones impares (pares en índice)
+                    const doble = digito * 2;
+                    sumaImpar += Math.floor(doble / 10) + (doble % 10);
+                } else {
+                    sumaPar += digito;
+                }
+            }
+
+            const sumaTotal = sumaPar + sumaImpar;
+            const digitoControl = (10 - (sumaTotal % 10)) % 10;
+
+            if (/[A-J]/.test(control)) {
+                return letras[digitoControl] === control;
+            } else {
+                return String(digitoControl) === control;
+            }
+        };
+
+        // Validar NIF y CIF
+        if (!data.cif && !data.nif) {
+            newErrors.cifNif = 'Debes proporcionar al menos un CIF o un NIF.';
+        } else {
+            if (data.cif && !validateCIF(data.cif)) {
+                newErrors.cif = 'El CIF introducido no es válido.';
+            }
+            if (data.nif && !validateNIF(data.nif)) {
+                newErrors.nif = 'El NIF introducido no es válido.';
+            }
+        }
+
+        // Validaciones existentes
         if (!data.nombre) {
             newErrors.nombre = 'El nombre del proveedor es obligatorio.';
         }
@@ -47,51 +102,76 @@ export default function NuevoProveedor({ storeUrl }) {
         return Object.keys(newErrors).length === 0;
     };
 
+
     const submit = async (e) => {
         e.preventDefault();
 
-        if (validateClient()) {
-            try {
-                const response = await fetch(route('proveedores.store'), {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),  // Token CSRF
-                    },
-                    body: JSON.stringify(data),
-                });
+        // Realiza la validación en el cliente
+        if (!validateClient()) {
+            // Combina todos los errores en un solo mensaje
+            const errorMessages = Object.values(clientErrors)
+                .flat()
+                .join('<br>');
 
-                if (!response.ok) {
-                    const errorData = await response.json();
+            // Muestra los errores con SweetAlert
+            Swal.fire({
+                title: 'Errores de validación',
+                html: errorMessages,
+                icon: 'error',
+                confirmButtonText: 'Aceptar',
+            });
+
+            return; // Detiene el envío del formulario
+        }
+
+        try {
+            const response = await fetch(route('proveedores.store'), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                },
+                body: JSON.stringify(data),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                if (response.status === 422) {
+                    const serverErrors = Object.values(errorData.errors)
+                        .flat()
+                        .join('<br>');
+                    Swal.fire({
+                        title: 'Errores del servidor',
+                        html: serverErrors,
+                        icon: 'error',
+                        confirmButtonText: 'Aceptar',
+                    });
+                } else {
                     throw new Error(errorData.message || 'Error al registrar el proveedor.');
                 }
-
-                const result = await response.json();
-
-                // Mostrar mensaje de éxito con SweetAlert
-                Swal.fire({
-                    title: 'Proveedor registrado',
-                    text: result.message,
-                    icon: 'success',
-                    confirmButtonText: 'Aceptar',
-                }).then(() => {
-                    // Redirigir a la página de gestión
-                    router.visit('/opciones');
-                });
-            } catch (error) {
-                console.error(error);
-                Swal.fire({
-                    title: 'Error',
-                    text: error.message,
-                    icon: 'error',
-                    confirmButtonText: 'Aceptar',
-                });
+                return;
             }
+
+            const result = await response.json();
+
+            Swal.fire({
+                title: 'Proveedor registrado',
+                text: result.message,
+                icon: 'success',
+                confirmButtonText: 'Aceptar',
+            }).then(() => {
+                router.visit('/opciones');
+            });
+        } catch (error) {
+            console.error(error);
+            Swal.fire({
+                title: 'Error',
+                text: error.message,
+                icon: 'error',
+                confirmButtonText: 'Aceptar',
+            });
         }
     };
-
-
-
 
 
 
@@ -166,6 +246,28 @@ export default function NuevoProveedor({ storeUrl }) {
                         />
                         {clientErrors.direccion && <div className="text-red-600 text-sm mt-1">{clientErrors.direccion}</div>}
                         {errors.direccion && <div className="text-red-600 text-sm mt-1">{errors.direccion}</div>}
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-bold text-gray-600">CIF</label>
+                        <input
+                            type="text"
+                            className="w-full px-4 py-2 mt-2 border border-gray-300 rounded-md"
+                            value={data.cif}
+                            onChange={(e) => setData('cif', e.target.value)}
+                        />
+                        {clientErrors.cifNif && <div className="text-red-600 text-sm mt-1">{clientErrors.cifNif}</div>}
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-bold text-gray-600">NIF</label>
+                        <input
+                            type="text"
+                            className="w-full px-4 py-2 mt-2 border border-gray-300 rounded-md"
+                            value={data.nif}
+                            onChange={(e) => setData('nif', e.target.value)}
+                        />
+                        {clientErrors.cifNif && <div className="text-red-600 text-sm mt-1">{clientErrors.cifNif}</div>}
                     </div>
 
                     <button
