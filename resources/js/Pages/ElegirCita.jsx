@@ -55,8 +55,8 @@ export default function ElegirCita() {
     }, []);
 
     useEffect(() => {
-        // Llamada a la API para obtener los días de descanso
-        axios.get('/descansos')  // Asegúrate de que la URL sea la correcta
+
+        axios.get('/descansos')
             .then(response => {
                 setDescansos(response.data);
             })
@@ -66,7 +66,7 @@ export default function ElegirCita() {
     }, []);
 
     const verificarDisponibilidadMensual = async () => {
-        setIsLoadingCalendar(true); // Inicia el estado de carga
+        setIsLoadingCalendar(true); 
         const diasSinCitasArray = [];
 
         const fechas = [];
@@ -462,22 +462,22 @@ export default function ElegirCita() {
                         <h3 className="text-2xl font-semibold">Selecciona el día:</h3>
                         <br /><br />
                         <div className="calendar-container mt-6 flex flex-col items-center">
-                        {isLoadingCalendar ? (
-                <p className="text-center text-xl text-gray-500">Cargando calendario...</p>
-            ) : (
+                            {isLoadingCalendar ? (
+                                <p className="text-center text-xl text-gray-500">Cargando calendario...</p>
+                            ) : (
 
-                        <Calendar
-    onChange={handleSelectDate}
-    value={selectedDate}
-    minDate={minDate}  // Solo permite seleccionar fechas a partir de hoy
-    maxDate={maxDate}  // Solo permite seleccionar fechas hasta el mismo día del siguiente mes
-    tileClassName={tileClassName} // Resalta días con citas
-    tileDisabled={tileDisabled} // Deshabilita días no disponibles
-/>
-)}
+                                <Calendar
+                                    onChange={handleSelectDate}
+                                    value={selectedDate}
+                                    minDate={minDate}  // Solo permite seleccionar fechas a partir de hoy
+                                    maxDate={maxDate}  // Solo permite seleccionar fechas hasta el mismo día del siguiente mes
+                                    tileClassName={tileClassName} // Resalta días con citas
+                                    tileDisabled={tileDisabled} // Deshabilita días no disponibles
+                                />
+                            )}
 
-<style>
-{`
+                            <style>
+                                {`
 
 
     .day-con-cita {
@@ -501,20 +501,20 @@ export default function ElegirCita() {
 
 
 `}
-</style>
+                            </style>
 
 
                         </div>
                         <br /><br /><br />
                         <p className="mt-6 text-gray-600 text-sm">
-    Los días marcados en <span className="font-bold text-blue-600">🔵</span> tienen citas reservadas.
-</p>
-<p className="mt-2 text-gray-600 text-sm">
-    Los días marcados en <span className="font-bold text-red-600">🟥</span>  son festivos o días de descanso.
-</p>
-<p className="mt-2 text-gray-600 text-sm">
-    Los días marcados en <span className="font-bold text-gray-600">🔘</span>  no quedan citas disponibles.
-</p>
+                            Los días marcados en <span className="font-bold text-blue-600">🔵</span> tienen citas reservadas.
+                        </p>
+                        <p className="mt-2 text-gray-600 text-sm">
+                            Los días marcados en <span className="font-bold text-red-600">🟥</span>  son festivos o días de descanso.
+                        </p>
+                        <p className="mt-2 text-gray-600 text-sm">
+                            Los días marcados en <span className="font-bold text-gray-600">🔘</span>  no quedan citas disponibles.
+                        </p>
 
                         <br /><br />
                         {selectedDate && horariosDisponibles.length > 0 && (

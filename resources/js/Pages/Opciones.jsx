@@ -28,6 +28,8 @@ dayjs.locale('es');
 export default function Opciones() {
     const [showCalendar, setShowCalendar] = useState(false);
     const [selectedDates, setSelectedDates] = useState([]);
+    const [tipoDescanso, setTipoDescanso] = useState(''); // 'libre' o 'vacaciones'
+
 
     const handleGuardarDescansos = () => {
         axios.post('/admin/dias-descanso', { dias: selectedDates })
@@ -40,6 +42,16 @@ export default function Opciones() {
             });
     };
 
+
+    const handleDateChange = (date) => {
+        if (tipoDescanso === 'libre') {
+            setSelectedDates([date]); // Solo un día si es día libre
+        } else if (tipoDescanso === 'vacaciones') {
+            setSelectedDates(date);  // Mantén el comportamiento original para vacaciones (rango de fechas)
+        }
+    };
+
+
     return (
         <div className="admin-dashboard bg-gray-100 min-h-screen"
             style={{
@@ -48,7 +60,7 @@ export default function Opciones() {
                 backgroundAttachment: 'fixed',
             }}>
             <NavigationAdmin admin={true} />
-            
+
 
             {/* Sección de Herramientas */}
             <div className="bg-white bg-opacity-90 p-8 rounded-lg shadow-lg w-full max-w-7xl mx-auto  mt-20 relative">
@@ -144,13 +156,16 @@ export default function Opciones() {
 
                     <div className="herramienta-item bg-[#E3E7F7] p-4 rounded-lg text-center">
                         <FontAwesomeIcon icon={faCalendarAlt} className="text-[#4A7A7C] text-4xl mb-2" />
-                        <p className="text-lg font-semibold">Gestionar Días de Descanso</p>
+                        <p className="text-lg font-semibold">Gestionar Vacaciones</p>
                         <br />
                         <button
                             onClick={() => setShowCalendar(true)} // Abre el calendario al hacer clic
                             className="mt-2 px-4 py-2 bg-[#A87B43] text-white rounded hover:bg-[#875d34]">
                             Seleccionar Días
                         </button>
+
+
+
 
                         {/* Modal del Calendario */}
                         {showCalendar && (
@@ -161,14 +176,29 @@ export default function Opciones() {
                                         className="absolute top-2 right-2 text-xl text-gray-500 hover:text-gray-700">
                                         ×
                                     </button>
+
                                     <h2 className="text-2xl font-semibold text-[#A87B43] mb-4 text-center">Selecciona los Días de Descanso</h2>
+
+                                    <div className="mb-4">
+    <label className="block text-lg font-semibold">¿Qué tipo de descanso es?</label>
+    <select
+        onChange={(e) => setTipoDescanso(e.target.value)}
+        className="mt-2 px-6 py-3 w-full max-w-xs border border-gray-300 rounded-lg text-lg"
+    >
+        <option value="">Selecciona una opción</option>
+        <option value="libre">Es un día libre</option>
+        <option value="vacaciones">Son vacaciones</option>
+    </select>
+</div>
+
                                     <div className="flex justify-center mb-4">
-                                        <Calendar
-                                            onChange={setSelectedDates}
-                                            value={selectedDates}
-                                            selectRange={true}
-                                            className="w-full max-w-md"
-                                        />
+                                    <Calendar
+    onChange={handleDateChange}
+    value={selectedDates}
+    selectRange={tipoDescanso === 'vacaciones'}  // Solo permite rangos si son vacaciones
+    className="w-full max-w-md"
+/>
+
                                     </div>
                                     <div className="mt-4 flex justify-between">
                                         <button
