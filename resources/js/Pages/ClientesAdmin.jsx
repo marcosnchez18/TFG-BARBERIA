@@ -129,7 +129,7 @@ export default function ClientesAdmin({ clientes }) {
         <th className="clientes-admin-table-header text-center px-4 py-2">Correo</th>
         <th className="clientes-admin-table-header text-center px-4 py-2">Número de Tarjeta</th>
         <th className="clientes-admin-table-header text-center px-4 py-2">Saldo</th>
-        <th className="clientes-admin-table-header text-center px-4 py-2">Ausencias</th>
+        <th className="clientes-admin-table-header text-center px-4 py-2">Estado</th>
         <th className="clientes-admin-table-header text-center px-4 py-2">Acciones</th>
     </tr>
 </thead>
@@ -140,7 +140,7 @@ export default function ClientesAdmin({ clientes }) {
             <td className="clientes-admin-table-cell text-center">{cliente.email}</td>
             <td className="clientes-admin-table-cell text-center">{cliente.numero_tarjeta_vip}</td>
             <td className="clientes-admin-table-cell text-center">{cliente.saldo} €</td>
-            <td className="clientes-admin-table-cell text-center">{cliente.contador_ausencias}</td>
+            <td className="clientes-admin-table-cell text-center">{cliente.estado}</td>
             <td className="clientes-admin-table-cell text-center">
                 <div className="flex justify-center items-center space-x-2">
                     <button
