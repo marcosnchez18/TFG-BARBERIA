@@ -23,7 +23,9 @@ class ClienteController extends Controller
             $cliente->citas_completadas = $cliente->obtenerCitasCompletadas()->count();
 
             $cliente->citas_ausentes = $cliente->obtenerCitasAusentes()->count();
-            
+
+            $cliente->fechas_ausentes = $cliente->obtenerFechasCitasAusentes();
+
             return $cliente;
         });
 
@@ -31,6 +33,8 @@ class ClienteController extends Controller
         'clientes' => $clientes
     ]);
 }
+
+
 
     // Método para eliminar un cliente
     public function destroy($id)

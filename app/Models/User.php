@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Contracts\Auth\MustVerifyEmail;  // Importar MustVerifyEmail para la verificación de email
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -146,5 +147,14 @@ public function obtenerCitasAusentes()
     return $this->hasMany(Cita::class, 'usuario_id')->where('estado', 'ausente');
 }
 
+public function obtenerFechasCitasAusentes()
+{
+    return $this->hasMany(Cita::class, 'usuario_id')
+        ->where('estado', 'ausente')
+        ->get()
+        ->map(function ($cita) {
+            return Carbon::parse($cita->fecha_hora_cita)->format('Y-m-d'); 
+        });
+}
 
 }
