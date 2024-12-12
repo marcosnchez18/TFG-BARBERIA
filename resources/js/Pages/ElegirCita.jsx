@@ -291,6 +291,9 @@ export default function ElegirCita() {
                                         axios.patch(`/citas/${response.data.cita_id}/actualizar-metodo-pago`, { metodo_pago: 'adelantado' })
                                             .then(() => {
                                                 Swal.fire('Pago completado', `Gracias ${details.payer.name.given_name}!`, 'success');
+                                                setTimeout(() => {
+                                                    window.location.href = '/reservar-cita';
+                                                }, 2500);
                                             });
                                     });
                                 },
@@ -298,6 +301,9 @@ export default function ElegirCita() {
                                     axios.patch(`/citas/${response.data.cita_id}/actualizar-metodo-pago`, { metodo_pago: 'efectivo' })
                                         .then(() => {
                                             Swal.fire('Pago cancelado', 'Puedes pagar en efectivo al llegar a la cita.', 'info');
+                                            setTimeout(() => {
+                                                window.location.href = '/reservar-cita';
+                                            }, 2500);
                                         });
                                 },
                                 onError: function (err) {
@@ -305,6 +311,9 @@ export default function ElegirCita() {
                                     Swal.fire('Error', 'Hubo un problema con el pago. Inténtalo de nuevo.', 'error');
                                 }
                             }).render('#paypal-button-container');
+                        },
+                        didClose: () => {
+                            window.location.href = '/reservar-cita';
                         }
                     });
                 });
