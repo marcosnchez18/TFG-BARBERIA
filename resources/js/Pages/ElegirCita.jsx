@@ -167,9 +167,9 @@ export default function ElegirCita() {
         }
 
         // Verificar si la fecha está en los descansos del barbero
-    if (diasDescansoBarbero.includes(dateStr)) {
-        return 'day-no-disponible';  // Clase CSS para marcar el día como no disponible (vacaciones o descanso)
-    }
+        if (diasDescansoBarbero.includes(dateStr)) {
+            return 'day-no-disponible';  // Clase CSS para marcar el día como no disponible (vacaciones o descanso)
+        }
 
         // Marcar días festivos o domingos como no disponibles
         if (holidays.isHoliday(date) || dayOfWeek === 0) {

@@ -112,7 +112,7 @@ const [diasSinCitas, setDiasSinCitas] = useState([]); // Días sin citas disponi
             return;
         }
 
-        const API_BASE_URL = `${window.location.origin}`; // Detectar automáticamente el dominio actual
+        const API_BASE_URL = `${window.location.origin}`; 
 
         // Mostrar los datos que se están enviando a la API
         console.log('Datos enviados a la API:', {
@@ -321,7 +321,7 @@ const [diasSinCitas, setDiasSinCitas] = useState([]); // Días sin citas disponi
             />)}
             <style>
     {`
-    
+
 
     .day-sin-citas {
         background-color: #d6d8d9 !important;
