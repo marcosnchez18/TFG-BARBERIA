@@ -29,6 +29,9 @@ export default function ElegirCita() {
 
     const [isLoadingCalendar, setIsLoadingCalendar] = useState(true);
 
+    const [diasDescansoBarbero, setDiasDescansoBarbero] = useState([]);
+
+
 
 
 
@@ -66,7 +69,7 @@ export default function ElegirCita() {
     }, []);
 
     const verificarDisponibilidadMensual = async () => {
-        setIsLoadingCalendar(true); 
+        setIsLoadingCalendar(true);
         const diasSinCitasArray = [];
 
         const fechas = [];
@@ -163,6 +166,11 @@ export default function ElegirCita() {
             return 'day-no-disponible';  // Clase CSS para marcar el día como no disponible
         }
 
+        // Verificar si la fecha está en los descansos del barbero
+    if (diasDescansoBarbero.includes(dateStr)) {
+        return 'day-no-disponible';  // Clase CSS para marcar el día como no disponible (vacaciones o descanso)
+    }
+
         // Marcar días festivos o domingos como no disponibles
         if (holidays.isHoliday(date) || dayOfWeek === 0) {
             return 'day-no-disponible'; // Clase CSS para días no disponibles
@@ -212,7 +220,18 @@ export default function ElegirCita() {
                 console.error("Error al cargar servicios del barbero:", error);
                 Swal.fire("Error", "No se pudieron cargar los servicios del barbero.", "error");
             });
+
+        // Obtener los días de descanso del barbero seleccionado
+        axios.get(`/api/descansos/${barbero.id}`)
+            .then(response => {
+                setDiasDescansoBarbero(response.data);  // Actualizar días de descanso del barbero
+            })
+            .catch(error => {
+                console.error("Error al cargar los días de descanso del barbero:", error);
+                Swal.fire("Error", "No se pudieron cargar los días de descanso del barbero.", "error");
+            });
     };
+
 
 
     const handleSelectServicio = (servicio) => {

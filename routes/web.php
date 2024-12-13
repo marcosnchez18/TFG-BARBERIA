@@ -192,6 +192,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 
 
+
+
+
     Route::delete('/trabajadores/{id}', [AdminController::class, 'destroy'])->name('trabajadores.destroy');
 
     Route::delete('/proveedores/{id}', [ProveedorController::class, 'destroy'])->name('proveedores.destroy');
@@ -251,6 +254,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/api/proveedores', [ProveedorController::class, 'obtenerProveedores']);
 
     Route::get('/api/citas-usuario', [CitaController::class, 'obtenerCitasUsuario']);   //para pintar dias
+
+    Route::get('/api/descansos/{barberoId}', [DescansoController::class, 'obtenerDiasDescanso']);
 
     Route::get('/api/productos', [ProductoController::class, 'obtenerProductos'])->name('productos.obtener');
 

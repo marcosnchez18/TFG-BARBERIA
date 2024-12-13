@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Descanso;
+use App\Models\DescansoIndividual;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -81,5 +82,15 @@ class DescansoController extends Controller
     public function destroy(Descanso $descanso)
     {
         //
+    }
+
+    public function obtenerDiasDescanso($barberoId)
+    {
+        // Obtener todos los descansos del barbero
+        $descansos = DescansoIndividual::where('user_id', $barberoId)
+                                       ->pluck('fecha')
+                                       ->toArray();
+
+        return response()->json($descansos);
     }
 }

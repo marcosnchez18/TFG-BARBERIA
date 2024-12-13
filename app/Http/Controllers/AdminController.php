@@ -469,9 +469,9 @@ public function misDatos()
 
 public function guardarDiasDescanso(Request $request)
 {
-    $dias = $request->input('dias');  // Obtén los días enviados desde el frontend
+    $dias = $request->input('dias');
 
-    // Asegúrate de que la lista de días tenga al menos 1 día seleccionado
+
     if (count($dias) > 0) {
         // Si solo hay un día seleccionado, lo guardamos directamente
         if (count($dias) == 1) {
@@ -493,12 +493,12 @@ public function guardarDiasDescanso(Request $request)
             $fechaInicio = Carbon::parse($dias[0])->addDay();  // Sumamos 1 día al primer día del rango
             $fechaFin = Carbon::parse(end($dias));  // Último día del rango
 
-            // Asegúrate de que el rango es válido (fecha de inicio menor que la de fin)
+
             if ($fechaInicio->greaterThan($fechaFin)) {
                 return response()->json(['message' => 'La fecha de inicio no puede ser mayor que la de fin'], 400);
             }
 
-            // Iteramos desde la fecha de inicio hasta la fecha final
+
             while ($fechaInicio->lte($fechaFin)) {
                 $fechaDescanso = $fechaInicio->format('Y-m-d');
 
@@ -518,7 +518,7 @@ public function guardarDiasDescanso(Request $request)
                 $fechaInicio->addDay();  // Sumamos 1 día a cada día dentro del rango
             }
 
-            // Asegúrate de guardar el último día del rango (fechaFin)
+
             $fechaDescanso = $fechaFin->format('Y-m-d');
             $existe = Descanso::where('fecha', $fechaDescanso)->exists();
 
@@ -535,10 +535,10 @@ public function guardarDiasDescanso(Request $request)
 
 public function guardarDescansoIndividual(Request $request)
 {
-    $userId = $request->input('user_id');  // ID del usuario al que se le asigna el descanso (anteriormente barbero_id)
-    $dias = $request->input('dias');  // Días seleccionados (pueden ser uno o varios)
+    $userId = $request->input('user_id');
+    $dias = $request->input('dias');
 
-    // Asegurarnos de que el user_id y la lista de días no estén vacíos
+
     if (!$userId) {
         return response()->json(['message' => 'El ID del usuario es requerido.'], 400);
     }
@@ -572,12 +572,12 @@ public function guardarDescansoIndividual(Request $request)
         $fechaInicio = Carbon::parse($dias[0])->addDay();  // Sumamos 1 día al primer día del rango
         $fechaFin = Carbon::parse(end($dias));  // Último día del rango
 
-        // Asegúrate de que el rango es válido (fecha de inicio menor que la de fin)
+
         if ($fechaInicio->greaterThan($fechaFin)) {
             return response()->json(['message' => 'La fecha de inicio no puede ser mayor que la de fin'], 400);
         }
 
-        // Iteramos desde la fecha de inicio hasta la fecha final
+
         while ($fechaInicio->lte($fechaFin)) {
             $fechaDescanso = $fechaInicio->format('Y-m-d');
 
@@ -600,7 +600,7 @@ public function guardarDescansoIndividual(Request $request)
             $fechaInicio->addDay();  // Sumamos 1 día a cada día dentro del rango
         }
 
-        // Asegúrate de guardar el último día del rango (fechaFin)
+        
         $fechaDescanso = $fechaFin->format('Y-m-d');
         $existe = DescansoIndividual::where('user_id', $userId)
                                  ->where('fecha', $fechaDescanso)
