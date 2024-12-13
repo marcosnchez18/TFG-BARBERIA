@@ -26,47 +26,41 @@ export default function Huecos() {
     const maxDate = today.add(1, 'month').toDate();
     const [descansos, setDescansos] = useState([]);
     const [isLoadingCalendar, setIsLoadingCalendar] = useState(false); // Indica si el calendario está cargando
-const [diasSinCitas, setDiasSinCitas] = useState([]); // Días sin citas disponibles
+    const [diasSinCitas, setDiasSinCitas] = useState([]); // Días sin citas disponibles
+    const [diasDescansoBarbero, setDiasDescansoBarbero] = useState([]);
 
 
-useEffect(() => {
-    // Cargar barberos activos
-    axios.get('/api/public/barberos')
-        .then(response => {
-            const barberosActivos = response.data.filter(barbero => barbero.estado === 'activo');
-            setBarberos(barberosActivos);
-            selectRandomBarberoAndService(barberosActivos); // Llamar a la función para seleccionar un barbero y servicio aleatorio
-        })
-        .catch(error => console.error("Error al cargar los barberos:", error));
-}, []);
 
-const selectRandomBarberoAndService = async (barberosActivos) => {
-    if (barberosActivos.length > 0) {
-        // Seleccionar un barbero aleatorio
-        const randomBarbero = barberosActivos[Math.floor(Math.random() * barberosActivos.length)];
-        setSelectedBarbero(randomBarbero);
-
-        // Obtener los servicios para el barbero seleccionado
-        axios
-            .get(`/api/public/barberos/${randomBarbero.id}/servicios`)
-            .then((response) => {
-                const serviciosDisponibles = response.data;
-                setServicios(serviciosDisponibles);
-
-                // Seleccionar un servicio aleatorio
-                const randomServicio = serviciosDisponibles[Math.floor(Math.random() * serviciosDisponibles.length)];
-                setSelectedServicio(randomServicio);
-                setSelectedServicioId(randomServicio.id || randomServicio.servicio_id);
-
-                // Llamar a la función de verificación de disponibilidad
-                verificarDisponibilidadMensual();
+    useEffect(() => {
+        axios.get('/api/public/barberos')
+            .then(response => {
+                const barberosActivos = response.data.filter(barbero => barbero.estado === 'activo');
+                setBarberos(barberosActivos);
+                selectRandomBarberoAndService(barberosActivos);
             })
-            .catch((error) => {
-                console.error("Error al cargar servicios:", error);
-                Swal.fire("Error", "No se pudieron cargar los servicios del barbero.", "error");
-            });
-    }
-};
+            .catch(error => console.error("Error al cargar los barberos:", error));
+    }, []);
+
+    const selectRandomBarberoAndService = async (barberosActivos) => {
+        if (barberosActivos.length > 0) {
+            const randomBarbero = barberosActivos[Math.floor(Math.random() * barberosActivos.length)];
+            setSelectedBarbero(randomBarbero);
+            axios
+                .get(`/api/public/barberos/${randomBarbero.id}/servicios`)
+                .then((response) => {
+                    const serviciosDisponibles = response.data;
+                    setServicios(serviciosDisponibles);
+                    const randomServicio = serviciosDisponibles[Math.floor(Math.random() * serviciosDisponibles.length)];
+                    setSelectedServicio(randomServicio);
+                    setSelectedServicioId(randomServicio.id || randomServicio.servicio_id);
+                    verificarDisponibilidadMensual();
+                })
+                .catch(() => {
+                });
+        }
+    };
+
+
 
 
     useEffect(() => {
@@ -97,7 +91,18 @@ const selectRandomBarberoAndService = async (barberosActivos) => {
                 console.error("Error al cargar servicios del barbero:", error);
                 Swal.fire("Error", "No se pudieron cargar los servicios del barbero.", "error");
             });
+
+        // Obtener los días de descanso del barbero seleccionado
+        axios.get(`/api/public/descansos/${barbero.id}`)
+            .then(response => {
+                setDiasDescansoBarbero(response.data);  // Actualizar días de descanso del barbero
+            })
+            .catch(error => {
+                console.error("Error al cargar los días de descanso del barbero:", error);
+                Swal.fire("Error", "No se pudieron cargar los días de descanso del barbero.", "error");
+            });
     };
+
 
 
 
@@ -225,6 +230,12 @@ const selectRandomBarberoAndService = async (barberosActivos) => {
         if (holidays.isHoliday(date) || dayOfWeek === 0) {
             return 'day-no-disponible';
         }
+
+        // Verificar si la fecha está en los descansos del barbero
+        if (diasDescansoBarbero.includes(dateStr)) {
+            return 'day-no-disponible';  // Clase CSS para marcar el día como no disponible (vacaciones o descanso)
+        }
+
         if (descansos.includes(dateStr)) {
             return 'day-no-disponible';  // Clase CSS para marcar el día como no disponible
         }
@@ -293,64 +304,64 @@ const selectRandomBarberoAndService = async (barberosActivos) => {
                     </div>
                 )}
                 {step === 2 && (
-    <div className="servicio-selection">
-        <h3 className="text-2xl font-semibold text-center">Seleccione un Servicio:</h3>
-        <div className="grid grid-cols-3 gap-6 mt-6">
-            {servicios.map(servicio => (
-                <div
-                key={servicio.id}
-                className="servicio-card cursor-pointer p-4 text-center rounded-lg border border-gray-300 hover:bg-blue-100 transition"
-                onClick={() => handleSelectServicio(servicio)} // Asegurarte que se pasa el objeto completo
-            >
-                <h4 className="text-xl font-bold">{servicio.nombre}</h4>
-                <h5 className="text-gray-600 mt-2 text-sm">{servicio.duracion} minutos</h5>
-                <p className="text-gray-600 mt-2">{servicio.precio}€</p>
-            </div>
+                    <div className="servicio-selection">
+                        <h3 className="text-2xl font-semibold text-center">Seleccione un Servicio:</h3>
+                        <div className="grid grid-cols-3 gap-6 mt-6">
+                            {servicios.map(servicio => (
+                                <div
+                                    key={servicio.id}
+                                    className="servicio-card cursor-pointer p-4 text-center rounded-lg border border-gray-300 hover:bg-blue-100 transition"
+                                    onClick={() => handleSelectServicio(servicio)} // Asegurarte que se pasa el objeto completo
+                                >
+                                    <h4 className="text-xl font-bold">{servicio.nombre}</h4>
+                                    <h5 className="text-gray-600 mt-2 text-sm">{servicio.duracion} minutos</h5>
+                                    <p className="text-gray-600 mt-2">{servicio.precio}€</p>
+                                </div>
 
-            ))}
-        </div>
-        <button
-            className="mt-6 px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition"
-            onClick={handleBack}
-        >
-            Volver Atrás
-        </button>
-    </div>
-)}
-{step === 3 && (
-    <div className="calendar-selection text-center">
-        <h3 className="text-2xl font-semibold">Selecciona el día:</h3>
-        <br /><br />
-        <div className="calendar-container mt-6 flex flex-col items-center">
-        {isLoadingCalendar ? (
-                <p className="text-gray-500 text-xl">Cargando calendario...</p>
-            ) : (
-            <Calendar
-                onChange={handleSelectDate}
-                value={selectedDate}
-                minDate={minDate}
-                maxDate={maxDate}
-                tileClassName={tileClassName}
-                tileDisabled={({ date }) => {
-                    const dateStr = dayjs(date).format('YYYY-MM-DD');
+                            ))}
+                        </div>
+                        <button
+                            className="mt-6 px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition"
+                            onClick={handleBack}
+                        >
+                            Volver Atrás
+                        </button>
+                    </div>
+                )}
+                {step === 3 && (
+                    <div className="calendar-selection text-center">
+                        <h3 className="text-2xl font-semibold">Selecciona el día:</h3>
+                        <br /><br />
+                        <div className="calendar-container mt-6 flex flex-col items-center">
+                            {isLoadingCalendar ? (
+                                <p className="text-gray-500 text-xl">Cargando calendario...</p>
+                            ) : (
+                                <Calendar
+                                    onChange={handleSelectDate}
+                                    value={selectedDate}
+                                    minDate={minDate}
+                                    maxDate={maxDate}
+                                    tileClassName={tileClassName}
+                                    tileDisabled={({ date }) => {
+                                        const dateStr = dayjs(date).format('YYYY-MM-DD');
 
-                    // Deshabilitar los días que están en descansos
-                    if (descansos.includes(dateStr)) {
-                        return true;
-                    }
+                                        // Deshabilitar los días que están en descansos
+                                        if (descansos.includes(dateStr)) {
+                                            return true;
+                                        }
 
-                    // Deshabilitar domingos
-                    const dayOfWeek = dayjs(date).day();
-                    if (dayOfWeek === 0) {
-                        return true;
-                    }
+                                        // Deshabilitar domingos
+                                        const dayOfWeek = dayjs(date).day();
+                                        if (dayOfWeek === 0) {
+                                            return true;
+                                        }
 
-                    // No deshabilitar ningún otro día
-                    return false;
-                }}
-            />)}
-            <style>
-    {`
+                                        // No deshabilitar ningún otro día
+                                        return false;
+                                    }}
+                                />)}
+                            <style>
+                                {`
 
 
     .day-sin-citas {
@@ -362,48 +373,48 @@ const selectRandomBarberoAndService = async (barberosActivos) => {
         background-color: #c6c8ca !important;
     }
     `}
-</style>
+                            </style>
 
-        </div>
-        <br /><br /><br />
+                        </div>
+                        <br /><br /><br />
 
-<p className="mt-2 text-gray-600 text-sm">
-    Los días marcados en <span className="font-bold text-red-600">🟥</span>  son festivos o días de descanso.
-</p>
-<p className="mt-2 text-gray-600 text-sm">
-    Los días marcados en <span className="font-bold text-gray-600">🔘</span>  no quedan citas disponibles.
-</p>
+                        <p className="mt-2 text-gray-600 text-sm">
+                            Los días marcados en <span className="font-bold text-red-600">🟥</span>  son festivos o días de descanso.
+                        </p>
+                        <p className="mt-2 text-gray-600 text-sm">
+                            Los días marcados en <span className="font-bold text-gray-600">🔘</span>  no quedan citas disponibles.
+                        </p>
 
-        <br /><br />
-        {selectedDate && (
-    <div className="horarios-disponibles mt-4">
-        <h3 className="text-2xl font-semibold">Horarios disponibles:</h3>
-        {horariosDisponibles.length > 0 ? (
-            <div className="horarios-list mt-4 grid grid-cols-4 gap-4">
-                {horariosDisponibles.map((horario) => (
-                    <div
-                        key={horario}
-                        className="horario-item p-2 bg-blue-500 text-white rounded cursor-pointer"
-                        onClick={() => handleSelectHorario(horario)}
-                    >
-                        {horario}
+                        <br /><br />
+                        {selectedDate && (
+                            <div className="horarios-disponibles mt-4">
+                                <h3 className="text-2xl font-semibold">Horarios disponibles:</h3>
+                                {horariosDisponibles.length > 0 ? (
+                                    <div className="horarios-list mt-4 grid grid-cols-4 gap-4">
+                                        {horariosDisponibles.map((horario) => (
+                                            <div
+                                                key={horario}
+                                                className="horario-item p-2 bg-blue-500 text-white rounded cursor-pointer"
+                                                onClick={() => handleSelectHorario(horario)}
+                                            >
+                                                {horario}
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <p className="text-red-500 mt-4">No hay horarios disponibles para esta fecha.</p>
+                                )}
+
+                            </div>
+                        )}
+                        <button
+                            className="mt-6 px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition"
+                            onClick={handleBack}
+                        >
+                            Volver Atrás
+                        </button>
                     </div>
-                ))}
-            </div>
-        ) : (
-    <p className="text-red-500 mt-4">No hay horarios disponibles para esta fecha.</p>
-)}
-
-            </div>
-        )}
-        <button
-            className="mt-6 px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition"
-            onClick={handleBack}
-        >
-            Volver Atrás
-        </button>
-    </div>
-)}
+                )}
 
             </div>
             <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />

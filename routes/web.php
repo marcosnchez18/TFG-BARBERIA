@@ -354,6 +354,7 @@ Route::get('/servicios-invitado', function () {
 
 Route::get('/api/public/citas/disponibilidad', [RecompensaController::class, 'disponibilidad'])->name('public.citas.disponibilidad');
 Route::get('/api/public/descansos', [DescansoController::class, 'getDescansos'])->name('descansos.public.dispo');
+Route::get('/api/public/descansos/{barberoId}', [DescansoController::class, 'obtenerDiasDescanso']);
 
 Route::get('/api/public/barberos', [AdminController::class, 'obtenerBarberos']);
 Route::get('/api/public/servicios', [ServicioController::class, 'index'])->name('servicios.public.index');
