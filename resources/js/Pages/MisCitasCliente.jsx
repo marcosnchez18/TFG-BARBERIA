@@ -90,9 +90,9 @@ export default function MisCitasCliente() {
         }
 
         // Consulta los descansos globales
-        axios.get('/descansos')
+        axios.get('/api/descansos')
             .then(response => {
-                setDescansos(prevDescansos => [...prevDescansos, ...response.data]);  
+                setDescansos(prevDescansos => [...prevDescansos, ...response.data]);
             })
             .catch(error => {
                 console.error("Error al cargar los descansos globales:", error);

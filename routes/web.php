@@ -181,9 +181,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::post('/admin/descansos', [DescansoController::class, 'store'])->name('admin.descansos.store');
 
-    // routes/web.php o routes/api.php
+
     Route::post('/admin/dias-descanso', [AdminController::class, 'guardarDiasDescanso'])->name('admin.diasDescanso');
-    Route::get('/descansos', [DescansoController::class, 'getDescansos']);
+    Route::get('/api/descansos', [DescansoController::class, 'getDescansos']);
 
     Route::post('/admin/guardar-descanso-individual', [AdminController::class, 'guardarDescansoIndividual'])
     ->name('admin.guardar.descanso.individual');
@@ -352,16 +352,16 @@ Route::get('/servicios-invitado', function () {
     return Inertia::render('Huecos');
 })->name('servicios-invitado');
 
-
-Route::get('/api/public/servicios', [ServicioController::class, 'index'])->name('servicios.public.index');
-
+Route::get('/api/public/citas/disponibilidad', [RecompensaController::class, 'disponibilidad'])->name('public.citas.disponibilidad');
 Route::get('/api/public/descansos', [DescansoController::class, 'getDescansos'])->name('descansos.public.dispo');
 
-Route::get('/api/public/citas/disponibilidad', [RecompensaController::class, 'disponibilidad'])->name('public.citas.disponibilidad');
-
-
+Route::get('/api/public/barberos', [AdminController::class, 'obtenerBarberos']);
+Route::get('/api/public/servicios', [ServicioController::class, 'index'])->name('servicios.public.index');
 Route::get('/api/public/barberos/{barberoId}/servicios', [RecompensaController::class, 'getServiciosPorBarbero'])
     ->name('public.barberos.servicios');
 
 
-Route::get('/api/public/barberos', [AdminController::class, 'obtenerBarberos']);
+
+
+
+

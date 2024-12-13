@@ -29,15 +29,45 @@ export default function Huecos() {
 const [diasSinCitas, setDiasSinCitas] = useState([]); // Días sin citas disponibles
 
 
-    useEffect(() => {
-        // Cargar barberos activos
-        axios.get('/api/public/barberos')
-            .then(response => {
-                const barberosActivos = response.data.filter(barbero => barbero.estado === 'activo');
-                setBarberos(barberosActivos);
+useEffect(() => {
+    // Cargar barberos activos
+    axios.get('/api/public/barberos')
+        .then(response => {
+            const barberosActivos = response.data.filter(barbero => barbero.estado === 'activo');
+            setBarberos(barberosActivos);
+            selectRandomBarberoAndService(barberosActivos); // Llamar a la función para seleccionar un barbero y servicio aleatorio
+        })
+        .catch(error => console.error("Error al cargar los barberos:", error));
+}, []);
+
+const selectRandomBarberoAndService = async (barberosActivos) => {
+    if (barberosActivos.length > 0) {
+        // Seleccionar un barbero aleatorio
+        const randomBarbero = barberosActivos[Math.floor(Math.random() * barberosActivos.length)];
+        setSelectedBarbero(randomBarbero);
+
+        // Obtener los servicios para el barbero seleccionado
+        axios
+            .get(`/api/public/barberos/${randomBarbero.id}/servicios`)
+            .then((response) => {
+                const serviciosDisponibles = response.data;
+                setServicios(serviciosDisponibles);
+
+                // Seleccionar un servicio aleatorio
+                const randomServicio = serviciosDisponibles[Math.floor(Math.random() * serviciosDisponibles.length)];
+                setSelectedServicio(randomServicio);
+                setSelectedServicioId(randomServicio.id || randomServicio.servicio_id);
+
+                // Llamar a la función de verificación de disponibilidad
+                verificarDisponibilidadMensual();
             })
-            .catch(error => console.error("Error al cargar los barberos:", error));
-    }, []);
+            .catch((error) => {
+                console.error("Error al cargar servicios:", error);
+                Swal.fire("Error", "No se pudieron cargar los servicios del barbero.", "error");
+            });
+    }
+};
+
 
     useEffect(() => {
         // Llamada a la API para obtener los días de descanso
@@ -112,7 +142,7 @@ const [diasSinCitas, setDiasSinCitas] = useState([]); // Días sin citas disponi
             return;
         }
 
-        const API_BASE_URL = `${window.location.origin}`; 
+        const API_BASE_URL = `${window.location.origin}`;
 
         // Mostrar los datos que se están enviando a la API
         console.log('Datos enviados a la API:', {
