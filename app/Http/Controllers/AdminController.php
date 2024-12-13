@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\CancelacionCitaCliente;
-
+use App\Models\DescansoIndividual;
 
 class AdminController extends Controller
 {
@@ -532,6 +532,92 @@ public function guardarDiasDescanso(Request $request)
 
     return response()->json(['message' => 'Días guardados correctamente'], 200);
 }
+
+public function guardarDescansoIndividual(Request $request)
+{
+    $userId = $request->input('user_id');  // ID del usuario al que se le asigna el descanso (anteriormente barbero_id)
+    $dias = $request->input('dias');  // Días seleccionados (pueden ser uno o varios)
+
+    // Asegurarnos de que el user_id y la lista de días no estén vacíos
+    if (!$userId) {
+        return response()->json(['message' => 'El ID del usuario es requerido.'], 400);
+    }
+
+    if (count($dias) == 0) {
+        return response()->json(['message' => 'Por favor, selecciona al menos un día de descanso'], 400);
+    }
+
+    // Comprobamos si solo hay un día o un rango de días
+    if (count($dias) == 1) {
+        // Si solo hay un día seleccionado, lo guardamos directamente
+        $fechaDescanso = Carbon::parse($dias[0])->addDay()->format('Y-m-d'); // Sumar 1 día al solo seleccionado
+
+        // Verificar si ya existe el día para este usuario
+        $existe = DescansoIndividual::where('user_id', $userId)
+                                 ->where('fecha', $fechaDescanso)
+                                 ->exists();
+
+        if ($existe) {
+            return response()->json(['message' => 'Este día ya está registrado como descanso para este usuario', 'fecha' => $fechaDescanso], 400);
+        }
+
+        // Si no existe, lo guardamos
+        DescansoIndividual::create([
+            'user_id' => $userId,
+            'fecha' => $fechaDescanso,
+        ]);
+
+    } else {
+        // Si hay un rango de días, ordenamos las fechas y las iteramos
+        $fechaInicio = Carbon::parse($dias[0])->addDay();  // Sumamos 1 día al primer día del rango
+        $fechaFin = Carbon::parse(end($dias));  // Último día del rango
+
+        // Asegúrate de que el rango es válido (fecha de inicio menor que la de fin)
+        if ($fechaInicio->greaterThan($fechaFin)) {
+            return response()->json(['message' => 'La fecha de inicio no puede ser mayor que la de fin'], 400);
+        }
+
+        // Iteramos desde la fecha de inicio hasta la fecha final
+        while ($fechaInicio->lte($fechaFin)) {
+            $fechaDescanso = $fechaInicio->format('Y-m-d');
+
+            // Verificar si ya existe el descanso para este usuario
+            $existe = DescansoIndividual::where('user_id', $userId)
+                                     ->where('fecha', $fechaDescanso)
+                                     ->exists();
+
+            if ($existe) {
+                return response()->json(['message' => 'Este día ya está registrado como descanso para este usuario', 'fecha' => $fechaDescanso], 400);
+            }
+
+            // Si no existe, lo guardamos
+            DescansoIndividual::create([
+                'user_id' => $userId,
+                'fecha' => $fechaDescanso,
+            ]);
+
+            // Avanzamos al siguiente día
+            $fechaInicio->addDay();  // Sumamos 1 día a cada día dentro del rango
+        }
+
+        // Asegúrate de guardar el último día del rango (fechaFin)
+        $fechaDescanso = $fechaFin->format('Y-m-d');
+        $existe = DescansoIndividual::where('user_id', $userId)
+                                 ->where('fecha', $fechaDescanso)
+                                 ->exists();
+
+        if (!$existe) {
+            DescansoIndividual::create([
+                'user_id' => $userId,
+                'fecha' => $fechaDescanso,
+            ]);
+        }
+    }
+
+    return response()->json(['message' => 'Días de descanso guardados correctamente para el usuario'], 200);
+}
+
+
 
 
 }

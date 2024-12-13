@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { usePage } from '@inertiajs/react';
 import dayjs from 'dayjs';
 import Calendar from 'react-calendar';
@@ -30,6 +30,12 @@ export default function Opciones() {
     const [selectedDates, setSelectedDates] = useState([]);
     const [tipoDescanso, setTipoDescanso] = useState(''); // 'libre' o 'vacaciones'
 
+    const [barberos, setBarberos] = useState([]);
+const [barberoSeleccionado, setBarberoSeleccionado] = useState(null);
+const [showCalendarBarbero, setShowCalendarBarbero] = useState(false);
+
+
+
 
     const handleGuardarDescansos = () => {
         axios.post('/admin/dias-descanso', { dias: selectedDates })
@@ -42,6 +48,34 @@ export default function Opciones() {
             });
     };
 
+    const handleGuardarDescansosBarbero = () => {
+        if (!barberoSeleccionado) {
+            Swal.fire('Error', 'Por favor, selecciona un barbero', 'error');
+            return;
+        }
+
+        // Verifica que el user_id no sea nulo antes de enviarlo
+        if (!barberoSeleccionado) {
+            Swal.fire('Error', 'El ID del barbero es inválido', 'error');
+            return;
+        }
+
+        axios.post('/admin/guardar-descanso-individual', {
+            user_id: barberoSeleccionado, // O el ID del usuario si es otro tipo de usuario
+            dias: selectedDates
+        })
+        .then(() => {
+            Swal.fire('Días guardados', 'Los días de descanso se han guardado correctamente para el usuario', 'success');
+            setShowCalendarBarbero(false); // Cerrar el calendario después de guardar
+        })
+        .catch(() => {
+            Swal.fire('Error', 'Hubo un problema al guardar los días de descanso del usuario', 'error');
+        });
+
+    };
+
+
+
 
     const handleDateChange = (date) => {
         if (tipoDescanso === 'libre') {
@@ -50,6 +84,17 @@ export default function Opciones() {
             setSelectedDates(date);  // Mantén el comportamiento original para vacaciones (rango de fechas)
         }
     };
+
+    useEffect(() => {
+        axios.get('/api/barberos')
+            .then(response => {
+                // Filtrar solo los barberos activos
+                const barberosActivos = response.data.filter(barbero => barbero.estado === 'activo');
+                setBarberos(barberosActivos);
+            })
+            .catch(error => console.error("Error al cargar los barberos:", error));
+    }, []);
+
 
 
     return (
@@ -216,6 +261,81 @@ export default function Opciones() {
                             </div>
                         )}
                     </div>
+
+                    <div className="herramienta-item bg-[#e3f7ee] p-4 rounded-lg text-center">
+    <FontAwesomeIcon icon={faCalendarAlt} className="text-[#4A7A7C] text-4xl mb-2" />
+    <p className="text-lg font-semibold">Gestionar Vacaciones Barbero</p>
+    <br />
+    <button
+        onClick={() => setShowCalendarBarbero(true)} // Abre el calendario al hacer clic
+        className="mt-2 px-4 py-2 bg-[#A87B43] text-white rounded hover:bg-[#875d34]">
+        Seleccionar Días
+    </button>
+</div>
+
+
+{showCalendarBarbero && (
+    <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
+        <div className="bg-white p-6 rounded-lg shadow-lg max-w-lg w-full relative">
+            <button
+                onClick={() => setShowCalendarBarbero(false)} // Cerrar el modal
+                className="absolute top-2 right-2 text-xl text-gray-500 hover:text-gray-700">
+                ×
+            </button>
+
+            <h2 className="text-2xl font-semibold text-[#A87B43] mb-4 text-center">Selecciona los Días de Descanso para el Barbero</h2>
+
+            <div className="mb-4">
+                <label className="block text-lg font-semibold">¿Qué tipo de descanso es?</label>
+                <select
+                    onChange={(e) => setTipoDescanso(e.target.value)}
+                    className="mt-2 px-6 py-3 w-full max-w-xs border border-gray-300 rounded-lg text-lg"
+                >
+                    <option value="">Selecciona una opción</option>
+                    <option value="libre">Es un día libre</option>
+                    <option value="vacaciones">Son vacaciones</option>
+                </select>
+            </div>
+
+            {/* Seleccionar barbero */}
+            <div className="mb-4">
+                <label className="block text-lg font-semibold">Selecciona el Barbero</label>
+                <select
+                    onChange={(e) => setBarberoSeleccionado(e.target.value)}
+                    className="mt-2 px-6 py-3 w-full max-w-xs border border-gray-300 rounded-lg text-lg"
+                >
+                    <option value="">Selecciona un Barbero</option>
+                    {barberos.map(barbero => (
+                        <option key={barbero.id} value={barbero.id}>{barbero.nombre}</option>
+                    ))}
+                </select>
+            </div>
+
+            <div className="flex justify-center mb-4">
+                <Calendar
+                    onChange={handleDateChange}
+                    value={selectedDates}
+                    selectRange={tipoDescanso === 'vacaciones'} // Solo permite rangos si son vacaciones
+                    className="w-full max-w-md"
+                />
+            </div>
+
+            <div className="mt-4 flex justify-between">
+                <button
+                    className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+                    onClick={() => setShowCalendarBarbero(false)}>
+                    Cancelar
+                </button>
+                <button
+                    className="px-4 py-2 bg-[#A87B43] text-white rounded hover:bg-[#875d34]"
+                    onClick={handleGuardarDescansosBarbero}>
+                    Guardar Días
+                </button>
+            </div>
+        </div>
+    </div>
+)}
+
 
                     <div className="herramienta-item bg-[#f0fcd0] p-4 rounded-lg text-center">
                         <FontAwesomeIcon icon={faShop} className="text-[#4A7A7C] text-4xl mb-2" />

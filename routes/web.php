@@ -185,6 +185,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/admin/dias-descanso', [AdminController::class, 'guardarDiasDescanso'])->name('admin.diasDescanso');
     Route::get('/descansos', [DescansoController::class, 'getDescansos']);
 
+    Route::post('/admin/guardar-descanso-individual', [AdminController::class, 'guardarDescansoIndividual'])
+    ->name('admin.guardar.descanso.individual');
+
 
 
 
