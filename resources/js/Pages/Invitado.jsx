@@ -72,11 +72,12 @@ export default function Invitado() {
                                 No obstante, puedes ver las horas disponibles de nuestros barberos.
                             </p>
                             <button
-                                onClick={() => window.open(route('servicios-invitado'), '_blank')}
-                                className="inicio-cliente-carta-boton mt-6 bg-blue-500 text-white px-6 py-3 rounded-md hover:bg-blue-600"
-                            >
-                                Ver disponibilidad
-                            </button>
+    onClick={() => window.location.href = route('servicios-invitado')}
+    className="inicio-cliente-carta-boton mt-6 bg-blue-500 text-white px-6 py-3 rounded-md hover:bg-blue-600"
+>
+    Ver disponibilidad
+</button>
+
 
                         </div>
                     </div>

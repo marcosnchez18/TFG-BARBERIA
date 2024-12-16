@@ -1,7 +1,7 @@
-// src/Components/Productos.jsx
+
 
 import React from 'react';
-import Swal from 'sweetalert2'; // Importamos SweetAlert2
+import Swal from 'sweetalert2'; 
 
 export default function Productos({ productos, agregarAlCarrito, verProducto, cargando }) {
     return (
