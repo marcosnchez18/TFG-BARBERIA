@@ -41,6 +41,7 @@ export default function Huecos() {
             .catch(error => console.error("Error al cargar los barberos:", error));
     }, []);
 
+
     const selectRandomBarberoAndService = async (barberosActivos) => {
         if (barberosActivos.length > 0) {
             const randomBarbero = barberosActivos[Math.floor(Math.random() * barberosActivos.length)];
@@ -212,9 +213,9 @@ export default function Huecos() {
             })
         );
 
-        console.log("Días sin citas después de la verificación:", diasSinCitasTemp); // Depura los días sin citas
+        console.log("Días sin citas después de la verificación:", diasSinCitasTemp); 
         setDiasSinCitas(diasSinCitasTemp);
-        setIsLoadingCalendar(false); // Finaliza la carga
+        setIsLoadingCalendar(false);
     };
 
 
@@ -227,8 +228,8 @@ export default function Huecos() {
         const dayOfWeek = dayjs(date).day();
         const dateStr = dayjs(date).format('YYYY-MM-DD');
 
-        if (holidays.isHoliday(date) || dayOfWeek === 0) {
-            return 'day-no-disponible';
+        if (descansos.includes(dateStr)) {
+            return 'day-no-disponible';  // Clase CSS para marcar el día como no disponible
         }
 
         // Verificar si la fecha está en los descansos del barbero
@@ -236,8 +237,8 @@ export default function Huecos() {
             return 'day-no-disponible';  // Clase CSS para marcar el día como no disponible (vacaciones o descanso)
         }
 
-        if (descansos.includes(dateStr)) {
-            return 'day-no-disponible';  // Clase CSS para marcar el día como no disponible
+        if (holidays.isHoliday(date) || dayOfWeek === 0) {
+            return 'day-no-disponible';
         }
 
         if (diasSinCitas.includes(dateStr)) {
@@ -301,6 +302,17 @@ export default function Huecos() {
                                 );
                             })}
                         </div>
+
+                        <br /><br />
+                        <button
+    className="mt-6 px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition"
+    onClick={() => {
+        window.location.href = '/invitado'; // Redirige a la página /invitado
+    }}
+>
+    Volver Atrás
+</button>
+
                     </div>
                 )}
                 {step === 2 && (
