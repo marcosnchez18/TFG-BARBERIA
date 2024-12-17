@@ -62,7 +62,7 @@ class NoticiaController extends Controller
     // Actualizar una noticia
     public function update(Request $request, Noticia $noticia)
     {
-        
+
         $request->validate([
             'titulo' => 'required|string|max:255',
             'contenido' => 'required|string',

@@ -58,7 +58,7 @@ export default function Asignar() {
     // Cargar servicios asignados al cambiar el barbero seleccionado
     useEffect(() => {
         if (activeTab === 'ver' && selectedBarbero) {
-            axios.get(`/api/barberos/${selectedBarbero}/servicios`)
+            axios.get(`/api/asignar/barberos/${selectedBarbero}/servicios`)
                 .then(response => setAssignedServices(response.data))
                 .catch(error => console.error("Error al cargar servicios asignados:", error));
         }

@@ -15,8 +15,33 @@ export default function ForoAdmin({ noticias }) {
     const [isEditing, setIsEditing] = useState(false);
     const [editingNoticiaId, setEditingNoticiaId] = useState(null);
 
+    // Validar los campos
+    const validateForm = () => {
+        if (!data.titulo.trim()) {
+            Swal.fire('Error', 'El título es obligatorio.', 'error');
+            return false;
+        }
+        if (data.titulo.length < 5) {
+            Swal.fire('Error', 'El título debe tener al menos 5 caracteres.', 'error');
+            return false;
+        }
+        if (!data.contenido.trim()) {
+            Swal.fire('Error', 'El contenido es obligatorio.', 'error');
+            return false;
+        }
+        if (data.contenido.length < 10) {
+            Swal.fire('Error', 'El contenido debe tener al menos 10 caracteres.', 'error');
+            return false;
+        }
+        return true;
+    };
+
     const submit = (e) => {
         e.preventDefault();
+
+        // Validar los campos antes de enviar
+        if (!validateForm()) return;
+
         if (isEditing) {
             put(route('noticias.update', editingNoticiaId), {
                 onSuccess: () => {
@@ -24,12 +49,18 @@ export default function ForoAdmin({ noticias }) {
                     setIsEditing(false);
                     Swal.fire('Actualizado', 'La noticia se actualizó con éxito.', 'success');
                 },
+                onError: () => {
+                    Swal.fire('Error', 'Hubo un problema al actualizar la noticia.', 'error');
+                },
             });
         } else {
             post(route('noticias.store'), {
                 onSuccess: () => {
                     reset();
                     Swal.fire('Publicada', 'La noticia se publicó con éxito.', 'success');
+                },
+                onError: () => {
+                    Swal.fire('Error', 'Hubo un problema al publicar la noticia.', 'error');
                 },
             });
         }
@@ -57,6 +88,9 @@ export default function ForoAdmin({ noticias }) {
                 Inertia.delete(route('noticias.destroy', id), {
                     onSuccess: () => {
                         Swal.fire('Eliminada', 'La noticia fue eliminada con éxito.', 'success');
+                    },
+                    onError: () => {
+                        Swal.fire('Error', 'Hubo un problema al eliminar la noticia.', 'error');
                     },
                 });
             }

@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
-    
+
     public function create()
     {
         return inertia('Auth/Login');
@@ -15,27 +15,33 @@ class LoginController extends Controller
 
 
     public function store(Request $request)
-    {
-        $credentials = $request->only('email', 'password');
+{
+    $credentials = $request->only('email', 'password');
 
-        if (Auth::attempt($credentials)) {
-            $user = Auth::user();
+    if (Auth::attempt($credentials)) {
+        $user = Auth::user();
 
-            // Verificar si el usuario está inactivo
-            if ($user->estado === 'inactivo') {
-                Auth::logout();
-                return redirect()->route('account.inactive');
-            }
-
-            // Redirigir según el rol del usuario
-            return redirect()->route($user->rol === 'admin' ? 'mi-gestion-admin' : 'mi-cuenta');
+        // Verificar si el usuario está inactivo
+        if ($user->estado === 'inactivo') {
+            Auth::logout();
+            return redirect()->route('account.inactive');
         }
 
+        // Redirigir según el rol del usuario
+        if ($user->rol === 'admin') {
+            return redirect()->route('mi-gestion-admin');
+        } elseif ($user->rol === 'trabajador') {
+            return redirect()->route('mi-cuenta-trabajador');
+        }
 
-        return back()->withErrors([
-            'email' => 'Las credenciales proporcionadas no coinciden con nuestros registros.',
-        ]);
+        return redirect()->route('mi-cuenta');
     }
+
+    return back()->withErrors([
+        'email' => 'Las credenciales proporcionadas no coinciden con nuestros registros.',
+    ]);
+}
+
 
 
     public function logout(Request $request)

@@ -59,7 +59,7 @@ export default function ElegirCita() {
 
     useEffect(() => {
 
-        axios.get('/descansos')
+        axios.get('/api/descansos')
             .then(response => {
                 setDescansos(response.data);
             })

@@ -15,7 +15,9 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\CancelacionCitaCliente;
+use App\Mail\WelcomeMail;
 use App\Models\DescansoIndividual;
+use Illuminate\Auth\Events\Registered;
 
 class AdminController extends Controller
 {
@@ -51,6 +53,48 @@ class AdminController extends Controller
             ->avg('valoracion');
 
         return Inertia::render('AdminDashboard', [
+            'user' => Auth::user(),
+            'citasHoy' => $citasHoy,
+            'nuevosUsuariosHoy' => $nuevosUsuariosHoy,
+            'gananciasMes' => $gananciasMes,
+            'nombreMesActual' => ucfirst($nombreMesActual),
+            'valoracionMedia' => $valoracionMedia ? round($valoracionMedia, 2) : 0,
+
+        ]);
+    }
+
+    public function dashboardTrabajador()
+    {
+        $barberoId = Auth::id();
+        $today = Carbon::today();
+        $startOfMonth = $today->copy()->startOfMonth();
+        $endOfMonth = $today->copy()->endOfMonth();
+
+        // Mes actual en español
+        $nombreMesActual = $today->locale('es')->translatedFormat('F');
+
+        // Contar citas de hoy para el barbero logueado
+        $citasHoy = Cita::whereDate('fecha_hora_cita', $today)
+            ->where('barbero_id', $barberoId)
+            ->count();
+
+        // Contar usuarios nuevos hoy con rol de cliente
+        $nuevosUsuariosHoy = User::where('rol', 'cliente')
+            ->whereDate('created_at', $today)
+            ->count();
+
+        // Ganancias del mes actual basadas en la columna precio_cita
+        $gananciasMes = Cita::where('barbero_id', $barberoId)
+            ->whereBetween('fecha_hora_cita', [$startOfMonth, $endOfMonth])
+            ->sum('precio_cita');
+
+        // Calcular valoración media de citas completadas del barbero
+        $valoracionMedia = Cita::where('barbero_id', $barberoId)
+            ->where('estado', 'completada')
+            ->whereNotNull('valoracion')
+            ->avg('valoracion');
+
+        return Inertia::render('TrabajadorDashboard', [
             'user' => Auth::user(),
             'citasHoy' => $citasHoy,
             'nuevosUsuariosHoy' => $nuevosUsuariosHoy,
@@ -202,33 +246,44 @@ public function createBarbero()
 
 
     public function store(Request $request)
-    {
-        // Validar los datos del formulario
-        $request->validate([
-            'nombre' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|confirmed|min:6', // La contraseña debe confirmarse
-            'imagen' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Validar que la imagen sea válida
-        ]);
+{
+    // Validar los datos del formulario
+    $request->validate([
+        'nombre' => 'required|string|max:255',
+        'email' => 'required|string|email|max:255|unique:users',
+        'password' => 'required|string|confirmed|min:6', // La contraseña debe confirmarse
+        'imagen' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Validar que la imagen sea válida
+    ]);
 
-        // Manejar la imagen si existe
-        $imagenPath = null;
-        if ($request->hasFile('imagen')) {
-            $imagenPath = $request->file('imagen')->store('images', 'public');
-        }
-
-        // Crear un nuevo usuario con el rol de "trabajador"
-        User::create([
-            'nombre' => $request->nombre,
-            'email' => $request->email,
-            'password' => Hash::make($request->password), // Encriptar la contraseña
-            'rol' => 'trabajador', // Asignar el rol fijo de trabajador
-            'imagen' => $imagenPath, // Guardar la ruta de la imagen si se proporcionó
-        ]);
-
-        // Redirigir con un mensaje de éxito
-        return response()->json(['message' => 'Barbero creado exitosamente'], 201);
+    // Manejar la imagen si existe
+    $imagenPath = null;
+    if ($request->hasFile('imagen')) {
+        $imagenPath = $request->file('imagen')->store('images', 'public');
     }
+
+    // Crear un nuevo usuario con el rol de "trabajador"
+    $user = User::create([
+        'nombre' => $request->nombre,
+        'email' => $request->email,
+        'password' => Hash::make($request->password), // Encriptar la contraseña
+        'rol' => 'trabajador', // Asignar el rol fijo de trabajador
+        'imagen' => $imagenPath, // Guardar la ruta de la imagen si se proporcionó
+    ]);
+
+    // Enviar correo de bienvenida y verificación
+    Mail::to($user->email)->send(new WelcomeMail($user));
+
+    // Activar el evento de registro para generar el enlace de verificación
+    event(new Registered($user));
+
+
+
+    // Redirigir al usuario a la página para verificar su correo electrónico
+    return redirect()->route('verification.notice');
+    return response()->json(['message' => 'Barbero creado exitosamente'], 201);
+}
+        // Redirigir con un mensaje de éxito
+
 
     public function editarBarberos()
     {
@@ -600,7 +655,7 @@ public function guardarDescansoIndividual(Request $request)
             $fechaInicio->addDay();  // Sumamos 1 día a cada día dentro del rango
         }
 
-        
+
         $fechaDescanso = $fechaFin->format('Y-m-d');
         $existe = DescansoIndividual::where('user_id', $userId)
                                  ->where('fecha', $fechaDescanso)
