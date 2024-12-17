@@ -26,7 +26,7 @@ export default function CitasBarberia() {
         // Cargar datos de barberos y servicios para los filtros
         axios.get('/api/barberos').then((res) => setBarberos(res.data));
         axios.get('/api/servicios').then((res) => setServicios(res.data));
-        
+
     };
 
     const cargarCitas = () => {
@@ -233,6 +233,7 @@ export default function CitasBarberia() {
 
                                 return (
                                     <div key={cita.id} className="p-6 border rounded-lg shadow bg-white">
+                                        <p><strong>Barbero:</strong> {cita.barbero.nombre}</p>
                                         <p><strong>Cliente:</strong> {cita.usuario.nombre}</p>
                                         <p><strong>Servicio:</strong> {cita.servicio.nombre}</p>
                                         <p><strong>Estado:</strong> <span className={getEstadoColor(cita.estado)}>{cita.estado}</span></p>
