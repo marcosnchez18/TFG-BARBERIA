@@ -22,9 +22,13 @@ export default function AdminDashboard() {
     const [citasDia, setCitasDia] = useState([]);
     const holidays = new Holidays('ES', 'AN', 'CA');
 
+
     const [showCalendar, setShowCalendar] = useState(false); // Para mostrar el calendario
     const [selectedDates, setSelectedDates] = useState([]); // Para almacenar los días seleccionados
     const [highlightedDates, setHighlightedDates] = useState([]);
+    const [descansos, setDescansos] = useState([]);
+    const [descansosIndividuales, setDescansosIndividuales] = useState([]);
+
 
 
 
@@ -70,6 +74,14 @@ export default function AdminDashboard() {
             const isSunday = dayjs(date).day() === 0;
             const isHoliday = holidays.isHoliday(date);
 
+            if (descansos.includes(formattedDate)) {
+                return 'highlighted-descanso'; // Clase CSS para días de descanso
+            }
+
+            if (descansosIndividuales.includes(formattedDate)) {
+                return 'highlighted-descanso-indi'; // Clase CSS para descansos individuales
+            }
+
             if (isSunday || isHoliday) {
                 return 'highlighted-holiday'; // Clase CSS para domingos y festivos
             }
@@ -81,6 +93,7 @@ export default function AdminDashboard() {
         return null;
     };
 
+
     useEffect(() => {
         axios.get('/api/citas-usuario')
             .then(response => {
@@ -89,6 +102,33 @@ export default function AdminDashboard() {
             })
             .catch(error => console.error('Error al obtener las citas:', error));
     }, []);
+
+    useEffect(() => {
+        axios.get('/api/admin/descansos')
+            .then(response => {
+                const descansoDates = response.data.map(fecha => dayjs(fecha).format('YYYY-MM-DD'));
+                setDescansos(descansoDates);
+            })
+            .catch(error => {
+                console.error('Error al obtener los días de descanso:', error);
+            });
+    }, []);
+
+    useEffect(() => {
+        axios.get('/api/admin/descansos-individuales')
+            .then(response => {
+                const individualDates = response.data.map(date => dayjs(date).format('YYYY-MM-DD'));
+                setDescansosIndividuales(individualDates); // Actualiza los descansos individuales
+            })
+            .catch(error => {
+                console.error('Error al obtener los días de descanso individuales:', error);
+            });
+    }, []);
+
+
+
+
+
 
 
 
@@ -256,39 +296,55 @@ export default function AdminDashboard() {
                         <p>Los días en 🟢 indican que tienes citas. </p>
                         <p>Un día con un 🟦 es tu selección actual. </p>
                         <p>Los días con un 🟥 son festivos locales.</p>
+                        <p>Los días con un 🟧 son descansos generales.</p>
+                        <p>Los días con un 🟨 son tus descansos propios.</p>
 
                         <style>
-                            {`
+    {`
         /* Días con citas: Verde */
         .highlighted-date {
             background-color: #28a745; /* Verde para días con citas */
 
             border-radius: 50%; /* Círculo */
-
         }
         .highlighted-date:hover {
-            background-color: #218838; /* Verde más oscuro al pasar el ratón */
-        }
-        .highlighted-date-selected {
-            background-color: #1e7e34; /* Verde más fuerte al seleccionar */
-            color: white;
+            background-color: #218838; /* Verde más oscuro */
         }
 
-        /* Días festivos o domingos: Rojo */
+        /* Festivos y domingos: Rojo */
         .highlighted-holiday {
             background-color: #fde2e2; /* Fondo rojo claro */
-            color: #c00; /* Rojo intenso para el número */
+            color: #c00; /* Rojo intenso */
         }
         .highlighted-holiday:hover {
-            background-color: #f8d7da; /* Fondo ligeramente más oscuro */
+            background-color: #f8d7da; /* Fondo más oscuro */
         }
 
-        /* Otros estilos */
-        .calen-admin {
-            font-family: 'Arial', sans-serif;
+        /* Días de descanso: Naranja (cuadrados) */
+        .highlighted-descanso {
+            background-color: #ffa500; /* Naranja */
+            
+            border-radius: 0; /* Sin bordes redondeados (cuadrados) */
+            transition: background-color 0.3s ease;
         }
+        .highlighted-descanso:hover {
+            background-color: #ff8c00; /* Naranja más oscuro */
+        }
+/* Descansos individuales: Amarillo */
+.highlighted-descanso-indi {
+    background-color: #FFD700; /* Amarillo */
+    color: black;
+    border-radius: 0; /* Sin bordes redondeados */
+}
+
+.highlighted-descanso-indi:hover {
+    background-color: #FFC107; /* Amarillo más oscuro */
+}
+
     `}
-                        </style>
+</style>
+
+
 
 
 

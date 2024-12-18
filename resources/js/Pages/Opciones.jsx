@@ -36,6 +36,10 @@ export default function Opciones() {
     const [barberoSeleccionado, setBarberoSeleccionado] = useState(null);
     const [showCalendarBarbero, setShowCalendarBarbero] = useState(false);
 
+    const [descansos, setDescansos] = useState([]);
+    const [descansosIndividuales, setDescansosIndividuales] = useState([]);
+
+
 
 
 
@@ -86,6 +90,14 @@ export default function Opciones() {
                 return 'highlighted-holiday';
             }
 
+            if (descansos.includes(formattedDate)) {
+                return 'highlighted-descanso'; // Clase CSS para días de descanso
+            }
+
+            if (descansosIndividuales.includes(formattedDate)) {
+                return 'highlighted-descanso-indi'; // Clase CSS para descansos individuales
+            }
+
             if (selectedDates.some(selectedDate => dayjs(selectedDate).format('YYYY-MM-DD') === formattedDate)) {
                 return 'highlighted-date';
             }
@@ -114,6 +126,30 @@ export default function Opciones() {
             })
             .catch(error => console.error("Error al cargar los barberos:", error));
     }, []);
+
+
+    useEffect(() => {
+        axios.get('/api/admin/descansos')
+            .then(response => {
+                const descansoDates = response.data.map(fecha => dayjs(fecha).format('YYYY-MM-DD'));
+                setDescansos(descansoDates);
+            })
+            .catch(error => {
+                console.error('Error al obtener los días de descanso:', error);
+            });
+    }, []);
+
+    useEffect(() => {
+        axios.get('/api/admin/descansos-individuales')
+            .then(response => {
+                const individualDates = response.data.map(date => dayjs(date).format('YYYY-MM-DD'));
+                setDescansosIndividuales(individualDates); // Actualiza los descansos individuales
+            })
+            .catch(error => {
+                console.error('Error al obtener los días de descanso individuales:', error);
+            });
+    }, []);
+
 
 
 
@@ -298,6 +334,27 @@ export default function Opciones() {
         .highlighted-vacation:hover {
             background-color: #0056b3; /* Azul más oscuro */
         }
+
+        /* Días de descanso: Naranja (cuadrados) */
+        .highlighted-descanso {
+            background-color: #ffa500; /* Naranja */
+
+            border-radius: 0; /* Sin bordes redondeados (cuadrados) */
+            transition: background-color 0.3s ease;
+        }
+        .highlighted-descanso:hover {
+            background-color: #ff8c00; /* Naranja más oscuro */
+        }
+/* Descansos individuales: Amarillo */
+.highlighted-descanso-indi {
+    background-color: #FFD700; /* Amarillo */
+    color: black;
+    border-radius: 0; /* Sin bordes redondeados */
+}
+
+.highlighted-descanso-indi:hover {
+    background-color: #FFC107; /* Amarillo más oscuro */
+}
     `}
                                         </style>
 
@@ -309,6 +366,8 @@ export default function Opciones() {
                                         <p>Un día libre se selecciona con un 🔵</p>
                         <p>Primer y último día de vacaciones: 🔵 y los intermedios: 🟦 </p>
                         <p>Los días con un 🟥 son festivos locales.</p>
+                        <p>Los días con un 🟧 son descansos generales.</p>
+                        <p>Los días con un 🟨 son tus descansos propios.</p>
                                     <div className="mt-4 flex justify-between">
                                         <button
                                             className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
@@ -419,6 +478,27 @@ export default function Opciones() {
         .highlighted-vacation:hover {
             background-color: #0056b3; /* Azul más oscuro */
         }
+
+        /* Días de descanso: Naranja (cuadrados) */
+        .highlighted-descanso {
+            background-color: #ffa500; /* Naranja */
+
+            border-radius: 0; /* Sin bordes redondeados (cuadrados) */
+            transition: background-color 0.3s ease;
+        }
+        .highlighted-descanso:hover {
+            background-color: #ff8c00; /* Naranja más oscuro */
+        }
+/* Descansos individuales: Amarillo */
+.highlighted-descanso-indi {
+    background-color: #FFD700; /* Amarillo */
+    color: black;
+    border-radius: 0; /* Sin bordes redondeados */
+}
+
+.highlighted-descanso-indi:hover {
+    background-color: #FFC107; /* Amarillo más oscuro */
+}
     `}
                                         </style>
                                     </div>
@@ -426,6 +506,8 @@ export default function Opciones() {
                                         <p>Un día libre se selecciona con un 🔵</p>
                         <p>Primer y último día de vacaciones: 🔵 y los intermedios: 🟦 </p>
                         <p>Los días con un 🟥 son festivos locales.</p>
+                        <p>Los días con un 🟧 son descansos generales.</p>
+                        <p>Los días con un 🟨 son tus descansos propios.</p>
                                 </div>
 
                                 <div className="mt-6 flex justify-between">

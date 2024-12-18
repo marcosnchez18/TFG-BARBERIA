@@ -329,6 +329,11 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
 
     Route::get('/api/proveedores', [ProveedorController::class, 'obtenerProveedores']);
 
+    Route::get('/api/admin/descansos', [DescansoController::class, 'getDescansos']);
+
+    Route::get('/api/admin/descansos-individuales', [DescansoController::class, 'getDescansosIndividuales']);
+
+
     Route::get('/api/asignar/barberos/{barbero}/servicios', [ServicioUsuarioController::class, 'getServiciosAsignados']);
 
     Route::get('/clientes/{id}/ficha', [ClienteController::class, 'mostrarFicha'])->name('clientes.ficha');

@@ -31,6 +31,28 @@ class DescansoController extends Controller
     return response()->json($descansos);
 }
 
+public function getDescansosIndividuales()
+{
+    try {
+
+        $userId = auth()->id();
+
+        if (!$userId) {
+            return response()->json(['error' => 'Usuario no autenticado.'], 401);
+        }
+
+        $descansos = DescansoIndividual::where('user_id', $userId)->pluck('fecha');
+
+        return response()->json($descansos);
+    } catch (\Exception $e) {
+        return response()->json([
+            'error' => 'No se pudieron obtener los días de descanso individuales.',
+            'message' => $e->getMessage(),
+        ], 500);
+    }
+}
+
+
 
     /**
      * Store a newly created resource in storage.
