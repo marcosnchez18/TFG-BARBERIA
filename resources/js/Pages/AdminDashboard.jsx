@@ -10,6 +10,7 @@ import Swal from 'sweetalert2';
 import axios from 'axios';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
 import 'dayjs/locale/es';
+import Holidays from 'date-holidays';
 import { Link } from '@inertiajs/react';
 
 dayjs.extend(localizedFormat);
@@ -19,6 +20,7 @@ export default function AdminDashboard() {
     const { user, citasHoy, nuevosUsuariosHoy, gananciasMes, nombreMesActual, valoracionMedia } = usePage().props;
     const [selectedDate, setSelectedDate] = useState(null);
     const [citasDia, setCitasDia] = useState([]);
+    const holidays = new Holidays('ES', 'AN', 'CA');
 
     const [showCalendar, setShowCalendar] = useState(false); // Para mostrar el calendario
     const [selectedDates, setSelectedDates] = useState([]); // Para almacenar los días seleccionados
@@ -26,18 +28,73 @@ export default function AdminDashboard() {
 
 
 
-    const handleDateChange = (date) => {
-        setSelectedDate(date);
-        const formattedDate = dayjs(date).format('YYYY-MM-DD');
+    const handleDateChange = async (date) => {
+        try {
 
-        axios.get(`/admin/citas/${formattedDate}`)
-            .then(response => {
+            setSelectedDate(date);
+
+
+            const formattedDate = dayjs(date).format('YYYY-MM-DD');
+
+
+            const response = await axios.get(`/admin/citas/${formattedDate}`);
+
+
+            if (response.data && Array.isArray(response.data)) {
                 setCitasDia(response.data);
-            })
-            .catch(() => {
+            } else {
+                console.warn('La API devolvió datos inesperados:', response.data);
                 setCitasDia([]);
+            }
+        } catch (error) {
+
+            console.error(`Error al obtener las citas para la fecha ${dayjs(date).format('LL')}:`, error);
+
+
+            setCitasDia([]);
+
+
+            Swal.fire({
+                title: 'Error',
+                text: 'No se pudieron cargar las citas para el día seleccionado.',
+                icon: 'error',
+                confirmButtonText: 'Aceptar',
             });
+        }
     };
+
+
+    const tileClassName = ({ date, view }) => {
+        if (view === 'month') {
+            const formattedDate = dayjs(date).format('YYYY-MM-DD');
+            const isSunday = dayjs(date).day() === 0;
+            const isHoliday = holidays.isHoliday(date);
+
+            if (isSunday || isHoliday) {
+                return 'highlighted-holiday'; // Clase CSS para domingos y festivos
+            }
+
+            if (highlightedDates.includes(formattedDate)) {
+                return 'highlighted-date'; // Clase CSS para días con citas
+            }
+        }
+        return null;
+    };
+
+    useEffect(() => {
+        axios.get('/api/citas-usuario')
+            .then(response => {
+                const dates = response.data.map(cita => dayjs(cita.fecha_hora_cita).format('YYYY-MM-DD'));
+                setHighlightedDates([...new Set(dates)]); // Guardar fechas únicas
+            })
+            .catch(error => console.error('Error al obtener las citas:', error));
+    }, []);
+
+
+
+
+
+
 
     useEffect(() => {
         axios.get('/api/citas-usuario')
@@ -189,31 +246,55 @@ export default function AdminDashboard() {
                     <div className="calendar-section mt-8 w-full flex flex-col items-center">
                         <h2 className="text-3xl font-semibold text-[#A87B43] mb-6">Calendario de Citas</h2>
                         <Calendar
-    onChange={handleDateChange}
-    value={selectedDate}
-    minDate={new Date(2000, 1, 1)}
-    className="calen-admin w-full max-w-xl mx-auto"
-    tileClassName={({ date, view }) => {
-        if (view === 'month') {
-            const formattedDate = dayjs(date).format('YYYY-MM-DD');
-            return highlightedDates.includes(formattedDate) ? 'highlighted-date' : null;
-        }
-        return null;
-    }}
-/>
-<style>
-{`
-    .highlighted-date {
-        background-color: #007bff;
-        color: white;
-        border-radius: 50%;
-    }
+                            onChange={handleDateChange}
+                            value={selectedDate}
+                            minDate={new Date(2000, 1, 1)}
+                            className="calen-admin w-full max-w-xl mx-auto"
+                            tileClassName={tileClassName}
+                        />
+                        <br /><br />
+                        <p>Los días en 🟢 indican que tienes citas. </p>
+                        <p>Un día con un 🟦 es tu selección actual. </p>
+                        <p>Los días con un 🟥 son festivos locales.</p>
 
-    .highlighted-date:hover {
-        background-color: #0056b3;
-    }
-`}
-</style>
+                        <style>
+                            {`
+        /* Días con citas: Verde */
+        .highlighted-date {
+            background-color: #28a745; /* Verde para días con citas */
+
+            border-radius: 50%; /* Círculo */
+
+        }
+        .highlighted-date:hover {
+            background-color: #218838; /* Verde más oscuro al pasar el ratón */
+        }
+        .highlighted-date-selected {
+            background-color: #1e7e34; /* Verde más fuerte al seleccionar */
+            color: white;
+        }
+
+        /* Días festivos o domingos: Rojo */
+        .highlighted-holiday {
+            background-color: #fde2e2; /* Fondo rojo claro */
+            color: #c00; /* Rojo intenso para el número */
+        }
+        .highlighted-holiday:hover {
+            background-color: #f8d7da; /* Fondo ligeramente más oscuro */
+        }
+
+        /* Otros estilos */
+        .calen-admin {
+            font-family: 'Arial', sans-serif;
+        }
+    `}
+                        </style>
+
+
+
+
+
+
 
 
                     </div>

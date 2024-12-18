@@ -8,6 +8,7 @@ import SobreNosotros from '@/Components/Sobrenosotros';
 import Footer from '../Components/Footer';
 import Swal from 'sweetalert2';
 import axios from 'axios';
+import Holidays from 'date-holidays';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
 import 'dayjs/locale/es';
 import { Link } from '@inertiajs/react';
@@ -29,10 +30,11 @@ export default function Opciones() {
     const [showCalendar, setShowCalendar] = useState(false);
     const [selectedDates, setSelectedDates] = useState([]);
     const [tipoDescanso, setTipoDescanso] = useState(''); // 'libre' o 'vacaciones'
+    const holidays = new Holidays('ES', 'AN', 'CA');
 
     const [barberos, setBarberos] = useState([]);
-const [barberoSeleccionado, setBarberoSeleccionado] = useState(null);
-const [showCalendarBarbero, setShowCalendarBarbero] = useState(false);
+    const [barberoSeleccionado, setBarberoSeleccionado] = useState(null);
+    const [showCalendarBarbero, setShowCalendarBarbero] = useState(false);
 
 
 
@@ -41,7 +43,7 @@ const [showCalendarBarbero, setShowCalendarBarbero] = useState(false);
         axios.post('/admin/dias-descanso', { dias: selectedDates })
             .then(() => {
                 Swal.fire('Días guardados', 'Los días de descanso se han guardado correctamente', 'success');
-                setShowCalendar(false); // Cerrar el calendario después de guardar
+                setShowCalendar(false);
             })
             .catch(() => {
                 Swal.fire('Error', 'Hubo un problema al guardar los días de descanso', 'error');
@@ -54,41 +56,59 @@ const [showCalendarBarbero, setShowCalendarBarbero] = useState(false);
             return;
         }
 
-        // Verifica que el user_id no sea nulo antes de enviarlo
+
         if (!barberoSeleccionado) {
             Swal.fire('Error', 'El ID del barbero es inválido', 'error');
             return;
         }
 
         axios.post('/admin/guardar-descanso-individual', {
-            user_id: barberoSeleccionado, // O el ID del usuario si es otro tipo de usuario
+            user_id: barberoSeleccionado,
             dias: selectedDates
         })
-        .then(() => {
-            Swal.fire('Días guardados', 'Los días de descanso se han guardado correctamente para el usuario', 'success');
-            setShowCalendarBarbero(false); // Cerrar el calendario después de guardar
-        })
-        .catch(() => {
-            Swal.fire('Error', 'Hubo un problema al guardar los días de descanso del usuario', 'error');
-        });
+            .then(() => {
+                Swal.fire('Días guardados', 'Los días de descanso se han guardado correctamente para el usuario', 'success');
+                setShowCalendarBarbero(false);
+            })
+            .catch(() => {
+                Swal.fire('Error', 'Hubo un problema al guardar los días de descanso del usuario', 'error');
+            });
 
     };
+
+    const tileClassName = ({ date, view }) => {
+        if (view === 'month') {
+            const formattedDate = dayjs(date).format('YYYY-MM-DD');
+            const isSunday = dayjs(date).day() === 0;
+            const isHoliday = holidays.isHoliday(date);
+
+            if (isSunday || isHoliday) {
+                return 'highlighted-holiday';
+            }
+
+            if (selectedDates.some(selectedDate => dayjs(selectedDate).format('YYYY-MM-DD') === formattedDate)) {
+                return 'highlighted-date';
+            }
+        }
+        return null;
+    };
+
 
 
 
 
     const handleDateChange = (date) => {
         if (tipoDescanso === 'libre') {
-            setSelectedDates([date]); // Solo un día si es día libre
+            setSelectedDates([date]);
         } else if (tipoDescanso === 'vacaciones') {
-            setSelectedDates(date);  // Mantén el comportamiento original para vacaciones (rango de fechas)
+            setSelectedDates(date);
         }
     };
 
     useEffect(() => {
         axios.get('/api/barberos')
             .then(response => {
-                // Filtrar solo los barberos activos
+
                 const barberosActivos = response.data.filter(barbero => barbero.estado === 'activo');
                 setBarberos(barberosActivos);
             })
@@ -109,7 +129,7 @@ const [showCalendarBarbero, setShowCalendarBarbero] = useState(false);
 
             {/* Sección de Herramientas */}
             <div className="bg-white bg-opacity-90 p-8 rounded-lg shadow-lg w-full max-w-7xl mx-auto  mt-20 relative">
-            <div className="absolute top-2 right-2">
+                <div className="absolute top-2 right-2">
                     <Link href="/mi-gestion-admin" className="text-black-600 text-xl font-bold hover:text-gray-400">✕</Link>
                 </div>
                 <h2 className="text-3xl font-semibold mb-6 text-center">Herramientas Útiles</h2>
@@ -225,26 +245,70 @@ const [showCalendarBarbero, setShowCalendarBarbero] = useState(false);
                                     <h2 className="text-2xl font-semibold text-[#A87B43] mb-4 text-center">Selecciona los Días de Descanso</h2>
 
                                     <div className="mb-4">
-    <label className="block text-lg font-semibold">¿Qué tipo de descanso es?</label>
-    <select
-        onChange={(e) => setTipoDescanso(e.target.value)}
-        className="mt-2 px-6 py-3 w-full max-w-xs border border-gray-300 rounded-lg text-lg"
-    >
-        <option value="">Selecciona una opción</option>
-        <option value="libre">Es un día libre</option>
-        <option value="vacaciones">Son vacaciones</option>
-    </select>
-</div>
+                                        <label className="block text-lg font-semibold">¿Qué tipo de descanso es?</label>
+                                        <select
+                                            onChange={(e) => setTipoDescanso(e.target.value)}
+                                            className="mt-2 px-6 py-3 w-full max-w-xs border border-gray-300 rounded-lg text-lg"
+                                        >
+                                            <option value="">Selecciona una opción</option>
+                                            <option value="libre">Es un día libre</option>
+                                            <option value="vacaciones">Son vacaciones</option>
+                                        </select>
+                                    </div>
 
                                     <div className="flex justify-center mb-4">
-                                    <Calendar
-    onChange={handleDateChange}
-    value={selectedDates}
-    selectRange={tipoDescanso === 'vacaciones'}  // Solo permite rangos si son vacaciones
-    className="w-full max-w-md"
-/>
+                                        <Calendar
+                                            onChange={handleDateChange}
+                                            value={selectedDates}
+                                            selectRange={tipoDescanso === 'vacaciones'}
+                                            className="w-full max-w-md"
+                                            tileClassName={tileClassName}
+                                        />
+
+
+                                        <style>
+                                            {`
+        /* Días seleccionados (verde para citas) */
+        .highlighted-date {
+
+
+            border-radius: 50%; /* Círculo */
+            transition: background-color 0.3s ease;
+        }
+        .highlighted-date:hover {
+            background-color: #218838; /* Verde más oscuro */
+        }
+
+        /* Festivos y domingos (rojo claro) */
+        .highlighted-holiday {
+            background-color: #fde2e2; /* Rojo claro */
+            color: #c00; /* Rojo oscuro para el texto */
+        }
+        .highlighted-holiday:hover {
+            background-color: #f8d7da; /* Fondo ligeramente más oscuro */
+        }
+
+        /* Días seleccionados como vacaciones (azul y cuadrados) */
+        .highlighted-vacation {
+            background-color: #007bff; /* Azul claro */
+            color: white; /* Texto blanco */
+            border-radius: 0; /* Cuadrado */
+            transition: background-color 0.3s ease;
+        }
+        .highlighted-vacation:hover {
+            background-color: #0056b3; /* Azul más oscuro */
+        }
+    `}
+                                        </style>
+
+
+
 
                                     </div>
+                                    <br />
+                                        <p>Un día libre se selecciona con un 🔵</p>
+                        <p>Primer y último día de vacaciones: 🔵 y los intermedios: 🟦 </p>
+                        <p>Los días con un 🟥 son festivos locales.</p>
                                     <div className="mt-4 flex justify-between">
                                         <button
                                             className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
@@ -263,78 +327,123 @@ const [showCalendarBarbero, setShowCalendarBarbero] = useState(false);
                     </div>
 
                     <div className="herramienta-item bg-[#e3f7ee] p-4 rounded-lg text-center">
-    <FontAwesomeIcon icon={faCalendarAlt} className="text-[#4A7A7C] text-4xl mb-2" />
-    <p className="text-lg font-semibold">Gestionar Vacaciones Barbero</p>
-    <br />
-    <button
-        onClick={() => setShowCalendarBarbero(true)} // Abre el calendario al hacer clic
-        className="mt-2 px-4 py-2 bg-[#A87B43] text-white rounded hover:bg-[#875d34]">
-        Seleccionar Días
-    </button>
-</div>
+                        <FontAwesomeIcon icon={faCalendarAlt} className="text-[#4A7A7C] text-4xl mb-2" />
+                        <p className="text-lg font-semibold">Gestionar Vacaciones Barbero</p>
+                        <br />
+                        <button
+                            onClick={() => setShowCalendarBarbero(true)} // Abre el calendario al hacer clic
+                            className="mt-2 px-4 py-2 bg-[#A87B43] text-white rounded hover:bg-[#875d34]">
+                            Seleccionar Días
+                        </button>
+                    </div>
 
 
-{showCalendarBarbero && (
-    <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
-        <div className="bg-white p-6 rounded-lg shadow-lg max-w-lg w-full relative">
-            <button
-                onClick={() => setShowCalendarBarbero(false)} // Cerrar el modal
-                className="absolute top-2 right-2 text-xl text-gray-500 hover:text-gray-700">
-                ×
-            </button>
+                    {showCalendarBarbero && (
+                        <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
+                            <div className="bg-white p-6 rounded-lg shadow-lg max-w-lg w-full relative">
+                                <button
+                                    onClick={() => setShowCalendarBarbero(false)} // Cerrar el modal
+                                    className="absolute top-2 right-2 text-xl text-gray-500 hover:text-gray-700">
+                                    ×
+                                </button>
 
-            <h2 className="text-2xl font-semibold text-[#A87B43] mb-4 text-center">Selecciona los Días de Descanso para el Barbero</h2>
+                                <h2 className="text-2xl font-semibold text-[#A87B43] mb-6 text-center">
+                                    Selecciona los Descansos para el Barbero
+                                </h2>
 
-            <div className="mb-4">
-                <label className="block text-lg font-semibold">¿Qué tipo de descanso es?</label>
-                <select
-                    onChange={(e) => setTipoDescanso(e.target.value)}
-                    className="mt-2 px-6 py-3 w-full max-w-xs border border-gray-300 rounded-lg text-lg"
-                >
-                    <option value="">Selecciona una opción</option>
-                    <option value="libre">Es un día libre</option>
-                    <option value="vacaciones">Son vacaciones</option>
-                </select>
-            </div>
+                                {/* Contenedor centrado */}
+                                <div className="flex flex-col items-center space-y-4">
+                                    <div className="w-full max-w-md">
+                                        <label className="block text-lg font-semibold mb-2 text-center">¿Qué tipo de descanso es?</label>
+                                        <select
+                                            onChange={(e) => setTipoDescanso(e.target.value)}
+                                            className="w-full px-4 py-3 border border-gray-300 rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-[#A87B43]"
+                                        >
+                                            <option value="">Selecciona una opción</option>
+                                            <option value="libre">Es un día libre</option>
+                                            <option value="vacaciones">Son vacaciones</option>
+                                        </select>
+                                    </div>
 
-            {/* Seleccionar barbero */}
-            <div className="mb-4">
-                <label className="block text-lg font-semibold">Selecciona el Barbero</label>
-                <select
-                    onChange={(e) => setBarberoSeleccionado(e.target.value)}
-                    className="mt-2 px-6 py-3 w-full max-w-xs border border-gray-300 rounded-lg text-lg"
-                >
-                    <option value="">Selecciona un Barbero</option>
-                    {barberos.map(barbero => (
-                        <option key={barbero.id} value={barbero.id}>{barbero.nombre}</option>
-                    ))}
-                </select>
-            </div>
+                                    <div className="w-full max-w-md">
+                                        <label className="block text-lg font-semibold mb-2 text-center">Selecciona el Barbero</label>
+                                        <select
+                                            onChange={(e) => setBarberoSeleccionado(e.target.value)}
+                                            className="w-full px-4 py-3 border border-gray-300 rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-[#A87B43]"
+                                        >
+                                            <option value="">Selecciona un Barbero</option>
+                                            {barberos.map(barbero => (
+                                                <option key={barbero.id} value={barbero.id}>{barbero.nombre}</option>
+                                            ))}
+                                        </select>
+                                    </div>
 
-            <div className="flex justify-center mb-4">
-                <Calendar
-                    onChange={handleDateChange}
-                    value={selectedDates}
-                    selectRange={tipoDescanso === 'vacaciones'} // Solo permite rangos si son vacaciones
-                    className="w-full max-w-md"
-                />
-            </div>
+                                    <div className="w-full flex justify-center">
+                                        <Calendar
+                                            onChange={handleDateChange}
+                                            value={selectedDates}
+                                            selectRange={tipoDescanso === 'vacaciones'}
+                                            className="w-full max-w-md"
+                                            tileClassName={tileClassName}
+                                        />
 
-            <div className="mt-4 flex justify-between">
-                <button
-                    className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
-                    onClick={() => setShowCalendarBarbero(false)}>
-                    Cancelar
-                </button>
-                <button
-                    className="px-4 py-2 bg-[#A87B43] text-white rounded hover:bg-[#875d34]"
-                    onClick={handleGuardarDescansosBarbero}>
-                    Guardar Días
-                </button>
-            </div>
-        </div>
-    </div>
-)}
+                                        <style>
+                                            {`
+        /* Días seleccionados (verde para citas) */
+        .highlighted-date {
+
+
+            border-radius: 50%; /* Círculo */
+            transition: background-color 0.3s ease;
+        }
+        .highlighted-date:hover {
+            background-color: #218838; /* Verde más oscuro */
+        }
+
+        /* Festivos y domingos (rojo claro) */
+        .highlighted-holiday {
+            background-color: #fde2e2; /* Rojo claro */
+            color: #c00; /* Rojo oscuro para el texto */
+        }
+        .highlighted-holiday:hover {
+            background-color: #f8d7da; /* Fondo ligeramente más oscuro */
+        }
+
+        /* Días seleccionados como vacaciones (azul y cuadrados) */
+        .highlighted-vacation {
+            background-color: #007bff; /* Azul claro */
+            color: white; /* Texto blanco */
+            border-radius: 0; /* Cuadrado */
+            transition: background-color 0.3s ease;
+        }
+        .highlighted-vacation:hover {
+            background-color: #0056b3; /* Azul más oscuro */
+        }
+    `}
+                                        </style>
+                                    </div>
+                                    <br />
+                                        <p>Un día libre se selecciona con un 🔵</p>
+                        <p>Primer y último día de vacaciones: 🔵 y los intermedios: 🟦 </p>
+                        <p>Los días con un 🟥 son festivos locales.</p>
+                                </div>
+
+                                <div className="mt-6 flex justify-between">
+                                    <button
+                                        className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600"
+                                        onClick={() => setShowCalendarBarbero(false)}>
+                                        Cancelar
+                                    </button>
+                                    <button
+                                        className="px-4 py-2 bg-[#A87B43] text-white rounded-lg hover:bg-[#875d34]"
+                                        onClick={handleGuardarDescansosBarbero}>
+                                        Guardar Días
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
 
 
                     <div className="herramienta-item bg-[#f0fcd0] p-4 rounded-lg text-center">
