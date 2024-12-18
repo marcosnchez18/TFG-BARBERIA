@@ -44,41 +44,80 @@ export default function Opciones() {
 
 
     const handleGuardarDescansos = () => {
-        axios.post('/admin/dias-descanso', { dias: selectedDates })
-            .then(() => {
-                Swal.fire('Días guardados', 'Los días de descanso se han guardado correctamente', 'success');
-                setShowCalendar(false);
-            })
-            .catch(() => {
-                Swal.fire('Error', 'Hubo un problema al guardar los días de descanso', 'error');
+        if (selectedDates.length === 0) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Atención',
+                text: 'Por favor, selecciona al menos un día antes de guardar.',
             });
-    };
-
-    const handleGuardarDescansosBarbero = () => {
-        if (!barberoSeleccionado) {
-            Swal.fire('Error', 'Por favor, selecciona un barbero', 'error');
             return;
         }
 
+        axios.post('/admin/dias-descanso', { dias: selectedDates })
+            .then(() => {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Días guardados',
+                    text: 'Los días de descanso se han guardado correctamente.',
+                }).then(() => {
+                    window.location.reload(); // Recargar la página
+                });
+            })
+            .catch((error) => {
+                const errorMessage = error.response?.data?.message || 'Hubo un problema al guardar los días de descanso';
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: errorMessage,
+                });
+            });
+    };
 
+
+
+    const handleGuardarDescansosBarbero = () => {
         if (!barberoSeleccionado) {
-            Swal.fire('Error', 'El ID del barbero es inválido', 'error');
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Por favor, selecciona un barbero.',
+            });
+            return;
+        }
+
+        if (selectedDates.length === 0) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Atención',
+                text: 'Por favor, selecciona al menos un día antes de guardar.',
+            });
             return;
         }
 
         axios.post('/admin/guardar-descanso-individual', {
             user_id: barberoSeleccionado,
-            dias: selectedDates
+            dias: selectedDates,
         })
             .then(() => {
-                Swal.fire('Días guardados', 'Los días de descanso se han guardado correctamente para el usuario', 'success');
-                setShowCalendarBarbero(false);
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Días guardados',
+                    text: 'Los días de descanso se han guardado correctamente para el usuario.',
+                }).then(() => {
+                    window.location.reload(); // Recargar la página
+                });
             })
-            .catch(() => {
-                Swal.fire('Error', 'Hubo un problema al guardar los días de descanso del usuario', 'error');
+            .catch((error) => {
+                const errorMessage = error.response?.data?.message || 'Hubo un problema al guardar los días de descanso del usuario';
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: errorMessage,
+                });
             });
-
     };
+
+
 
     const tileClassName = ({ date, view }) => {
         if (view === 'month') {
@@ -363,11 +402,11 @@ export default function Opciones() {
 
                                     </div>
                                     <br />
-                                        <p>Un día libre se selecciona con un 🔵</p>
-                        <p>Primer y último día de vacaciones: 🔵 y los intermedios: 🟦 </p>
-                        <p>Los días con un 🟥 son festivos locales.</p>
-                        <p>Los días con un 🟧 son descansos generales.</p>
-                        <p>Los días con un 🟨 son tus descansos propios.</p>
+                                    <p>Un día libre se selecciona con un 🔵</p>
+                                    <p>Primer y último día de vacaciones: 🔵 y los intermedios: 🟦 </p>
+                                    <p>Los días con un 🟥 son festivos locales.</p>
+                                    <p>Los días con un 🟧 son descansos generales.</p>
+                                    <p>Los días con un 🟨 son tus descansos propios.</p>
                                     <div className="mt-4 flex justify-between">
                                         <button
                                             className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
@@ -503,11 +542,11 @@ export default function Opciones() {
                                         </style>
                                     </div>
                                     <br />
-                                        <p>Un día libre se selecciona con un 🔵</p>
-                        <p>Primer y último día de vacaciones: 🔵 y los intermedios: 🟦 </p>
-                        <p>Los días con un 🟥 son festivos locales.</p>
-                        <p>Los días con un 🟧 son descansos generales.</p>
-                        <p>Los días con un 🟨 son tus descansos propios.</p>
+                                    <p>Un día libre se selecciona con un 🔵</p>
+                                    <p>Primer y último día de vacaciones: 🔵 y los intermedios: 🟦 </p>
+                                    <p>Los días con un 🟥 son festivos locales.</p>
+                                    <p>Los días con un 🟧 son descansos generales.</p>
+                                    <p>Los días con un 🟨 son tus descansos propios.</p>
                                 </div>
 
                                 <div className="mt-6 flex justify-between">
