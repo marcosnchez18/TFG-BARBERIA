@@ -293,11 +293,24 @@ export default function AdminDashboard() {
                             tileClassName={tileClassName}
                         />
                         <br /><br />
-                        <p>Los días en 🟢 indican que tienes citas. </p>
-                        <p>Un día con un 🟦 es tu selección actual. </p>
-                        <p>Los días con un 🟥 son festivos locales.</p>
-                        <p>Los días con un 🟧 son descansos generales.</p>
-                        <p>Los días con un 🟨 son tus descansos propios.</p>
+                        <div>
+    <p className="flex items-center">
+        <span className="mr-2">🟢</span> Los días indican que tienes citas.
+    </p>
+    <p className="flex items-center">
+        <span className="mr-2">🟦</span> Un día es tu selección actual.
+    </p>
+    <p className="flex items-center">
+        <span className="mr-2">🟥</span> Los días son festivos locales.
+    </p>
+    <p className="flex items-center">
+        <span className="mr-2">🟧</span> Los días son descansos generales.
+    </p>
+    <p className="flex items-center">
+        <span className="mr-2">🟨</span> Los días son tus descansos propios.
+    </p>
+</div>
+
 
                         <style>
     {`
@@ -323,7 +336,7 @@ export default function AdminDashboard() {
         /* Días de descanso: Naranja (cuadrados) */
         .highlighted-descanso {
             background-color: #ffa500; /* Naranja */
-            
+
             border-radius: 0; /* Sin bordes redondeados (cuadrados) */
             transition: background-color 0.3s ease;
         }

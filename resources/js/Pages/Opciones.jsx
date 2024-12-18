@@ -39,6 +39,10 @@ export default function Opciones() {
     const [descansos, setDescansos] = useState([]);
     const [descansosIndividuales, setDescansosIndividuales] = useState([]);
 
+    const [citasVerde, setCitasVerde] = useState([]);
+const [citasVioleta, setCitasVioleta] = useState([]);
+
+
 
 
 
@@ -72,6 +76,11 @@ export default function Opciones() {
                 });
             });
     };
+
+    const tileDisabled = ({ date }) => {
+        return dayjs(date).isBefore(dayjs(), 'day');
+    };
+
 
 
 
@@ -140,6 +149,14 @@ export default function Opciones() {
             if (selectedDates.some(selectedDate => dayjs(selectedDate).format('YYYY-MM-DD') === formattedDate)) {
                 return 'highlighted-date';
             }
+
+            if (citasVerde.includes(formattedDate)) {
+                return 'highlighted-green'; // Clase para días en verde
+            }
+
+            if (citasVioleta.includes(formattedDate)) {
+                return 'highlighted-purple'; // Clase para días en violeta
+            }
         }
         return null;
     };
@@ -165,6 +182,30 @@ export default function Opciones() {
             })
             .catch(error => console.error("Error al cargar los barberos:", error));
     }, []);
+
+
+    useEffect(() => {
+        // Citas del barbero actual
+        axios.get('/api/citas-barbero-actual')
+            .then(response => {
+                const dates = response.data.map(date => dayjs(date).format('YYYY-MM-DD'));
+                setCitasVerde(dates);
+            })
+            .catch(error => {
+                console.error('Error al obtener las citas del barbero actual:', error);
+            });
+
+        // Citas de todos los barberos
+        axios.get('/api/citas-todos')
+            .then(response => {
+                const dates = response.data.map(date => dayjs(date).format('YYYY-MM-DD'));
+                setCitasVioleta(dates);
+            })
+            .catch(error => {
+                console.error('Error al obtener las citas de todos los barberos:', error);
+            });
+    }, []);
+
 
 
     useEffect(() => {
@@ -338,10 +379,11 @@ export default function Opciones() {
                                             selectRange={tipoDescanso === 'vacaciones'}
                                             className="w-full max-w-md"
                                             tileClassName={tileClassName}
+                                            tileDisabled={tileDisabled}
                                         />
 
 
-                                        <style>
+<style>
                                             {`
         /* Días seleccionados (verde para citas) */
         .highlighted-date {
@@ -366,7 +408,7 @@ export default function Opciones() {
         /* Días seleccionados como vacaciones (azul y cuadrados) */
         .highlighted-vacation {
             background-color: #007bff; /* Azul claro */
-            color: white; /* Texto blanco */
+
             border-radius: 0; /* Cuadrado */
             transition: background-color 0.3s ease;
         }
@@ -386,7 +428,7 @@ export default function Opciones() {
         }
 /* Descansos individuales: Amarillo */
 .highlighted-descanso-indi {
-    background-color: #FFD700; /* Amarillo */
+
     color: black;
     border-radius: 0; /* Sin bordes redondeados */
 }
@@ -394,6 +436,21 @@ export default function Opciones() {
 .highlighted-descanso-indi:hover {
     background-color: #FFC107; /* Amarillo más oscuro */
 }
+
+/* Días en verde (citas del barbero actual) */
+.highlighted-green {
+    background-color: #28a745; /* Verde */
+
+    border-radius: 50%;
+}
+
+/* Días en violeta (citas de todos los barberos) */
+.highlighted-purple {
+    background-color: #6f42c1; /* Violeta */
+
+    border-radius: 50%;
+}
+
     `}
                                         </style>
 
@@ -401,12 +458,33 @@ export default function Opciones() {
 
 
                                     </div>
-                                    <br />
-                                    <p>Un día libre se selecciona con un 🔵</p>
-                                    <p>Primer y último día de vacaciones: 🔵 y los intermedios: 🟦 </p>
-                                    <p>Los días con un 🟥 son festivos locales.</p>
-                                    <p>Los días con un 🟧 son descansos generales.</p>
-                                    <p>Los días con un 🟨 son tus descansos propios.</p>
+
+                                    <div className="legend ml-20">
+    <p className="flex items-center">
+        <span className="mr-2">🔵</span> Día libre / Primer y último día de vacaciones
+    </p>
+    <p className="flex items-center">
+        <span className="mr-2">🟦</span> Días intermedios de vacaciones
+    </p>
+    <p className="flex items-center">
+        <span className="mr-2">🟥</span> Festivos locales
+    </p>
+    <p className="flex items-center">
+        <span className="mr-2">🟧</span> Descansos generales
+    </p>
+    <p className="flex items-center">
+        <span className="mr-2">🟨</span> Tus descansos propios
+    </p>
+    <p className="flex items-center">
+        <span className="mr-2">🟢</span> Próximas citas
+    </p>
+    <p className="flex items-center">
+        <span className="mr-2">🟣</span> Citas de barberos
+    </p>
+</div>
+
+
+
                                     <div className="mt-4 flex justify-between">
                                         <button
                                             className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
@@ -483,6 +561,7 @@ export default function Opciones() {
                                             selectRange={tipoDescanso === 'vacaciones'}
                                             className="w-full max-w-md"
                                             tileClassName={tileClassName}
+                                            tileDisabled={tileDisabled}
                                         />
 
                                         <style>
@@ -510,7 +589,7 @@ export default function Opciones() {
         /* Días seleccionados como vacaciones (azul y cuadrados) */
         .highlighted-vacation {
             background-color: #007bff; /* Azul claro */
-            color: white; /* Texto blanco */
+
             border-radius: 0; /* Cuadrado */
             transition: background-color 0.3s ease;
         }
@@ -530,7 +609,7 @@ export default function Opciones() {
         }
 /* Descansos individuales: Amarillo */
 .highlighted-descanso-indi {
-    background-color: #FFD700; /* Amarillo */
+
     color: black;
     border-radius: 0; /* Sin bordes redondeados */
 }
@@ -538,15 +617,35 @@ export default function Opciones() {
 .highlighted-descanso-indi:hover {
     background-color: #FFC107; /* Amarillo más oscuro */
 }
+
+/* Días en verde (citas del barbero actual) */
+.highlighted-green {
+    background-color: #28a745; /* Verde */
+
+    border-radius: 50%;
+}
+
+/* Días en violeta (citas de todos los barberos) */
+.highlighted-purple {
+    background-color: #6f42c1; /* Violeta */
+
+    border-radius: 50%;
+}
+
     `}
                                         </style>
                                     </div>
-                                    <br />
-                                    <p>Un día libre se selecciona con un 🔵</p>
-                                    <p>Primer y último día de vacaciones: 🔵 y los intermedios: 🟦 </p>
-                                    <p>Los días con un 🟥 son festivos locales.</p>
-                                    <p>Los días con un 🟧 son descansos generales.</p>
-                                    <p>Los días con un 🟨 son tus descansos propios.</p>
+
+                                    <div className="legend">
+    <p><span>🔵</span> Día libre / Primer y último día de vacaciones</p>
+    <p><span>🟦</span> Días intermedios de vacaciones</p>
+    <p><span>🟥</span> Festivos locales</p>
+    <p><span>🟧</span> Descansos generales</p>
+    <p><span>🟨</span> Tus descansos propios</p>
+    <p><span>🟢</span> Próximas citas</p>
+    <p><span>🟣</span> Citas de barberos</p>
+</div>
+
                                 </div>
 
                                 <div className="mt-6 flex justify-between">

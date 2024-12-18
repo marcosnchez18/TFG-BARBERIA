@@ -349,8 +349,8 @@ export default function MisCitasCliente() {
     };
 
     const tileClassName = ({ date }) => {
-        const dayOfWeek = dayjs(date).day(); // Día de la semana
-        const dateStr = dayjs(date).format('YYYY-MM-DD'); // Fecha en formato YYYY-MM-DD
+        const dayOfWeek = dayjs(date).day();
+        const dateStr = dayjs(date).format('YYYY-MM-DD');
 
         // Marcar domingos como no disponibles
         if (dayOfWeek === 0) {
@@ -364,12 +364,12 @@ export default function MisCitasCliente() {
 
         // Marcar días con citas
         if (highlightedDates.includes(dateStr)) {
-            return 'day-con-cita bg-blue-500 text-white'; // Clase CSS para días con citas
+            return 'day-con-cita bg-blue-500 text-white';
         }
 
         // Marcar días sin citas disponibles
         if (diasSinCitas.includes(dateStr)) {
-            return 'day-sin-citas text-gray-500'; // Clase CSS para días sin citas
+            return 'day-sin-citas text-gray-500';
         }
 
         // Marcar días de descanso
@@ -377,7 +377,7 @@ export default function MisCitasCliente() {
             return 'day-no-disponible';
         }
 
-        return null; // Clase predeterminada
+        return null;
     };
 
 
@@ -388,7 +388,7 @@ export default function MisCitasCliente() {
     const generarPDF = (cita) => {
         const doc = new jsPDF();
 
-        // Añadir título y logo si está disponible
+
         doc.setFontSize(20);
         doc.text("Justificante de Pago", 105, 20, null, null, "center");
 
@@ -396,7 +396,7 @@ export default function MisCitasCliente() {
             doc.addImage(logoBase64, 'PNG', 15, 40, 180, 180);
         }
 
-        // Datos de la cita (agregados solo si están disponibles)
+
         doc.setFontSize(12);
         if (cita.usuario) doc.text(`Cliente: ${cita.usuario.nombre}`, 20, 80);
         if (cita.servicio) doc.text(`Servicio: ${cita.servicio.nombre}`, 20, 90);
@@ -406,14 +406,14 @@ export default function MisCitasCliente() {
         doc.text(`Estado: ${cita.estado}`, 20, 130);
         doc.text(`Precio: ${Number(cita.precio_cita || 0).toFixed(2)}€`, 20, 140);
 
-        // Mensaje de agradecimiento
+
         doc.setFontSize(14);
         doc.text("Gracias por confiar en nosotros. ¡Te esperamos en nuestra barbería!", 20, 160);
 
-        // Agregar QR si está disponible
-        const qrYOffset = 170; // Posición Y para el QR debajo del mensaje
+
+        const qrYOffset = 170;
         if (qrBase64) {
-            doc.addImage(qrBase64, 'PNG', 85, qrYOffset, 30, 30); // QR centrado
+            doc.addImage(qrBase64, 'PNG', 85, qrYOffset, 30, 30);
         }
 
         doc.save("Justificante_de_Pago.pdf");
@@ -520,15 +520,21 @@ export default function MisCitasCliente() {
 
                             </div>
                             <br /><br /><br />
-                            <p className="mt-6 text-gray-600 text-sm">
-                                Los días marcados en <span className="font-bold text-blue-600">🔵</span> tienen citas reservadas.
-                            </p>
-                            <p className="mt-2 text-gray-600 text-sm">
-                                Los días marcados en <span className="font-bold text-red-600">🟥</span>  son festivos o días de descanso.
-                            </p>
-                            <p className="mt-2 text-gray-600 text-sm">
-                                Los días marcados en <span className="font-bold text-gray-600">🔘</span>  no quedan citas disponibles.
-                            </p>
+                            <div className="flex flex-col items-center mt-4 space-y-2">
+    <div className="flex items-center">
+        <span className="font-bold text-blue-600 w-6 text-center">🔵</span>
+        <p className="text-gray-600 text-sm">Los días tienen citas reservadas.</p>
+    </div>
+    <div className="flex items-center">
+        <span className="font-bold text-red-600 w-6 text-center">🟥</span>
+        <p className="text-gray-600 text-sm">Los días son festivos o días de descanso.</p>
+    </div>
+    <div className="flex items-center">
+        <span className="font-bold text-gray-600 w-6 text-center">🔘</span>
+        <p className="text-gray-600 text-sm">Los días no tienen citas disponibles.</p>
+    </div>
+</div>
+
 
                             <br /><br />
                             {selectedDate && horariosDisponibles.length > 0 && (

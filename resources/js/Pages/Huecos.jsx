@@ -213,7 +213,7 @@ export default function Huecos() {
             })
         );
 
-        console.log("Días sin citas después de la verificación:", diasSinCitasTemp); 
+        console.log("Días sin citas después de la verificación:", diasSinCitasTemp);
         setDiasSinCitas(diasSinCitasTemp);
         setIsLoadingCalendar(false);
     };
@@ -390,12 +390,15 @@ export default function Huecos() {
                         </div>
                         <br /><br /><br />
 
-                        <p className="mt-2 text-gray-600 text-sm">
-                            Los días marcados en <span className="font-bold text-red-600">🟥</span>  son festivos o días de descanso.
-                        </p>
-                        <p className="mt-2 text-gray-600 text-sm">
-                            Los días marcados en <span className="font-bold text-gray-600">🔘</span>  no quedan citas disponibles.
-                        </p>
+                        <div className="flex flex-col items-center mt-4">
+    <p className="mt-2 text-gray-600 text-sm flex items-center">
+        <span className="font-bold text-red-600 mr-2">🟥</span> Los días son festivos o días de descanso.
+    </p>
+    <p className="mt-2 text-gray-600 text-sm flex items-center">
+        <span className="font-bold text-gray-600 mr-2">🔘</span> Los días no tienen citas disponibles.
+    </p>
+</div>
+
 
                         <br /><br />
                         {selectedDate && (

@@ -391,12 +391,42 @@ public function citasDelDia(Request $request)
 {
     $usuario = Auth::user();
 
-    
+
     $citas = Cita::where('usuario_id', $usuario->id)
         ->orWhere('barbero_id', $usuario->id)
         ->get(['fecha_hora_cita']);
 
     return response()->json($citas);
 }
+
+public function getCitasBarberoActual()
+    {
+        $barberoId = Auth::id(); 
+
+        if (!$barberoId) {
+            return response()->json(['message' => 'Usuario no autenticado.'], 401);
+        }
+
+
+        $fechas = Cita::where('barbero_id', $barberoId)
+            ->selectRaw('DATE(fecha_hora_cita) as fecha')
+            ->groupBy('fecha')
+            ->pluck('fecha');
+
+        return response()->json($fechas);
+    }
+
+
+
+
+    public function getCitasTodos()
+    {
+
+        $fechas = Cita::selectRaw('DATE(fecha_hora_cita) as fecha')
+            ->groupBy('fecha')
+            ->pluck('fecha');
+
+        return response()->json($fechas);
+    }
 
 }

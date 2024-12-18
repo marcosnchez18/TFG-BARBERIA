@@ -333,6 +333,10 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
 
     Route::get('/api/admin/descansos-individuales', [DescansoController::class, 'getDescansosIndividuales']);
 
+    Route::get('/api/citas-barbero-actual', [CitaController::class, 'getCitasBarberoActual']);
+
+    Route::get('/api/citas-todos', [CitaController::class, 'getCitasTodos']);
+
 
     Route::get('/api/asignar/barberos/{barbero}/servicios', [ServicioUsuarioController::class, 'getServiciosAsignados']);
 
