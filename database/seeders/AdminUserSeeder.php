@@ -17,11 +17,10 @@ class AdminUserSeeder extends Seeder
                 'password' => Hash::make('admin'),
                 'rol' => 'admin',
                 'saldo' => 0,
-                'contador_ausencias' => 0,
                 'estado' => 'activo',
-                'numero_tarjeta_vip' => DB::raw('null'),
-                'referido_por' => DB::raw('null'),
-                'imagen' => 'images/jose.png', // Ruta inicial para la imagen
+                'numero_tarjeta_vip' => 'JA1111111',
+                'referido_por' => null,
+                'imagen' => 'images/jose.png',
                 'email_verified_at' => now(),
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -32,16 +31,14 @@ class AdminUserSeeder extends Seeder
                 'password' => Hash::make('admin'),
                 'rol' => 'admin',
                 'saldo' => 0,
-                'contador_ausencias' => 0,
                 'estado' => 'activo',
-                'numero_tarjeta_vip' => DB::raw('null'),
-                'referido_por' => DB::raw('null'),
-                'imagen' => 'images/hector.png', // Ruta inicial para la imagen
+                'numero_tarjeta_vip' => 'DV2222222',
+                'referido_por' => null,
+                'imagen' => 'images/hector.png',
                 'email_verified_at' => now(),
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
         ]);
-
     }
 }

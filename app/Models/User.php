@@ -54,16 +54,17 @@ class User extends Authenticatable implements MustVerifyEmail  // Implementar Mu
      * Boot method para ejecutar acciones antes de que un usuario sea creado.
      */
     protected static function boot()
-    {
-        parent::boot();
+{
+    parent::boot();
 
-        // Al crear un cliente, generamos automáticamente su número de tarjeta VIP
-        static::creating(function ($user) {
-            if ($user->rol === 'cliente') {  // Solo para los clientes
-                $user->numero_tarjeta_vip = self::generateNumeroTarjetaVIP();
-            }
-        });
-    }
+    
+    static::creating(function ($user) {
+        if (in_array($user->rol, ['cliente', 'trabajador'])) {
+            $user->numero_tarjeta_vip = self::generateNumeroTarjetaVIP();
+        }
+    });
+}
+
 
     /**
      * Generar un número de tarjeta VIP único.
@@ -153,7 +154,7 @@ public function obtenerFechasCitasAusentes()
         ->where('estado', 'ausente')
         ->get()
         ->map(function ($cita) {
-            return Carbon::parse($cita->fecha_hora_cita)->format('Y-m-d'); 
+            return Carbon::parse($cita->fecha_hora_cita)->format('Y-m-d');
         });
 }
 

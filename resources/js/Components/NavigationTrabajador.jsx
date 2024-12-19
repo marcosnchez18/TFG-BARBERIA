@@ -49,7 +49,11 @@ export default function NavigationTrabajador() {
                              Home
                         </button>
                         <Link href={route('mi-cuenta-trabajador')} className="text-lg md:text-xl text-white hover:text-gray-400 nav-item-hover">Mis gestiones</Link>
-                        
+                        <Link href={route('trabajador-citas')} className="text-lg md:text-xl text-white hover:text-gray-400 nav-item-hover">Citas de Hoy</Link>
+                        <Link href={route('citas-barberia-trab')} className="text-lg md:text-xl text-white hover:text-gray-400 nav-item-hover">Citas Barbería</Link>
+                        <Link href={route('trabajador-foro')} className="text-lg md:text-xl text-white hover:text-gray-400 nav-item-hover">Noticias</Link>
+                        <Link href={route('mis-datos-trabajador')} className="text-lg md:text-xl text-white hover:text-gray-400 nav-item-hover">Mis Datos</Link>
+
                         <button onClick={() => setShowLogoutModal(true)} className="text-lg md:text-xl text-white hover:text-gray-400 flex items-center nav-item-hover">
                             <i className="fas fa-sign-out-alt mr-2"></i> Cerrar Sesión
                         </button>

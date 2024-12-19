@@ -205,10 +205,14 @@ export default function MisCitasCliente() {
     };
 
     const handleModifyClick = (cita) => {
+        // Restablecer estados relacionados con la cita anterior
         setSelectedCita(cita);
         setSelectedServicio(cita.servicio);
-        setShowModificar(true);
+        setSelectedDate(null); // Limpiar la fecha seleccionada
+        setHorariosDisponibles([]); // Limpiar los horarios disponibles
+        setShowModificar(true); // Mostrar la ventana de modificación
     };
+
 
     const handleDayClick = (date) => {
         const dayOfWeek = dayjs(date).day(); // Día de la semana

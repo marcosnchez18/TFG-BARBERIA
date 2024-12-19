@@ -362,6 +362,49 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
 Route::middleware(['auth', 'verified', 'trabajador'])->group(function () {
     // RUTAS DE TRABAJADOR
     Route::get('/mi-cuenta-trabajador', [AdminController::class, 'dashboardTrabajador'])->name('mi-cuenta-trabajador');
+
+    Route::get('/trabajador/citas/{fecha}', [AdminController::class, 'citasPorDia']);
+
+
+    Route::get('/api/trabajador/descansos', [DescansoController::class, 'getDescansos']);
+
+    Route::get('/api/trabajador/descansos-individuales', [DescansoController::class, 'getDescansosIndividuales']);
+
+    Route::get('/trabajador/citas-barbero', [AdminController::class, 'citasBarberoTrabajador'])->name('trabajador.citas-barbero');
+
+    Route::get('/trabajador/citas-barberia', [AdminController::class, 'citasBarberia'])->name('trabajador.citas-barberia');
+
+    Route::patch('/trabajador/citas/{id}/cambiar-estado', [AdminController::class, 'cambiarEstado']);
+
+    Route::patch('/trabajador/citas/{id}/cambiar-metodo-pago', [AdminController::class, 'cambiarMetodoPago']);
+
+    Route::delete('/trabajador/citas/{id}/cancelar', [AdminController::class, 'cancelarCita']);
+
+    Route::get('/opciones-trabajador', function () {
+        return Inertia::render('OpcionesTrabajador');
+    })->name('opciones-trabajador');
+
+    Route::get('/trabajador/citas', function () {
+        return Inertia::render('CitasAdminTrabajador');
+    })->name('trabajador-citas');
+
+    Route::get('/citas-barberia-trab', function () {
+        return Inertia::render('CitasBarberiaTrabajador');
+    })->name('citas-barberia-trab');
+
+
+    Route::get('/mis-datos-trabajador', function () {
+        return Inertia::render('MisDatosAdminTrabajador');
+    })->name('mis-datos-trabajador');
+
+
+    // Foro de noticias del trabajador
+
+    Route::get('/trabajador/foro', [NoticiaController::class, 'indexTrab'])->name('trabajador-foro'); //falta
+    Route::post('/trabajador/foro', [NoticiaController::class, 'storeTrab'])->name('noticias2.store');
+    Route::put('/trabajador/foro/{noticia}', [NoticiaController::class, 'updateTrab'])->name('noticias2.update');
+    Route::delete('/trabajador/foro/{noticia}', [NoticiaController::class, 'destroyTrab'])->name('noticias2.destroy');
+
 });
 
 

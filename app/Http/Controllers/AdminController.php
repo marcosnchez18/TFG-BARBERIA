@@ -124,6 +124,25 @@ class AdminController extends Controller
         return response()->json($citas);
     }
 
+    public function citasBarberoTrabajador()
+    {
+        if (Auth::user()->rol !== 'trabajador') {
+            return response()->json(['error' => 'Acceso no autorizado'], 403);
+        }
+
+        $barberoId = Auth::id();
+
+        // Filtrar las citas pendientes y futuras del barbero logueado
+        $citas = Cita::where('barbero_id', $barberoId)
+            ->where('fecha_hora_cita', '>=', Carbon::now())
+            ->where('estado', 'pendiente')
+            ->with(['usuario:id,nombre', 'servicio:id,nombre'])
+            ->orderBy('fecha_hora_cita', 'asc')
+            ->get();
+
+        return response()->json($citas);
+    }
+
     public function cambiarEstado(Request $request, $id)
 {
     $cita = Cita::with('servicio', 'usuario')->findOrFail($id);

@@ -17,11 +17,11 @@ return new class extends Migration
         $table->string('email')->unique();
         $table->timestamp('email_verified_at')->nullable();
         $table->string('password');
-        $table->enum('rol', ['admin', 'cliente', 'trabajador'])->default('cliente'); 
+        $table->enum('rol', ['admin', 'cliente', 'trabajador'])->default('cliente');
         $table->decimal('saldo', 8, 2)->default(0);
         $table->integer('contador_ausencias')->default(0);
         $table->enum('estado', ['activo', 'inactivo'])->default('activo');
-        $table->string('numero_tarjeta_vip')->unique()->nullable();
+        $table->string('numero_tarjeta_vip')->unique();
         $table->string('referido_por')->nullable();
         $table->rememberToken();
         $table->timestamps();

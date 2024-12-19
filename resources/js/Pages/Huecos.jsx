@@ -266,8 +266,26 @@ export default function Huecos() {
 
 
     const handleBack = () => {
-        setStep(prevStep => prevStep - 1);
+        setStep((prevStep) => {
+            const newStep = prevStep - 1;
+
+            // Restablecer el estado según el paso al que se regresa
+            if (newStep === 1) {
+                setSelectedBarbero(null); // Restablecer la selección del barbero
+                setServicios([]); // Limpiar los servicios disponibles
+            } else if (newStep === 2) {
+                setSelectedServicio(null); // Restablecer la selección del servicio
+                setSelectedServicioId(null); // Restablecer el ID del servicio seleccionado
+                setSelectedDate(null); // Limpiar la fecha seleccionada
+                setHorariosDisponibles([]); // Limpiar los horarios disponibles
+            } else if (newStep === 3) {
+                setSelectedTime(null); // Restablecer la hora seleccionada
+            }
+
+            return newStep;
+        });
     };
+
 
     return (
         <div className="elegir-cita-background">
