@@ -10,12 +10,10 @@ class TrabajadorMiddleware
 {
     public function handle(Request $request, Closure $next)
     {
-        // Verificar si el usuario tiene el rol de 'trabajador'
-        if (Auth::check() && Auth::user()->role === 'trabajador') {
-            return $next($request);
+        if (Auth::check() && Auth::user()->rol === 'trabajador') {
+            return $next($request); // Permitir acceso si es trabajador
         }
 
-        // Si no es trabajador, redirigir o devolver error 403
-        return abort(403); // O redirigir: return redirect('/');
+        return abort(403); // Redirigir si no es trabajador
     }
 }
