@@ -53,6 +53,17 @@ public function getDescansosIndividuales()
 }
 
 
+public function getDescansosIndividuales2($id)
+{
+    $descansos = DB::table('descansos_individuales')
+        ->where('user_id', $id)
+        ->pluck('fecha');
+
+    return response()->json($descansos);
+}
+
+
+
 
     /**
      * Store a newly created resource in storage.

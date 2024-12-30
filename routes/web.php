@@ -338,7 +338,11 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
     Route::get('/api/citas-todos', [CitaController::class, 'getCitasTodos']);
 
 
+
     Route::get('/api/asignar/barberos/{barbero}/servicios', [ServicioUsuarioController::class, 'getServiciosAsignados']);
+
+    Route::get('/barbero/{id}/descansos-individuales', [CitaController::class, 'getDescansosIndividuales2']);
+
 
     Route::get('/clientes/{id}/ficha', [ClienteController::class, 'mostrarFicha'])->name('clientes.ficha');
 });

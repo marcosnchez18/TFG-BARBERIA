@@ -81,6 +81,26 @@ const [citasVioleta, setCitasVioleta] = useState([]);
         return dayjs(date).isBefore(dayjs(), 'day');
     };
 
+    const handleBarberoChange = (e) => {
+        const barberoId = e.target.value;
+        setBarberoSeleccionado(barberoId);
+
+        if (barberoId) {
+
+            axios.get(`/barbero/${barberoId}/descansos-individuales`)
+                .then((response) => {
+                    const individualDates = response.data.map(date => dayjs(date).format('YYYY-MM-DD'));
+                    setDescansosIndividuales(individualDates);
+                })
+                .catch((error) => {
+                    console.error('Error al obtener los días de descanso individuales:', error);
+                });
+        } else {
+            setDescansosIndividuales([]);
+        }
+    };
+
+
 
 
 
@@ -143,7 +163,7 @@ const [citasVioleta, setCitasVioleta] = useState([]);
             }
 
             if (descansosIndividuales.includes(formattedDate)) {
-                return 'highlighted-descanso-indi'; // Clase CSS para descansos individuales
+                return 'highlighted-descanso-barbero'; // Clase para descansos individuales
             }
 
             if (selectedDates.some(selectedDate => dayjs(selectedDate).format('YYYY-MM-DD') === formattedDate)) {
@@ -426,6 +446,18 @@ const [citasVioleta, setCitasVioleta] = useState([]);
         .highlighted-descanso:hover {
             background-color: #ff8c00; /* Naranja más oscuro */
         }
+
+        /* Días de descanso individual (marrón) */
+.highlighted-descanso-barbero {
+    background-color: #8B4513; /* Marrón */
+    color: white; /* Texto blanco */
+    border-radius: 0; /* Cuadrado */
+    transition: background-color 0.3s ease;
+}
+.highlighted-descanso-barbero:hover {
+    background-color: #5D3313; /* Marrón más oscuro */
+}
+
 /* Descansos individuales: Amarillo */
 .highlighted-descanso-indi {
 
@@ -473,7 +505,7 @@ const [citasVioleta, setCitasVioleta] = useState([]);
         <span className="mr-2">🟧</span> Descansos generales
     </p>
     <p className="flex items-center">
-        <span className="mr-2">🟨</span> Tus descansos propios
+        <span className="mr-2">🟫</span> Tus descansos
     </p>
     <p className="flex items-center">
         <span className="mr-2">🟢</span> Próximas citas
@@ -544,14 +576,15 @@ const [citasVioleta, setCitasVioleta] = useState([]);
                                     <div className="w-full max-w-md">
                                         <label className="block text-lg font-semibold mb-2 text-center">Selecciona el Barbero</label>
                                         <select
-                                            onChange={(e) => setBarberoSeleccionado(e.target.value)}
-                                            className="w-full px-4 py-3 border border-gray-300 rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-[#A87B43]"
-                                        >
-                                            <option value="">Selecciona un Barbero</option>
-                                            {barberos.map(barbero => (
-                                                <option key={barbero.id} value={barbero.id}>{barbero.nombre}</option>
-                                            ))}
-                                        </select>
+    onChange={handleBarberoChange}
+    className="w-full px-4 py-3 border border-gray-300 rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-[#A87B43]"
+>
+    <option value="">Selecciona un Barbero</option>
+    {barberos.map(barbero => (
+        <option key={barbero.id} value={barbero.id}>{barbero.nombre}</option>
+    ))}
+</select>
+
                                     </div>
 
                                     <div className="w-full flex justify-center">
@@ -625,6 +658,18 @@ const [citasVioleta, setCitasVioleta] = useState([]);
     border-radius: 50%;
 }
 
+/* Días de descanso individual (marrón) */
+.highlighted-descanso-barbero {
+    background-color: #8B4513; /* Marrón */
+    color: white; /* Texto blanco */
+    border-radius: 0; /* Cuadrado */
+    transition: background-color 0.3s ease;
+}
+.highlighted-descanso-barbero:hover {
+    background-color: #5D3313; /* Marrón más oscuro */
+}
+
+
 /* Días en violeta (citas de todos los barberos) */
 .highlighted-purple {
     background-color: #6f42c1; /* Violeta */
@@ -641,7 +686,7 @@ const [citasVioleta, setCitasVioleta] = useState([]);
     <p><span>🟦</span> Días intermedios de vacaciones</p>
     <p><span>🟥</span> Festivos locales</p>
     <p><span>🟧</span> Descansos generales</p>
-    <p><span>🟨</span> Tus descansos propios</p>
+    <p><span>🟫</span> Tus descansos</p>
     <p><span>🟢</span> Próximas citas</p>
     <p><span>🟣</span> Citas de barberos</p>
 </div>
