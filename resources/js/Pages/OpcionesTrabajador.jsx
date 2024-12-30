@@ -288,7 +288,7 @@ const [citasVioleta, setCitasVioleta] = useState([]);
                         <FontAwesomeIcon icon={faPlus} className="text-[#A87B43] text-4xl mb-2" />
                         <p className="text-lg font-semibold">Nuevo Servicio</p>
                         <br />
-                        <Link href={route('admin.servicios.create')} className="mt-2 px-4 py-2 bg-[#A87B43] text-white rounded hover:bg-[#875d34]">
+                        <Link href={route('trabajador.servicios.create')} className="mt-2 px-4 py-2 bg-[#A87B43] text-white rounded hover:bg-[#875d34]">
                             Añadir
                         </Link>
                     </div>
@@ -302,28 +302,12 @@ const [citasVioleta, setCitasVioleta] = useState([]);
                         </Link>
                     </div>
 
-                    <div className="herramienta-item bg-[#dafcd0] p-4 rounded-lg text-center">
-                        <FontAwesomeIcon icon={faEdit} className="text-[#4A7A7C] text-4xl mb-2" />
-                        <p className="text-lg font-semibold">Editar Servicios</p>
-                        <br />
-                        <Link href={route('admin.servicios.editar')} className="mt-2 px-4 py-2 bg-[#A87B43] text-white rounded hover:bg-[#875d34]">
-                            Editar
-                        </Link>
-                    </div>
 
 
 
 
-                    <div className="herramienta-item bg-[#e3f7ee] p-4 rounded-lg text-center">
-                        <FontAwesomeIcon icon={faCalendarAlt} className="text-[#4A7A7C] text-4xl mb-2" />
-                        <p className="text-lg font-semibold">Gestionar Vacaciones Barbero</p>
-                        <br />
-                        <button
-                            onClick={() => setShowCalendarBarbero(true)} // Abre el calendario al hacer clic
-                            className="mt-2 px-4 py-2 bg-[#A87B43] text-white rounded hover:bg-[#875d34]">
-                            Seleccionar Días
-                        </button>
-                    </div>
+
+
 
 
                     {showCalendarBarbero && (

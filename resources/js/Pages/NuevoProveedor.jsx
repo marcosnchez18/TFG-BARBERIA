@@ -86,7 +86,10 @@ export default function NuevoProveedor({ storeUrl }) {
 
         if (!data.telefono) {
             newErrors.telefono = 'El teléfono es obligatorio.';
+        } else if (!/^\d{9}$/.test(data.telefono)) {
+            newErrors.telefono = 'El teléfono debe tener 9 dígitos.';
         }
+
 
         if (!data.email) {
             newErrors.email = 'El correo electrónico es obligatorio.';

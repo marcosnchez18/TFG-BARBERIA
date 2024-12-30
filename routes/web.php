@@ -409,6 +409,10 @@ Route::middleware(['auth', 'verified', 'trabajador'])->group(function () {
     Route::put('/trabajador/foro/{noticia}', [NoticiaController::class, 'updateTrab'])->name('noticias2.update');
     Route::delete('/trabajador/foro/{noticia}', [NoticiaController::class, 'destroyTrab'])->name('noticias2.destroy');
 
+    Route::get('/trabajador/nuevos-servicios', [ServicioController::class, 'createTrab'])->name('trabajador.servicios.create');
+
+    Route::post('/trabajador/servicios', [ServicioController::class, 'storeTrab'])->name('trabajador.servicios.store');
+
 });
 
 
