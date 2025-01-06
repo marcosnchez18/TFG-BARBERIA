@@ -464,6 +464,46 @@ public function getServiciosPorBarbero($barberoId)
     return response()->json($citas);
 }
 
+public function citasBarberiaTrab(Request $request)
+{
+
+    $usuario = Auth::user();
+
+    // Verificar si el usuario es un trabajador
+    if (!$usuario || $usuario->rol !== 'trabajador') {
+        return response()->json(['error' => 'Acceso no autorizado'], 403);
+    }
+
+    // Obtener los filtros del request
+    $servicioId = $request->input('servicio_id');
+    $estado = $request->input('estado');
+    $fechaDia = $request->input('fecha_dia');
+    $fechaMes = $request->input('fecha_mes');
+
+
+    $query = Cita::with(['usuario', 'barbero', 'servicio'])
+        ->where('barbero_id', $usuario->id);
+
+    if ($servicioId) {
+        $query->where('servicio_id', $servicioId);
+    }
+    if ($estado) {
+        $query->where('estado', $estado);
+    }
+    if ($fechaDia) {
+        $query->whereDate('fecha_hora_cita', $fechaDia);
+    }
+    if ($fechaMes) {
+        $query->whereYear('fecha_hora_cita', substr($fechaMes, 0, 4))
+              ->whereMonth('fecha_hora_cita', substr($fechaMes, 5, 2));
+    }
+
+   
+    $citas = $query->get();
+
+    return response()->json($citas);
+}
+
 
 public function cambiarMetodoPago(Request $request, $id)
 {

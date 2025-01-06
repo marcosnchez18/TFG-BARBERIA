@@ -376,7 +376,7 @@ Route::middleware(['auth', 'verified', 'trabajador'])->group(function () {
 
     Route::get('/trabajador/citas-barbero', [AdminController::class, 'citasBarberoTrabajador'])->name('trabajador.citas-barbero');
 
-    Route::get('/trabajador/citas-barberia', [AdminController::class, 'citasBarberia'])->name('trabajador.citas-barberia');
+    Route::get('/trabajador/citas-barberia', [AdminController::class, 'citasBarberiaTrab'])->name('trabajador.citas-barberia');
 
     Route::patch('/trabajador/citas/{id}/cambiar-estado', [AdminController::class, 'cambiarEstado']);
 
@@ -393,8 +393,10 @@ Route::middleware(['auth', 'verified', 'trabajador'])->group(function () {
     })->name('trabajador-citas');
 
     Route::get('/citas-barberia-trab', function () {
-        return Inertia::render('CitasBarberiaTrabajador');
-    })->name('citas-barberia-trab');
+        return Inertia::render('CitasBarberiaTrabajador', [
+            'auth' => ['user' => Auth::user()]
+        ]);
+    })->middleware(['auth'])->name('citas-barberia-trab');
 
 
     Route::get('/mis-datos-trabajador', function () {

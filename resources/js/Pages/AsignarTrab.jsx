@@ -212,7 +212,7 @@ const usuario = auth?.user || null;
                 key={barbero.id}
                 value={barbero.id}
                 style={{
-                    color: barbero.id !== usuario?.id ? 'red' : 'white', // Rojo si no es seleccionable
+                    color: barbero.id !== usuario?.id ? 'red' : 'white', 
                     fontWeight: barbero.id !== usuario?.id ? 'bold' : 'normal'
                 }}
             >

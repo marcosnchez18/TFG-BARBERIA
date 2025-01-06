@@ -10,7 +10,6 @@ export default function CitasBarberiaTrabajador() {
     const [barberos, setBarberos] = useState([]);
     const [servicios, setServicios] = useState([]);
     const [filtros, setFiltros] = useState({
-        barbero_id: '',
         servicio_id: '',
         estado: '',
         fecha_dia: '',
@@ -30,14 +29,21 @@ export default function CitasBarberiaTrabajador() {
     };
 
     const cargarCitas = () => {
-        // Cargar citas con filtros
         axios
-            .get(`/trabajador/citas-barberia`, { params: filtros })
+            .get(`/trabajador/citas-barberia`, {
+                params: {
+                    servicio_id: filtros.servicio_id,
+                    estado: filtros.estado,
+                    fecha_dia: filtros.fecha_dia,
+                    fecha_mes: filtros.fecha_mes
+                }
+            })
             .then((response) => setCitas(response.data))
             .catch((error) => {
                 console.error('Error al cargar citas:', error);
             });
     };
+
 
     const handleCambiarMetodoPago = (citaId, nuevoMetodo) => {
         Swal.fire({
@@ -148,19 +154,7 @@ export default function CitasBarberiaTrabajador() {
 
                     {/* Filtros */}
                     <div className="mb-4 flex flex-wrap justify-between items-center gap-4">
-                        <select
-                            name="barbero_id"
-                            value={filtros.barbero_id}
-                            onChange={handleFiltroChange}
-                            className="border p-2 rounded flex-grow"
-                        >
-                            <option value="">Todos los Barberos</option>
-                            {barberos.map((barbero) => (
-                                <option key={barbero.id} value={barbero.id}>
-                                    {barbero.nombre}
-                                </option>
-                            ))}
-                        </select>
+
 
                         <select
                             name="servicio_id"
