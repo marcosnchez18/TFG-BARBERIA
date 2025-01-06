@@ -413,6 +413,21 @@ Route::middleware(['auth', 'verified', 'trabajador'])->group(function () {
 
     Route::post('/trabajador/servicios', [ServicioController::class, 'storeTrab'])->name('trabajador.servicios.store');
 
+
+    Route::get('/trabajador/asignar-servicios', function () {
+        return Inertia::render('AsignarTrab', [
+            'auth' => ['user' => Auth::user()]
+        ]);
+    })->middleware(['auth'])->name('trabajador.asignar.servicios');
+
+    Route::post('/trabajador/asignar-servicios', [ServicioUsuarioController::class, 'asignarServicios'])
+        ->name('trabajador.asignar-servicios');
+
+    Route::get('/api/trabajador/asignar/barberos/{barbero}/servicios', [ServicioUsuarioController::class, 'getServiciosAsignados']);
+
+    Route::post('/trabajador/desasignar-servicio', [ServicioUsuarioController::class, 'desasignarServicio']);
+
+
 });
 
 

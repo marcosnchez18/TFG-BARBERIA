@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Inertia } from '@inertiajs/inertia';
-import NavigationAdmin from '../Components/NavigationAdmin';
+import NavigationTrabajador from '../Components/NavigationTrabajador';
 import Footer from '../Components/Footer';
 import Swal from 'sweetalert2';
 import SobreNosotros from '@/Components/Sobrenosotros';
@@ -95,7 +95,7 @@ const usuario = auth?.user || null;
                 backgroundImage: `url('/images/barberia.jpg')`,
                 backgroundAttachment: 'fixed',
             }}>
-            <NavigationAdmin admin={true} />
+            <NavigationTrabajador admin={true} />
             <div className="container mx-auto p-8">
                 <div className="bg-white bg-opacity-80 p-8 rounded-lg shadow-lg w-full max-w-md mx-auto mt-20 relative">
                     <div className="absolute top-2 right-2">

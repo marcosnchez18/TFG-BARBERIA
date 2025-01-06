@@ -151,7 +151,7 @@ const [citasVioleta, setCitasVioleta] = useState([]);
                         <FontAwesomeIcon icon={faTasks} className="text-[#4A7A7C] text-4xl mb-2" />
                         <p className="text-lg font-semibold">Asignar Servicios</p>
                         <br />
-                        <Link href={route('admin.asignar.servicios')} className="mt-2 px-4 py-2 bg-[#A87B43] text-white rounded hover:bg-[#875d34]">
+                        <Link href={route('trabajador.asignar.servicios')} className="mt-2 px-4 py-2 bg-[#A87B43] text-white rounded hover:bg-[#875d34]">
                             Asignar
                         </Link>
                     </div>
@@ -168,7 +168,7 @@ const [citasVioleta, setCitasVioleta] = useState([]);
                         <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
                             <div className="bg-white p-6 rounded-lg shadow-lg max-w-lg w-full relative">
                                 <button
-                                    onClick={() => setShowCalendarBarbero(false)} 
+                                    onClick={() => setShowCalendarBarbero(false)}
                                     className="absolute top-2 right-2 text-xl text-gray-500 hover:text-gray-700">
                                     ×
                                 </button>
