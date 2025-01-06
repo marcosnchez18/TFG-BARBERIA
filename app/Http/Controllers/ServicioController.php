@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Servicio;
 use Illuminate\Support\Facades\File;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class ServicioController extends Controller
@@ -27,7 +28,9 @@ class ServicioController extends Controller
 
     public function createTrab()
     {
-        return Inertia::render('NuevosServiciosTrab');
+        return Inertia::render('NuevosServiciosTrab', [
+            'auth' => ['user' => Auth::user()]
+        ]);
     }
 
     /**

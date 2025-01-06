@@ -68,5 +68,19 @@
         "precio": "39.00",
         "descripcion": "Te quitamos los piojos insofactus",
         "duracion": 55
+    },
+    {
+        "id": 11,
+        "nombre": "lala",
+        "precio": "12.00",
+        "descripcion": "lala",
+        "duracion": 21
+    },
+    {
+        "id": 12,
+        "nombre": "neque",
+        "precio": "12.00",
+        "descripcion": "neque",
+        "duracion": 23
     }
 ]

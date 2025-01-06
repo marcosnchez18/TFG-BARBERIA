@@ -8,14 +8,19 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faScissors, faEuroSign, faClock, faPen, faUserTie } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 import { Link } from '@inertiajs/react';
+import { usePage } from '@inertiajs/react';
 
-export default function NuevosServicios() {
+
+export default function NuevosServiciosTrab() {
     const [nombre, setNombre] = useState('');
     const [descripcion, setDescripcion] = useState('');
     const [precio, setPrecio] = useState('');
     const [duracion, setDuracion] = useState('');
     const [barberos, setBarberos] = useState([]);
-    const [selectedBarbero, setSelectedBarbero] = useState(''); // Selector único
+    const [selectedBarbero, setSelectedBarbero] = useState('');
+    const { auth } = usePage().props || {};
+const usuario = auth?.user || null;
+
 
     useEffect(() => {
         // Cargar los barberos desde la API
@@ -23,6 +28,14 @@ export default function NuevosServicios() {
             .then(response => setBarberos(response.data))
             .catch(error => console.error('Error al cargar barberos:', error));
     }, []);
+
+    useEffect(() => {
+        if (usuario && usuario.rol === 'trabajador') {
+            setSelectedBarbero(usuario.id);
+        }
+    }, [usuario]);
+
+
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -148,24 +161,22 @@ export default function NuevosServicios() {
                             </div>
                         </div>
                         <div className="mb-6">
-                            <label className="block text-gray-700 font-bold mb-2">Seleccionar Barbero:</label>
-                            <div className="relative">
-                                <FontAwesomeIcon icon={faUserTie} className="absolute left-3 top-3 text-gray-500" />
-                                <select
-                                    value={selectedBarbero}
-                                    onChange={(e) => setSelectedBarbero(e.target.value)}
-                                    className="w-full pl-10 px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#A87B43] bg-white"
-                                    required
-                                >
-                                    <option value="">Seleccione un barbero</option>
-                                    {barberos.map(barbero => (
-                                        <option key={barbero.id} value={barbero.id}>
-                                            {barbero.nombre}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-                        </div>
+    <label className="block text-gray-700 font-bold mb-2">Barbero:</label>
+    <div className="relative">
+        <FontAwesomeIcon icon={faUserTie} className="absolute left-3 top-3 text-gray-500" />
+        <select
+            value={selectedBarbero}
+            disabled
+            className="w-full pl-10 px-4 py-3 border rounded-lg bg-gray-200 cursor-not-allowed"
+        >
+            <option key={usuario?.id} value={usuario?.id}>
+                {usuario?.nombre}
+            </option>
+        </select>
+    </div>
+</div>
+
+
                         <div className="text-center">
                             <button
                                 type="submit"

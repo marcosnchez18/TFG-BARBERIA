@@ -47,35 +47,6 @@ const [citasVioleta, setCitasVioleta] = useState([]);
 
 
 
-    const handleGuardarDescansos = () => {
-        if (selectedDates.length === 0) {
-            Swal.fire({
-                icon: 'warning',
-                title: 'Atención',
-                text: 'Por favor, selecciona al menos un día antes de guardar.',
-            });
-            return;
-        }
-
-        axios.post('/admin/dias-descanso', { dias: selectedDates })
-            .then(() => {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Días guardados',
-                    text: 'Los días de descanso se han guardado correctamente.',
-                }).then(() => {
-                    window.location.reload(); // Recargar la página
-                });
-            })
-            .catch((error) => {
-                const errorMessage = error.response?.data?.message || 'Hubo un problema al guardar los días de descanso';
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: errorMessage,
-                });
-            });
-    };
 
     const tileDisabled = ({ date }) => {
         return dayjs(date).isBefore(dayjs(), 'day');
@@ -84,82 +55,8 @@ const [citasVioleta, setCitasVioleta] = useState([]);
 
 
 
-    const handleGuardarDescansosBarbero = () => {
-        if (!barberoSeleccionado) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'Por favor, selecciona un barbero.',
-            });
-            return;
-        }
-
-        if (selectedDates.length === 0) {
-            Swal.fire({
-                icon: 'warning',
-                title: 'Atención',
-                text: 'Por favor, selecciona al menos un día antes de guardar.',
-            });
-            return;
-        }
-
-        axios.post('/admin/guardar-descanso-individual', {
-            user_id: barberoSeleccionado,
-            dias: selectedDates,
-        })
-            .then(() => {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Días guardados',
-                    text: 'Los días de descanso se han guardado correctamente para el usuario.',
-                }).then(() => {
-                    window.location.reload(); // Recargar la página
-                });
-            })
-            .catch((error) => {
-                const errorMessage = error.response?.data?.message || 'Hubo un problema al guardar los días de descanso del usuario';
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: errorMessage,
-                });
-            });
-    };
 
 
-
-    const tileClassName = ({ date, view }) => {
-        if (view === 'month') {
-            const formattedDate = dayjs(date).format('YYYY-MM-DD');
-            const isSunday = dayjs(date).day() === 0;
-            const isHoliday = holidays.isHoliday(date);
-
-            if (isSunday || isHoliday) {
-                return 'highlighted-holiday';
-            }
-
-            if (descansos.includes(formattedDate)) {
-                return 'highlighted-descanso'; // Clase CSS para días de descanso
-            }
-
-            if (descansosIndividuales.includes(formattedDate)) {
-                return 'highlighted-descanso-indi'; // Clase CSS para descansos individuales
-            }
-
-            if (selectedDates.some(selectedDate => dayjs(selectedDate).format('YYYY-MM-DD') === formattedDate)) {
-                return 'highlighted-date';
-            }
-
-            if (citasVerde.includes(formattedDate)) {
-                return 'highlighted-green'; // Clase para días en verde
-            }
-
-            if (citasVioleta.includes(formattedDate)) {
-                return 'highlighted-purple'; // Clase para días en violeta
-            }
-        }
-        return null;
-    };
 
 
 
@@ -184,51 +81,8 @@ const [citasVioleta, setCitasVioleta] = useState([]);
     }, []);
 
 
-    useEffect(() => {
-        // Citas del barbero actual
-        axios.get('/api/citas-barbero-actual')
-            .then(response => {
-                const dates = response.data.map(date => dayjs(date).format('YYYY-MM-DD'));
-                setCitasVerde(dates);
-            })
-            .catch(error => {
-                console.error('Error al obtener las citas del barbero actual:', error);
-            });
-
-        // Citas de todos los barberos
-        axios.get('/api/citas-todos')
-            .then(response => {
-                const dates = response.data.map(date => dayjs(date).format('YYYY-MM-DD'));
-                setCitasVioleta(dates);
-            })
-            .catch(error => {
-                console.error('Error al obtener las citas de todos los barberos:', error);
-            });
-    }, []);
 
 
-
-    useEffect(() => {
-        axios.get('/api/admin/descansos')
-            .then(response => {
-                const descansoDates = response.data.map(fecha => dayjs(fecha).format('YYYY-MM-DD'));
-                setDescansos(descansoDates);
-            })
-            .catch(error => {
-                console.error('Error al obtener los días de descanso:', error);
-            });
-    }, []);
-
-    useEffect(() => {
-        axios.get('/api/admin/descansos-individuales')
-            .then(response => {
-                const individualDates = response.data.map(date => dayjs(date).format('YYYY-MM-DD'));
-                setDescansosIndividuales(individualDates); // Actualiza los descansos individuales
-            })
-            .catch(error => {
-                console.error('Error al obtener los días de descanso individuales:', error);
-            });
-    }, []);
 
 
 
@@ -314,7 +168,7 @@ const [citasVioleta, setCitasVioleta] = useState([]);
                         <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
                             <div className="bg-white p-6 rounded-lg shadow-lg max-w-lg w-full relative">
                                 <button
-                                    onClick={() => setShowCalendarBarbero(false)} // Cerrar el modal
+                                    onClick={() => setShowCalendarBarbero(false)} 
                                     className="absolute top-2 right-2 text-xl text-gray-500 hover:text-gray-700">
                                     ×
                                 </button>
