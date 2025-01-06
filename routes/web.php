@@ -400,7 +400,9 @@ Route::middleware(['auth', 'verified', 'trabajador'])->group(function () {
 
 
     Route::get('/mis-datos-trabajador', function () {
-        return Inertia::render('MisDatosAdminTrabajador');
+        return Inertia::render('MisDatosAdminTrabajador', [
+            'trabajador' => Auth::user(),
+        ]);
     })->name('mis-datos-trabajador');
 
 
@@ -428,6 +430,10 @@ Route::middleware(['auth', 'verified', 'trabajador'])->group(function () {
     Route::get('/api/trabajador/asignar/barberos/{barbero}/servicios', [ServicioUsuarioController::class, 'getServiciosAsignados']);
 
     Route::post('/trabajador/desasignar-servicio', [ServicioUsuarioController::class, 'desasignarServicio']);
+
+
+    Route::patch('/trabajador/actualizar-datos', [AdminController::class, 'actualizarDatos'])->name('trabajador.actualizar-datos');
+    Route::post('/trabajador/actualizar-foto/{id}', [AdminController::class, 'actualizarFoto'])->name('trabajador.actualizar-foto');
 
 
 });

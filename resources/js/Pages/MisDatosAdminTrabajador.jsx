@@ -10,7 +10,8 @@ import SobreNosotros from '@/Components/Sobrenosotros';
 import Footer from '../Components/Footer';
 
 export default function MisDatosAdminTrabajador() {
-    const { admin } = usePage().props; // Datos del admin proporcionados desde el servidor.
+    const { trabajador = {} } = usePage().props;
+
 
     const [isEditing, setIsEditing] = useState({
         nombre: false,
@@ -18,12 +19,17 @@ export default function MisDatosAdminTrabajador() {
     });
 
     const [selectedPhoto, setSelectedPhoto] = useState(null);
-    const [photoPreview, setPhotoPreview] = useState(admin.imagen || '/images/default-avatar.png');
+    const [photoPreview, setPhotoPreview] = useState(trabajador.imagen ? `/storage/${trabajador.imagen}` : '/images/default-avatar.png');
+
     const { data, setData, patch, errors } = useForm({
-        nombre: admin.nombre,
-        email: admin.email,
+        nombre: trabajador.nombre,
+        email: trabajador.email,
 
     });
+
+    const initialPhoto = trabajador.imagen ? `/storage/${trabajador.imagen}` : '/images/default-avatar.png';
+
+
 
     // Alternar estado de edición para un campo
     const toggleEditing = (field) => {
@@ -35,7 +41,7 @@ export default function MisDatosAdminTrabajador() {
 
     // Manejar la actualización de un campo específico
     const handleUpdate = (field) => {
-        patch(route('admin.actualizar-datos'), {
+        patch(route('trabajador.actualizar-datos'), {
             preserveScroll: true,
             onSuccess: () => {
                 Swal.fire('¡Actualizado!', `${field} ha sido actualizado correctamente.`, 'success');
@@ -65,22 +71,24 @@ export default function MisDatosAdminTrabajador() {
         const formData = new FormData();
         formData.append('imagen', selectedPhoto);
 
-        Inertia.post(route('admin.actualizar-foto', admin.id), formData, {
-            onSuccess: () => {
+        Inertia.post(route('trabajador.actualizar-foto', trabajador.id), formData, {
+            onSuccess: (response) => {
                 Swal.fire('¡Actualizado!', 'Foto actualizada con éxito.', 'success');
                 setSelectedPhoto(null);
-                setPhotoPreview(URL.createObjectURL(selectedPhoto)); // Actualiza la vista previa
+                setPhotoPreview(`/storage/${response.props.trabajador.imagen}`); // Cargar la imagen actualizada desde el servidor
             },
             onError: () => {
                 Swal.fire('Error', 'Hubo un problema al actualizar la foto. Inténtalo de nuevo.', 'error');
             },
         });
+
+
     };
 
 
     const cancelPhotoEdit = () => {
         setSelectedPhoto(null);
-        setPhotoPreview(admin.imagen || '/images/default-avatar.png'); // Restaura la foto original
+        setPhotoPreview(trabajador.imagen || '/images/default-avatar.png'); // Restaura la foto original
     };
 
     return (
@@ -104,12 +112,13 @@ export default function MisDatosAdminTrabajador() {
                 >
                     <div className="text-center mb-8">
                         <label htmlFor="photo-input" className="cursor-pointer">
-                            <img
-                                src={photoPreview}
-                                alt="Foto de perfil"
-                                className="w-32 h-32 rounded-full mx-auto border-4 border-blue-500 shadow-md hover:opacity-80"
-                                title="Haz clic para cambiar la foto"
-                            />
+                        <img
+    src={photoPreview}
+    alt="Foto de perfil"
+    className="w-32 h-32 rounded-full mx-auto border-4 border-blue-500 shadow-md hover:opacity-80"
+/>
+
+
                         </label>
                         <input
                             id="photo-input"

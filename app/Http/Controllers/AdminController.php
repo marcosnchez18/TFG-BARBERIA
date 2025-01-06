@@ -498,7 +498,7 @@ public function citasBarberiaTrab(Request $request)
               ->whereMonth('fecha_hora_cita', substr($fechaMes, 5, 2));
     }
 
-   
+
     $citas = $query->get();
 
     return response()->json($citas);
@@ -558,20 +558,22 @@ public function misDatos()
     public function actualizarFoto(Request $request, $id)
 {
     $request->validate([
-        'imagen' => 'required|image|mimes:jpg,jpeg,png|max:2048', // Valida que sea una imagen
+        'imagen' => 'required|image|mimes:jpg,jpeg,png|max:2048', // Validar que sea una imagen
     ]);
 
-    $admin = User::findOrFail($id); // Encuentra al administrador por su ID
+    $trabajador = User::findOrFail($id); // Encuentra al trabajador por su ID
 
-    // Elimina la foto anterior si no es la predeterminada
-    if ($admin->imagen && $admin->imagen !== '/images/default-avatar.png') {
-        Storage::delete($admin->imagen);
+    // Elimina la foto anterior si existe y no es la predeterminada
+    if ($trabajador->imagen && !str_contains($trabajador->imagen, 'default-avatar.png')) {
+        Storage::disk('public')->delete($trabajador->imagen);
     }
 
-    // Guarda la nueva foto
-    $path = $request->file('imagen')->store('public/perfiles'); // Guardar en la carpeta "perfiles"
-    $admin->imagen = Storage::url($path); // Almacena la URL de acceso público en la base de datos
-    $admin->save();
+    // Guarda la nueva foto en la misma carpeta que en `store()`
+    $path = $request->file('imagen')->store('images', 'public');
+
+    // Actualiza la imagen en la base de datos
+    $trabajador->imagen = $path; // Solo la ruta relativa dentro de 'storage/app/public'
+    $trabajador->save();
 
     return back()->with('success', 'Foto de perfil actualizada correctamente.');
 }
