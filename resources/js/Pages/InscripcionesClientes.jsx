@@ -138,7 +138,7 @@ export default function InscripcionesClientes({ oferta }) {
                         <ul className="mt-4 text-sm text-gray-600">
                             <li><strong>Duración:</strong> {oferta.duracion_meses} meses</li>
                             <li><strong>Vacantes:</strong> {oferta.numero_vacantes}</li>
-                            <li><strong>Máximo Inscripciones:</strong> {oferta.inscripciones_maximas}</li>
+                            
                         </ul>
                     </div>
                 </div>

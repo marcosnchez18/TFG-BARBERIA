@@ -562,3 +562,9 @@ Route::get('/api/public/barberos', [AdminController::class, 'obtenerBarberos']);
 Route::get('/api/public/servicios', [ServicioController::class, 'index'])->name('servicios.public.index');
 Route::get('/api/public/barberos/{barberoId}/servicios', [RecompensaController::class, 'getServiciosPorBarbero'])
     ->name('public.barberos.servicios');
+
+
+Route::post('/guardar-ruta-sesion', function (Illuminate\Http\Request $request) {
+    session(['ruta_despues_login' => $request->ruta]);
+    return response()->json(['success' => true]);       // Variable de sesión
+});

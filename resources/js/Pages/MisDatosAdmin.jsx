@@ -94,7 +94,7 @@ export default function MisDatosAdmin() {
 
     const cancelPhotoEdit = () => {
         setSelectedPhoto(null);
-        setPhotoPreview(admin.imagen ? `/storage/${admin.imagen}` : '/images/default-avatar.png'); // Restaurar imagen original
+        setPhotoPreview(admin.imagen ? `/storage/${admin.imagen}` : '/images/default-avatar.png'); 
     };
 
 
@@ -120,7 +120,7 @@ export default function MisDatosAdmin() {
                     <div className="text-center mb-8">
                         <label htmlFor="photo-input" className="cursor-pointer">
                         <img
-    src={photoPreview} // Se usa el preview o la imagen de la BD
+    src={photoPreview}
     alt="Foto de perfil"
     className="w-32 h-32 rounded-full mx-auto border-4 border-blue-500 shadow-md hover:opacity-80"
 />

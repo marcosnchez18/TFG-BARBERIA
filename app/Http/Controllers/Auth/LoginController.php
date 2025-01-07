@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 
 class LoginController extends Controller
 {
@@ -27,6 +28,13 @@ class LoginController extends Controller
             return redirect()->route('account.inactive');
         }
 
+        // Verificar si hay una ruta guardada en sesión
+        $rutaRedireccion = session('ruta_despues_login', null);
+        if ($rutaRedireccion) {
+            session()->forget('ruta_despues_login'); // Limpiar la sesión después de usarla
+            return redirect($rutaRedireccion);
+        }
+
         // Redirigir según el rol del usuario
         if ($user->rol === 'admin') {
             return redirect()->route('mi-gestion-admin');
@@ -41,6 +49,7 @@ class LoginController extends Controller
         'email' => 'Las credenciales proporcionadas no coinciden con nuestros registros.',
     ]);
 }
+
 
 
 

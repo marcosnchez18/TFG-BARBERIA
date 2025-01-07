@@ -15,7 +15,6 @@ class Oferta extends Model
         'descripcion',
         'duracion_meses',
         'numero_vacantes',
-        'inscripciones_maximas',
     ];
 
     /**
