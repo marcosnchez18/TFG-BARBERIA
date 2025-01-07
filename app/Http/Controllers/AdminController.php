@@ -125,23 +125,23 @@ class AdminController extends Controller
     }
 
     public function citasBarberoTrabajador()
-    {
-        if (Auth::user()->rol !== 'trabajador') {
-            return response()->json(['error' => 'Acceso no autorizado'], 403);
-        }
-
-        $barberoId = Auth::id();
-
-        // Filtrar las citas pendientes y futuras del barbero logueado
-        $citas = Cita::where('barbero_id', $barberoId)
-            ->where('fecha_hora_cita', '>=', Carbon::now())
-            ->where('estado', 'pendiente')
-            ->with(['usuario:id,nombre', 'servicio:id,nombre'])
-            ->orderBy('fecha_hora_cita', 'asc')
-            ->get();
-
-        return response()->json($citas);
+{
+    if (Auth::user()->rol !== 'trabajador') {
+        return response()->json(['error' => 'Acceso no autorizado'], 403);
     }
+
+    $barberoId = Auth::id();
+    $hoy = Carbon::now()->toDateString(); // Obtiene la fecha de hoy en formato YYYY-MM-DD
+
+    // Obtener todas las citas del barbero logueado para hoy (independientemente del estado)
+    $citas = Cita::where('barbero_id', $barberoId)
+        ->whereDate('fecha_hora_cita', $hoy) // Filtra SOLO las de hoy
+        ->with(['usuario:id,nombre', 'servicio:id,nombre'])
+        ->orderBy('fecha_hora_cita', 'asc')
+        ->get();
+
+    return response()->json($citas);
+}
 
     public function cambiarEstado(Request $request, $id)
 {
