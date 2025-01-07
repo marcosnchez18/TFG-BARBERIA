@@ -445,29 +445,26 @@ export default function ElegirCita() {
                     <div className="barbero-selection">
                         <h3 className="text-2xl font-semibold text-center">¿Con quién quieres reservar la cita?</h3>
                         <div className="flex justify-around mt-6">
-                            {barberos.map(barbero => {
-                                // Asignar fotos específicas a José Ángel y Daniel Valle
-                                const imagenEspecial = barbero.nombre === 'José Ángel Sánchez Harana'
-                                    ? '/images/jose.png'
-                                    : barbero.nombre === 'Daniel Valle Vargas'
-                                        ? '/images/hector.png'
-                                        : null;
+                        {barberos.map(barbero => {
+    
+    const imagenFinal = barbero.imagen ? `/storage/${barbero.imagen}` : '/images/default-avatar.png';
 
-                                return (
-                                    <div
-                                        key={barbero.id}
-                                        className="barbero-card cursor-pointer hover:shadow-md transition-shadow rounded-lg p-4 text-center"
-                                        onClick={() => handleSelectBarbero(barbero)}
-                                    >
-                                        <img
-                                            src={imagenEspecial || (barbero.imagen ? `/storage/${barbero.imagen}` : '/images/default-avatar.png')} // Lógica para mostrar la imagen correcta
-                                            alt={barbero.nombre}
-                                            className="rounded-full w-32 h-32 mx-auto"
-                                        />
-                                        <h4 className="text-xl mt-4">{barbero.nombre}</h4>
-                                    </div>
-                                );
-                            })}
+    return (
+        <div
+            key={barbero.id}
+            className="barbero-card cursor-pointer hover:shadow-md transition-shadow rounded-lg p-4 text-center"
+            onClick={() => handleSelectBarbero(barbero)}
+        >
+            <img
+                src={imagenFinal}
+                alt={barbero.nombre}
+                className="rounded-full w-32 h-32 mx-auto"
+            />
+            <h4 className="text-xl mt-4">{barbero.nombre}</h4>
+        </div>
+    );
+})}
+
 
 
 
