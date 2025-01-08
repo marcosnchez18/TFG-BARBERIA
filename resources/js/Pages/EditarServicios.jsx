@@ -10,27 +10,39 @@ export default function EditarServicios({ servicios }) {
     const [searchTerm, setSearchTerm] = useState('');
     const [currentService, setCurrentService] = useState(null);
     const [step, setStep] = useState(1);
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 4;
+
 
     const eliminarServicio = (id) => {
-        Swal.fire({
-            title: '¿Estás seguro?',
-            text: '¡Esta acción no se puede deshacer!',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#3085d6',
-            confirmButtonText: 'Sí, eliminar',
-            cancelButtonText: 'Cancelar',
-        }).then((result) => {
-            if (result.isConfirmed) {
-                Inertia.delete(route('servicios.destroy', id), {
-                    onSuccess: () => {
+    Swal.fire({
+        title: '¿Estás seguro?',
+        text: '¡Esta acción no se puede deshacer!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar',
+    }).then((result) => {
+        if (result.isConfirmed) {
+            Inertia.delete(route('servicios.destroy', id), {
+                onSuccess: (page) => {
+                    // Verificar si hay un mensaje de error en la sesión
+                    if (page.props.flash.error) {
+                        Swal.fire('Error', page.props.flash.error, 'error');
+                    } else {
                         Swal.fire('Eliminado', 'Servicio eliminado con éxito.', 'success');
-                    },
-                });
-            }
-        });
-    };
+                    }
+                },
+                onError: (errors) => {
+                    Swal.fire('Error', 'Hubo un problema al eliminar el servicio.', 'error');
+                },
+            });
+        }
+    });
+};
+
 
     const editarServicio = (servicio) => {
         setCurrentService(servicio);
@@ -96,6 +108,21 @@ export default function EditarServicios({ servicios }) {
         servicio.nombre.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
+    // Cálculo de paginación
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentServicios = filteredServicios.slice(indexOfFirstItem, indexOfLastItem);
+    const totalPages = Math.max(1, Math.ceil(filteredServicios.length / itemsPerPage));
+
+    const nextPage = () => {
+        if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+    };
+
+    const prevPage = () => {
+        if (currentPage > 1) setCurrentPage(currentPage - 1);
+    };
+
+
     return (
         <div
             style={{
@@ -135,30 +162,51 @@ export default function EditarServicios({ servicios }) {
                             </tr>
                         </thead>
                         <tbody>
-                            {filteredServicios.map((servicio) => (
-                                <tr key={servicio.id} className="clientes-admin-table-row">
-                                    <td className="clientes-admin-table-cell">{servicio.nombre}</td>
-                                    <td className="clientes-admin-table-cell">{servicio.descripcion}</td>
-                                    <td className="clientes-admin-table-cell">{servicio.precio} €</td>
-                                    <td className="clientes-admin-table-cell">{servicio.duracion} min</td>
-                                    <td className="clientes-admin-table-cell text-center space-x-2">
-                                        <button
-                                            onClick={() => editarServicio(servicio)}
-                                            className="clientes-admin-btn-edit"
-                                        >
-                                            ✏️
-                                        </button>
-                                        <button
-                                            onClick={() => eliminarServicio(servicio.id)}
-                                            className="clientes-admin-btn-delete"
-                                        >
-                                            🗑️
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
+    {currentServicios.map((servicio) => (
+        <tr key={servicio.id} className="clientes-admin-table-row">
+            <td className="clientes-admin-table-cell">{servicio.nombre}</td>
+            <td className="clientes-admin-table-cell">{servicio.descripcion}</td>
+            <td className="clientes-admin-table-cell">{servicio.precio} €</td>
+            <td className="clientes-admin-table-cell">{servicio.duracion} min</td>
+            <td className="clientes-admin-table-cell text-center space-x-2">
+                <button
+                    onClick={() => editarServicio(servicio)}
+                    className="clientes-admin-btn-edit"
+                >
+                    ✏️
+                </button>
+                <button
+                    onClick={() => eliminarServicio(servicio.id)}
+                    className="clientes-admin-btn-delete"
+                >
+                    🗑️
+                </button>
+            </td>
+        </tr>
+    ))}
+</tbody>
+
                     </table>
+                    <div className="flex justify-center mt-4 space-x-4">
+    <button
+        onClick={prevPage}
+        disabled={currentPage === 1}
+        className={`px-4 py-2 rounded ${currentPage === 1 ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600 text-white'}`}
+    >
+        ◀️ Anterior
+    </button>
+
+    <span className="text-white">Página {currentPage} de {totalPages}</span>
+
+    <button
+        onClick={nextPage}
+        disabled={currentPage >= totalPages}
+        className={`px-4 py-2 rounded ${currentPage >= totalPages ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600 text-white'}`}
+    >
+        Siguiente ▶️
+    </button>
+</div>
+
                 </div>
 
                 {/* Modal de Edición */}

@@ -2,11 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Cita;
 use App\Models\Servicio;
+use App\Models\User;
 use Illuminate\Support\Facades\File;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
+use App\Mail\CitaCanceladaPorServicio;
 
 class ServicioController extends Controller
 {
@@ -102,18 +106,38 @@ public function storeTrab(Request $request)
         ]);
     }
 
-    public function destroy($id)
-    {
 
-        $servicio = Servicio::findOrFail($id);
-        $servicio->delete();
+public function destroy($id)
+{
+    $servicio = Servicio::findOrFail($id);
 
+    // Verificar si hay citas futuras con este servicio
+    $citasFuturas = Cita::where('servicio_id', $id)
+        ->where('fecha_hora_cita', '>', now())
+        ->get();
 
-        $this->actualizarServiciosJson();
+    if ($citasFuturas->isNotEmpty()) {
+        // Enviar un correo electrónico a cada usuario afectado
+        foreach ($citasFuturas as $cita) {
+            $usuario = User::find($cita->usuario_id);
 
+            if ($usuario) {
+                Mail::to($usuario->email)->send(new CitaCanceladaPorServicio($usuario, $servicio, $cita));
+            }
+        }
 
-        return redirect()->route('admin.servicios.editar')->with('success', 'Servicio eliminado correctamente.');
+        // Cancelar todas las citas futuras de este servicio
+        Cita::where('servicio_id', $id)
+            ->where('fecha_hora_cita', '>', now())
+            ->delete();
     }
+
+    // Eliminar el servicio
+    $servicio->delete();
+    $this->actualizarServiciosJson();
+
+    return redirect()->route('admin.servicios.editar')->with('success', 'Servicio eliminado correctamente.');
+}
 
 
 
