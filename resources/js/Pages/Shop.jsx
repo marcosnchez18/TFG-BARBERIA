@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import Swal from 'sweetalert2'; 
+import Swal from 'sweetalert2';
 import '../../css/Barber.css';
 import NavigationCliente from '@/Components/NavigationCliente';
 import Footer from '../Components/Footer';
@@ -97,6 +97,23 @@ export default function TiendaPrincipal() {
         return () => clearTimeout(timer);
     }, []);
 
+
+    useEffect(() => {
+        const ocultarHero = () => setMostrarHero(false);
+
+        // Ocultar Hero después de 4 segundos
+        const timer = setTimeout(ocultarHero, 4000);
+
+        // Agregar evento de clic en toda la pantalla
+        document.addEventListener('click', ocultarHero);
+
+        return () => {
+            clearTimeout(timer); // Limpiar el timeout si el usuario hace clic antes
+            document.removeEventListener('click', ocultarHero); // Eliminar evento cuando se desmonte
+        };
+    }, []);
+
+
     // Ver detalles de un producto
     const verProducto = (producto) => {
         setProductoSeleccionado(producto);
@@ -126,13 +143,14 @@ export default function TiendaPrincipal() {
             <NavigationCliente />
 
             {mostrarHero && (
-                <section className="hero-section">
-                    <div className="hero-text">
-                        <h2>¡Bienvenido a Nuestra Tienda!</h2>
-                        <p>Encuentra productos exclusivos para ti. ¡Haz tu compra ahora!</p>
-                    </div>
-                </section>
-            )}
+    <section className="hero-section">
+        <div className="hero-text">
+            <h2>¡Bienvenido a Nuestra Tienda!</h2>
+            <p>Encuentra productos exclusivos para ti. ¡Haz tu compra ahora!</p>
+        </div>
+    </section>
+)}
+
 
             {/* Aquí se usa el componente Productos */}
             <Productos
