@@ -10,9 +10,13 @@ import WhatsAppButton from '@/Components/Wasa';
 import Productos from '../Components/Productos';
 import { Inertia } from "@inertiajs/inertia";
 
-export default function TiendaPrincipal() {
+export default function Shop() {
     const [productos, setProductos] = useState([]);
-    const [carrito, setCarrito] = useState([]);
+    const [carrito, setCarrito] = useState(() => {
+        const carritoGuardado = localStorage.getItem("carrito");
+        return carritoGuardado ? JSON.parse(carritoGuardado) : [];
+    });
+
     const [cargando, setCargando] = useState(true);
     const [mostrarHero, setMostrarHero] = useState(true);
     const [productoSeleccionado, setProductoSeleccionado] = useState(null);
@@ -41,6 +45,17 @@ export default function TiendaPrincipal() {
         const productoExistente = carrito.find((item) => item.id === producto.id);
 
         if (productoExistente) {
+            // Si ya existe en el carrito, verifica que la cantidad no exceda el stock
+            if (productoExistente.cantidad + 1 > producto.stock) {
+                Swal.fire(
+                    "Stock insuficiente",
+                    `No puedes agregar más de ${producto.stock} unidades de este producto.`,
+                    "warning"
+                );
+                return;
+            }
+
+            // Si hay suficiente stock, incrementa la cantidad
             setCarrito(
                 carrito.map((item) =>
                     item.id === producto.id
@@ -49,12 +64,29 @@ export default function TiendaPrincipal() {
                 )
             );
         } else {
+            // Si no existe en el carrito, verifica que haya stock disponible
+            if (producto.stock < 1) {
+                Swal.fire(
+                    "Producto agotado",
+                    "Este producto no tiene unidades disponibles.",
+                    "error"
+                );
+                return;
+            }
+
+            // Si hay stock, agrega el producto al carrito
             setCarrito([...carrito, { ...producto, cantidad: 1 }]);
         }
 
         setAnimarCarrito(true);
         setTimeout(() => setAnimarCarrito(false), 500);
     };
+
+
+    useEffect(() => {
+        localStorage.setItem("carrito", JSON.stringify(carrito));
+    }, [carrito]);
+
 
     // Función para disminuir la cantidad de productos en el carrito
     const disminuirCantidad = (idProducto) => {
@@ -75,6 +107,17 @@ export default function TiendaPrincipal() {
 
     // Función para aumentar la cantidad de productos en el carrito
     const aumentarCantidad = (idProducto) => {
+        const productoExistente = carrito.find((item) => item.id === idProducto);
+
+        if (productoExistente && productoExistente.cantidad + 1 > productoExistente.stock) {
+            Swal.fire(
+                "Stock insuficiente",
+                `No puedes agregar más de ${productoExistente.stock} unidades de este producto.`,
+                "warning"
+            );
+            return;
+        }
+
         setCarrito(
             carrito.map((item) =>
                 item.id === idProducto
@@ -83,6 +126,7 @@ export default function TiendaPrincipal() {
             )
         );
     };
+
 
     // Función para eliminar productos del carrito
     const eliminarDelCarrito = (idProducto) => {
@@ -94,6 +138,12 @@ export default function TiendaPrincipal() {
         (total, producto) => total + producto.precio * producto.cantidad,
         0
     );
+
+    const vaciarCarrito = () => {
+        setCarrito([]);
+        localStorage.removeItem("carrito");
+    };
+
 
     // Obtener productos desde la API
     useEffect(() => {
@@ -279,12 +329,13 @@ export default function TiendaPrincipal() {
     Tramitar Pedido
 </button>
 
-                                <button
-                                    className="w-full mt-2 bg-red-500 text-white py-2 rounded-lg hover:bg-red-600"
-                                    onClick={() => setCarrito([])}
-                                >
-                                    Vaciar Cesta
-                                </button>
+<button
+    className="w-full mt-2 bg-red-500 text-white py-2 rounded-lg hover:bg-red-600"
+    onClick={vaciarCarrito}
+>
+    Vaciar Cesta
+</button>
+
                             </div>
                         </>
                     )}
