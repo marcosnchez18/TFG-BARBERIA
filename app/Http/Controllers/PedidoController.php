@@ -27,9 +27,17 @@ class PedidoController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
-    {
-        //
-    }
+{
+    $pedido = Pedido::create([
+        'user_id' => auth()->id(),
+        'estado' => 'pendiente',
+        'total' => 0, // Se actualizará más tarde
+        'metodo_entrega' => $request->metodo_entrega,
+        'direccion_entrega' => $request->metodo_entrega === 'envio' ? $request->direccion : null
+    ]);
+
+    return response()->json(['message' => 'Pedido registrado con éxito', 'pedido_id' => $pedido->id]);
+}
 
     /**
      * Display the specified resource.

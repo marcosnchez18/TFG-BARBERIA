@@ -109,7 +109,7 @@ export default function TrabajaCliente({ ofertas }) {
                                         <li>
                                             <strong>Vacantes:</strong> {oferta.numero_vacantes}
                                         </li>
-                                        
+
                                     </ul>
                                     <button
                                         onClick={() => window.open(`/inscribirsecliente/${oferta.id}`, '_blank')}

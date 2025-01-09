@@ -14,6 +14,7 @@ use App\Http\Controllers\DescansoController;
 use App\Http\Controllers\FichaClienteController;
 use App\Http\Controllers\FichaController;
 use App\Http\Controllers\OfertaController;
+use App\Http\Controllers\PedidoController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\RecompensaController;
@@ -170,6 +171,22 @@ Route::middleware(['auth', 'verified', 'cliente'])->group(function () {
     Route::patch('/admin/user/quitar-saldo', [AdminController::class, 'quitaSaldo'])->name('admin.user.quitar-saldo');
 
     Route::delete('/api/candidaturas/{localizador}', [CandidaturaController::class, 'destroy'])->name('candidaturas.destroy');
+
+
+
+    Route::post('/guardar-carrito', function (Request $request) {
+        session(['carrito' => $request->input('carrito')]); // Guarda el carrito en sesión
+        return response()->json(['message' => 'Carrito guardado']);
+    });
+
+    Route::get('/tramitar-pedido', function () {
+        return Inertia::render('TramitarPedido', [
+            'carrito' => session('carrito', []) // Pasa el carrito guardado en sesión
+        ]);
+    })->name('tramitar-pedido');
+
+    Route::post('/api/tramitar-pedido', [PedidoController::class, 'store']);
+
 
 
 });

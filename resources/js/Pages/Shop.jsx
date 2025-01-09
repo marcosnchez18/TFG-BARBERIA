@@ -8,6 +8,7 @@ import Localizacion from '../Components/Localizacion';
 import SobreNosotros from '../Components/Sobrenosotros';
 import WhatsAppButton from '@/Components/Wasa';
 import Productos from '../Components/Productos';
+import { Inertia } from "@inertiajs/inertia";
 
 export default function TiendaPrincipal() {
     const [productos, setProductos] = useState([]);
@@ -17,6 +18,23 @@ export default function TiendaPrincipal() {
     const [productoSeleccionado, setProductoSeleccionado] = useState(null);
     const [animarCarrito, setAnimarCarrito] = useState(false);
     const [mostrarCarrito, setMostrarCarrito] = useState(false);
+
+    const tramitarPedido = () => {
+        if (carrito.length === 0) {
+            Swal.fire("Tu carrito está vacío", "¡Agrega productos para continuar!", "warning");
+            return;
+        }
+
+        axios.post('/guardar-carrito', { carrito })
+            .then(() => {
+                Inertia.visit('/tramitar-pedido');
+            })
+            .catch(error => {
+                console.error("Error al guardar el carrito:", error);
+                Swal.fire('Error', 'No se pudo guardar el carrito.', 'error');
+            });
+    };
+
 
     // Función para agregar productos al carrito
     const agregarAlCarrito = (producto) => {
@@ -255,11 +273,12 @@ export default function TiendaPrincipal() {
                                     Total: {totalCarrito.toFixed(2)} €
                                 </p>
                                 <button
-                                    className="w-full mt-4 bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600"
-                                    onClick={() => alert('Tramitar pedido')}
-                                >
-                                    Tramitar Pedido
-                                </button>
+    className="w-full mt-4 bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600"
+    onClick={tramitarPedido}
+>
+    Tramitar Pedido
+</button>
+
                                 <button
                                     className="w-full mt-2 bg-red-500 text-white py-2 rounded-lg hover:bg-red-600"
                                     onClick={() => setCarrito([])}
