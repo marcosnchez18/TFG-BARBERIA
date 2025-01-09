@@ -8,8 +8,10 @@ use App\Models\PedidoProducto;
 use App\Models\Producto;
 use App\Models\Recibo;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use Inertia\Inertia;
 
 class PedidoController extends Controller
 {
@@ -17,9 +19,44 @@ class PedidoController extends Controller
      * Display a listing of the resource.
      */
     public function index()
+{
+    $user = Auth::user(); // Obtener usuario autenticado
+
+    // Obtener pedidos del usuario autenticado con la relación 'user'
+    $pedidos = Pedido::where('user_id', $user->id)
+        ->with('user') // Relación con el modelo User
+        ->orderBy('created_at', 'desc')
+        ->get()
+        ->map(function ($pedido) {
+            return [
+                'id' => $pedido->id,
+                'email' => $pedido->user->email ?? 'Correo no disponible', // Evita errores si no hay email
+                'estado' => ucfirst($pedido->estado), // Primera letra en mayúscula
+                'total' => number_format($pedido->total, 2) . ' €', // Formato de precio
+                'metodo_entrega' => ucfirst($pedido->metodo_entrega), // Primera letra en mayúscula
+                'direccion_entrega' => $pedido->metodo_entrega === 'envio'
+                    ? $pedido->direccion_entrega
+                    : 'Recogida en tienda',
+                'fecha_pedido' => $pedido->created_at->format('d/m/Y H:i'), // Formato de fecha
+            ];
+        });
+
+    return Inertia::render('MisPedidos', [
+        'pedidos' => $pedidos
+    ]);
+}
+
+public function getPedidos()
     {
-        //
+        $user = Auth::user();
+
+        $pedidos = Pedido::where('user_id', $user->id)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return response()->json($pedidos);
     }
+
 
     /**
      * Show the form for creating a new resource.
@@ -37,6 +74,11 @@ class PedidoController extends Controller
     DB::beginTransaction(); // Iniciar transacción para evitar datos inconsistentes
 
     try {
+        // Generar un código único de 16 dígitos para el pedido
+        do {
+            $codigoPedido = str_pad(mt_rand(0, 9999999999999999), 16, '0', STR_PAD_LEFT);
+        } while (Pedido::where('codigo_pedido', $codigoPedido)->exists());
+
         // Calcular el total del pedido sumando los precios de cada producto
         $total = collect($request->productos)->sum(fn($producto) => $producto['precio'] * $producto['cantidad']);
 
@@ -46,7 +88,8 @@ class PedidoController extends Controller
             'estado' => 'pendiente',
             'total' => $total, // Ahora almacena el total real del pedido
             'metodo_entrega' => $request->metodo_entrega,
-            'direccion_entrega' => $request->metodo_entrega === 'envio' ? $request->direccion : null
+            'direccion_entrega' => $request->metodo_entrega === 'envio' ? $request->direccion : null,
+            'codigo_pedido' => $codigoPedido, // Usar el código generado
         ]);
 
         // Insertar cada producto en la tabla `pedido_productos`
@@ -81,6 +124,7 @@ class PedidoController extends Controller
         // Enviar el correo al usuario con los detalles del pedido
         Mail::to(auth()->user()->email)->send(new PedidoRealizadoMail([
             'id' => $pedido->id,
+            'codigo_pedido' => $pedido->codigo_pedido, // Pasar el código de pedido al correo
             'usuario' => auth()->user(),
             'productos' => $request->productos,
             'total' => $total,
@@ -90,13 +134,18 @@ class PedidoController extends Controller
 
         DB::commit(); // Confirmar transacción si todo salió bien
 
-        return response()->json(['message' => 'Pedido registrado con éxito', 'pedido_id' => $pedido->id]);
+        return response()->json([
+            'message' => 'Pedido registrado con éxito',
+            'numero_pedido' => $pedido->codigo_pedido, // Devolver el código de pedido único
+        ]);
 
     } catch (\Exception $e) {
         DB::rollBack(); // Si hay un error, deshacer los cambios
         return response()->json(['error' => 'Hubo un problema al registrar el pedido.'], 500);
     }
 }
+
+
 
     /**
      * Display the specified resource.

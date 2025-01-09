@@ -9,7 +9,7 @@
     <h1>¡Gracias por tu compra, {{ $pedido['usuario']['nombre'] }}!</h1>
     <p>Tu pedido ha sido confirmado con éxito.</p>
 
-    <h2>Detalles del pedido #{{ $pedido['id'] }}:</h2>
+    <h2>Detalles del pedido #{{ $pedido['codigo_pedido'] }}:</h2>
     <ul>
         @foreach ($pedido['productos'] as $producto)
             <li>

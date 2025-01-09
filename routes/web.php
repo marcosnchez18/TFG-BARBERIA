@@ -188,7 +188,16 @@ Route::middleware(['auth', 'verified', 'cliente'])->group(function () {
     Route::post('/api/tramitar-pedido', [PedidoController::class, 'store']);
 
 
+    Route::get('/mis-pedidos', [PedidoController::class, 'index'])
+        ->name('mis-pedidos');
 
+
+    Route::get('/api/mis-pedidos', [PedidoController::class, 'getPedidos'])
+        ->name('api.mis-pedidos');
+
+
+    Route::get('/pedido/{id}', [PedidoController::class, 'show'])
+        ->name('pedido.detalle');
 });
 
 
@@ -451,8 +460,6 @@ Route::middleware(['auth', 'verified', 'trabajador'])->group(function () {
 
     Route::patch('/trabajador/actualizar-datos', [AdminController::class, 'actualizarDatos'])->name('trabajador.actualizar-datos');
     Route::post('/trabajador/actualizar-foto/{id}', [AdminController::class, 'actualizarFoto'])->name('trabajador.actualizar-foto');
-
-
 });
 
 
