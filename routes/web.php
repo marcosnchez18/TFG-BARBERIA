@@ -195,9 +195,11 @@ Route::middleware(['auth', 'verified', 'cliente'])->group(function () {
     Route::get('/api/mis-pedidos', [PedidoController::class, 'getPedidos'])
         ->name('api.mis-pedidos');
 
+    Route::get('/api/ver-pedido/{id}', [PedidoController::class, 'show'])->name('pedido.show');
 
-    Route::get('/pedido/{id}', [PedidoController::class, 'show'])
-        ->name('pedido.detalle');
+
+
+
 });
 
 
