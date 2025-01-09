@@ -10,7 +10,7 @@ class Pedido extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id', 'estado', 'total', 'metodo_entrega'
+        'user_id', 'estado', 'total', 'metodo_entrega', 'direccion_entrega'
     ];
 
     public function user()
@@ -18,13 +18,17 @@ class Pedido extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function tickets()
+
+    public function productos()
     {
-        return $this->hasMany(Ticket::class);
+        return $this->belongsToMany(Producto::class, 'pedido_productos')
+            ->withPivot('cantidad', 'precio_unitario')
+            ->withTimestamps();
     }
 
-    public function pedidoProveedores()
+    public function recibo()
     {
-        return $this->hasMany(PedidoProveedor::class);
+        return $this->hasOne(Recibo::class, 'pedido_id');
     }
+
 }

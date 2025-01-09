@@ -15,16 +15,18 @@ class Producto extends Model
 
     public function proveedor()
     {
-        return $this->belongsTo(Proveedor::class);
+        return $this->belongsTo(Proveedor::class, 'proveedor_id');
     }
 
-    public function carritos()
+    public function pedidos()
     {
-        return $this->hasMany(Carrito::class);
+        return $this->belongsToMany(Pedido::class, 'pedido_productos')
+            ->withPivot('cantidad', 'precio_unitario')
+            ->withTimestamps();
     }
 
     public function pedidosProveedores()
     {
-        return $this->hasMany(PedidoProveedor::class);
+        return $this->hasMany(PedidoProveedor::class, 'producto_id');
     }
 }

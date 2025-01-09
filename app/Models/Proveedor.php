@@ -17,11 +17,13 @@ class Proveedor extends Model
 
     public function productos()
     {
-        return $this->hasMany(Producto::class);
+        return $this->hasMany(Producto::class, 'proveedor_id');
     }
 
     public function pedidosProveedores()
     {
-        return $this->hasMany(PedidoProveedor::class);
+        return $this->hasMany(PedidoProveedor::class, 'proveedor_id');
     }
+
+
 }

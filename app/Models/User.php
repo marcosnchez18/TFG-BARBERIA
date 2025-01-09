@@ -54,16 +54,16 @@ class User extends Authenticatable implements MustVerifyEmail  // Implementar Mu
      * Boot method para ejecutar acciones antes de que un usuario sea creado.
      */
     protected static function boot()
-{
-    parent::boot();
+    {
+        parent::boot();
 
-    
-    static::creating(function ($user) {
-        if (in_array($user->rol, ['cliente', 'trabajador'])) {
-            $user->numero_tarjeta_vip = self::generateNumeroTarjetaVIP();
-        }
-    });
-}
+
+        static::creating(function ($user) {
+            if (in_array($user->rol, ['cliente', 'trabajador'])) {
+                $user->numero_tarjeta_vip = self::generateNumeroTarjetaVIP();
+            }
+        });
+    }
 
 
     /**
@@ -117,45 +117,41 @@ class User extends Authenticatable implements MustVerifyEmail  // Implementar Mu
     }
 
     public function servicios()
-{
-    return $this->belongsToMany(Servicio::class, 'servicio_usuario', 'usuario_id', 'servicio_id');
-}
-
-public function ficha()
-{
-    return $this->hasOne(Ficha::class, 'user_id');
-}
-
-public function carritos()
     {
-        return $this->hasMany(Carrito::class);
+        return $this->belongsToMany(Servicio::class, 'servicio_usuario', 'usuario_id', 'servicio_id');
     }
+
+    public function ficha()
+    {
+        return $this->hasOne(Ficha::class, 'user_id');
+    }
+
+
 
     public function pedidos()
     {
-        return $this->hasMany(Pedido::class);
+        return $this->hasMany(Pedido::class, 'user_id');
     }
 
 
-public function obtenerCitasCompletadas()
-{
-    return $this->hasMany(Cita::class, 'usuario_id')->where('estado', 'completada');
-}
+    public function obtenerCitasCompletadas()
+    {
+        return $this->hasMany(Cita::class, 'usuario_id')->where('estado', 'completada');
+    }
 
 
-public function obtenerCitasAusentes()
-{
-    return $this->hasMany(Cita::class, 'usuario_id')->where('estado', 'ausente');
-}
+    public function obtenerCitasAusentes()
+    {
+        return $this->hasMany(Cita::class, 'usuario_id')->where('estado', 'ausente');
+    }
 
-public function obtenerFechasCitasAusentes()
-{
-    return $this->hasMany(Cita::class, 'usuario_id')
-        ->where('estado', 'ausente')
-        ->get()
-        ->map(function ($cita) {
-            return Carbon::parse($cita->fecha_hora_cita)->format('Y-m-d');
-        });
-}
-
+    public function obtenerFechasCitasAusentes()
+    {
+        return $this->hasMany(Cita::class, 'usuario_id')
+            ->where('estado', 'ausente')
+            ->get()
+            ->map(function ($cita) {
+                return Carbon::parse($cita->fecha_hora_cita)->format('Y-m-d');
+            });
+    }
 }
