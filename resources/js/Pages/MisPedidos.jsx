@@ -6,6 +6,8 @@ import WhatsAppButton from '@/Components/Wasa';
 import SobreNosotros from '@/Components/Sobrenosotros';
 import Footer from '../Components/Footer';
 import dayjs from 'dayjs';
+import Swal from 'sweetalert2';
+
 
 
 export default function MisPedidos() {
@@ -68,6 +70,58 @@ const [filtroFecha, setFiltroFecha] = useState('');     // Para fecha selecciona
         setPedidos(pedidosOrdenados);
     };
 
+    const cancelarPedido = (pedidoId) => {
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: 'Cancelar este pedido no se podrá deshacer.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Sí, cancelar',
+            cancelButtonText: 'No, mantener',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                axios
+                    .post(`/api/cancelar-pedido/${pedidoId}`)
+                    .then((response) => {
+                        if (response.status === 200) {
+                            Swal.fire(
+                                '¡Cancelado!',
+                                'El pedido ha sido cancelado correctamente.',
+                                'success'
+                            );
+                            // Actualiza el estado del pedido en el frontend
+                            setPedidos((prevPedidos) =>
+                                prevPedidos.map((pedido) =>
+                                    pedido.id === pedidoId
+                                        ? { ...pedido, estado: 'cancelado' }
+                                        : pedido
+                                )
+                            );
+                        } else {
+                            Swal.fire(
+                                'Error',
+                                'Hubo un problema al procesar la solicitud.',
+                                'error'
+                            );
+                        }
+                    })
+                    .catch((error) => {
+                        console.error('Error al cancelar el pedido:', error);
+                        Swal.fire(
+                            'Error',
+                            error.response?.data?.error || 'Hubo un problema al cancelar el pedido.',
+                            'error'
+                        );
+                    });
+            }
+        });
+    };
+
+
+
+
 
     const handleVerPedido = (pedidoId) => {
         axios.get(`/api/ver-pedido/${pedidoId}`)
@@ -89,6 +143,7 @@ const [filtroFecha, setFiltroFecha] = useState('');     // Para fecha selecciona
     return (
         <div>
             <NavigationCliente />
+
             <div
                 className="flex flex-col min-h-screen"
                 style={{
@@ -98,8 +153,10 @@ const [filtroFecha, setFiltroFecha] = useState('');     // Para fecha selecciona
                     justifyContent: 'center',
                 }}
             >
+                <br /><br /><br />
                 <div className="container mx-auto p-6 mt-10 bg-white shadow-md rounded-lg">
                     <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">Mis Pedidos 📦</h2>
+                    <br /><br />
 
                     {pedidos.length === 0 ? (
                         <p className="text-center text-gray-500 text-lg">❌ No tienes pedidos registrados.</p>
@@ -177,6 +234,8 @@ const [filtroFecha, setFiltroFecha] = useState('');     // Para fecha selecciona
                                         <th className="py-2 px-4 border">Método Entrega</th>
                                         <th className="py-2 px-4 border">Dirección</th>
                                         <th className="py-2 px-4 border">Fecha</th>
+                                        <th className="py-2 px-4 border">Acciones</th>
+
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -204,6 +263,19 @@ const [filtroFecha, setFiltroFecha] = useState('');     // Para fecha selecciona
                                             <td className="py-2 px-4 text-center font-bold">
                                                 {dayjs(pedido.created_at).format('D/M/YYYY')}
                                             </td>
+                                            <td className="py-2 px-4 text-center">
+    {pedido.estado === 'pendiente' ? (
+        <button
+            onClick={() => cancelarPedido(pedido.id)}
+            className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition"
+        >
+            Cancelar
+        </button>
+    ) : (
+        <span className="text-gray-500 italic">No disponible</span>
+    )}
+</td>
+
 
                                         </tr>
                                     ))}

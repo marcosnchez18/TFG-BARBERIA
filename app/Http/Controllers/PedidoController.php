@@ -181,6 +181,30 @@ class PedidoController extends Controller
 }
 
 
+public function cancelar($id)
+{
+    $pedido = Pedido::findOrFail($id);
+
+    // Solo permitir cancelar pedidos con estado pendiente
+    if ($pedido->estado !== 'pendiente') {
+        return response()->json(['error' => 'Solo se pueden cancelar pedidos pendientes.'], 403);
+    }
+
+    // Actualizar estado del pedido
+    $pedido->estado = 'cancelado';
+    $pedido->save();
+
+    // Reembolsar el saldo al usuario
+    $usuario = $pedido->user; // Asegúrate de tener la relación `usuario` configurada
+    $usuario->saldo += $pedido->total;
+    $usuario->save();
+
+    return response()->json(['message' => 'Pedido cancelado correctamente.'], 200);
+
+}
+
+
+
 
 
 

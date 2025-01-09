@@ -197,6 +197,9 @@ Route::middleware(['auth', 'verified', 'cliente'])->group(function () {
 
     Route::get('/api/ver-pedido/{id}', [PedidoController::class, 'show'])->name('pedido.show');
 
+    Route::post('/api/cancelar-pedido/{id}', [PedidoController::class, 'cancelar'])->name('pedido.cancelar');
+
+
 
 
 
