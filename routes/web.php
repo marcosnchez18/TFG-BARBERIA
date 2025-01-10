@@ -198,11 +198,6 @@ Route::middleware(['auth', 'verified', 'cliente'])->group(function () {
     Route::get('/api/ver-pedido/{id}', [PedidoController::class, 'show'])->name('pedido.show');
 
     Route::post('/api/cancelar-pedido/{id}', [PedidoController::class, 'cancelar'])->name('pedido.cancelar');
-
-
-
-
-
 });
 
 
@@ -376,6 +371,18 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
 
 
     Route::get('/clientes/{id}/ficha', [ClienteController::class, 'mostrarFicha'])->name('clientes.ficha');
+
+    Route::get('/admin/pedidos', [PedidoController::class, 'pedidosAdminVista'])
+        ->name('admin.pedidos');
+
+    Route::get('/api/admin/pedidos', [PedidoController::class, 'getPedidosAdmin'])
+        ->name('api.admin.pedidos');
+
+    Route::get('/api/admin/ver-pedido/{id}', [PedidoController::class, 'show'])->name('pedido.admin.show');
+
+    Route::patch('/api/admin/cancelar-pedido/{id}', [PedidoController::class, 'cancelarAdmin'])
+    ->name('api.admin.cancelar.pedido');
+
 });
 
 

@@ -43,56 +43,66 @@ export default function Productos({ productos, agregarAlCarrito, verProducto, ca
                 </div>
 
                 {/* Opciones de filtros */}
-                {mostrarFiltros && (
-                    <div
-                        className="absolute top-12 right-4 bg-white border border-gray-300 p-4 rounded-lg shadow-lg w-64 z-50"
-                        style={{ zIndex: 50 }}
-                    >
-                        <h3 className="text-sm font-bold mb-4">Opciones de Filtro:</h3>
+{mostrarFiltros && (
+    <div
+        className="absolute top-12 right-4 bg-white border border-gray-300 p-4 rounded-lg shadow-lg w-64 z-50"
+        style={{ zIndex: 50 }}
+    >
+        {/* Botón para cerrar filtros */}
+        <button
+            className="absolute top-2 right-2 text-gray-500 hover:text-red-500 text-lg font-bold"
+            onClick={() => setMostrarFiltros(false)}
+            aria-label="Cerrar"
+        >
+            ✖
+        </button>
 
-                        {/* Ordenar por */}
-                        <div className="mb-4">
-                            <label className="text-sm font-bold text-gray-600 mb-1 block">
-                                Ordenar por:
-                            </label>
-                            <select
-                                className="border rounded-lg px-2 py-1 w-full text-sm"
-                                value={filtroPrecio}
-                                onChange={(e) => setFiltroPrecio(e.target.value)}
-                            >
-                                <option value="">Seleccionar</option>
-                                <option value="asc">Precio: de menor a mayor</option>
-                                <option value="desc">Precio: de mayor a menor</option>
-                            </select>
-                        </div>
+        <h3 className="text-sm font-bold mb-4">Opciones de Filtro:</h3>
 
-                        {/* Rango de precio */}
-                        <div className="mb-4">
-                            <label className="text-sm font-bold text-gray-600 mb-1 block">
-                                Rango de precio:
-                            </label>
-                            <input
-                                type="range"
-                                min="0"
-                                max={precioMaximo}
-                                value={rangoPrecio}
-                                onChange={(e) => setRangoPrecio(Number(e.target.value))}
-                                className="w-full"
-                            />
-                            <p className="text-xs text-gray-600 mt-1">
-                                Máximo: <span className="font-bold">{rangoPrecio} €</span>
-                            </p>
-                        </div>
+        {/* Ordenar por */}
+        <div className="mb-4">
+            <label className="text-sm font-bold text-gray-600 mb-1 block">
+                Ordenar por:
+            </label>
+            <select
+                className="border rounded-lg px-2 py-1 w-full text-sm"
+                value={filtroPrecio}
+                onChange={(e) => setFiltroPrecio(e.target.value)}
+            >
+                <option value="">Seleccionar</option>
+                <option value="asc">Precio: de menor a mayor</option>
+                <option value="desc">Precio: de mayor a menor</option>
+            </select>
+        </div>
 
-                        {/* Botón para cerrar filtros */}
-                        <button
-                            className="mt-2 bg-red-500 text-white px-3 py-1 rounded-lg text-sm w-full"
-                            onClick={() => setMostrarFiltros(false)}
-                        >
-                            Aplicar Filtros
-                        </button>
-                    </div>
-                )}
+        {/* Rango de precio */}
+        <div className="mb-4">
+            <label className="text-sm font-bold text-gray-600 mb-1 block">
+                Rango de precio:
+            </label>
+            <input
+                type="range"
+                min="0"
+                max={precioMaximo}
+                value={rangoPrecio}
+                onChange={(e) => setRangoPrecio(Number(e.target.value))}
+                className="w-full"
+            />
+            <p className="text-xs text-gray-600 mt-1">
+                Máximo: <span className="font-bold">{rangoPrecio} €</span>
+            </p>
+        </div>
+
+        {/* Botón para aplicar filtros */}
+        <button
+            className="mt-2 bg-blue-500 text-white px-3 py-1 rounded-lg text-sm w-full"
+            onClick={() => setMostrarFiltros(false)}
+        >
+            Aplicar Filtros
+        </button>
+    </div>
+)}
+
 
                 {/* Productos */}
                 {cargando ? (

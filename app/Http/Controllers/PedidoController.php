@@ -7,6 +7,7 @@ use App\Models\Pedido;
 use App\Models\PedidoProducto;
 use App\Models\Producto;
 use App\Models\Recibo;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -56,6 +57,20 @@ class PedidoController extends Controller
 
         return response()->json($pedidos);
     }
+
+    public function getPedidosAdmin()
+{
+    $pedidos = Pedido::with('user:id,email')->get();
+
+    return response()->json($pedidos);
+}
+
+
+public function pedidosAdminVista()
+{
+    return Inertia::render('PedidosAdmin');
+}
+
 
 
     /**
@@ -202,6 +217,33 @@ public function cancelar($id)
     return response()->json(['message' => 'Pedido cancelado correctamente.'], 200);
 
 }
+
+
+public function cancelarAdmin($id)
+{
+    $pedido = Pedido::findOrFail($id);
+
+    if ($pedido->estado !== 'pendiente') {
+        return response()->json(['error' => 'Solo se pueden cancelar pedidos pendientes.'], 403);
+    }
+
+    $usuario = User::find($pedido->user_id); // Buscar al usuario manualmente
+
+    if (!$usuario) {
+        return response()->json(['error' => 'No se encontró el usuario asociado al pedido.'], 404);
+    }
+
+    // Cancelar pedido
+    $pedido->estado = 'cancelado';
+    $pedido->save();
+
+    // Reembolsar saldo al usuario
+    $usuario->saldo += $pedido->total;
+    $usuario->save();
+
+    return response()->json(['message' => 'Pedido cancelado correctamente.'], 200);
+}
+
 
 
 

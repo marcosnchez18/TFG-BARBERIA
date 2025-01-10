@@ -421,9 +421,17 @@ export default function AdminDashboard() {
                     <div className="space-y-4">
 
                         <div className="herramienta-item bg-[#dafcd0] p-4 rounded-lg text-center">
-                            <p className="text-lg font-semibold">Gestiona tu Barbería</p>
+                            <p className="text-lg font-semibold">Gestiona tu Barbería ✂️</p>
                             <br />
                             <Link href={route('opciones')} className="mt-2 px-4 py-2 bg-[#A87B43] text-white rounded hover:bg-[#875d34]">
+                                Gestionar
+                            </Link>
+                        </div>
+
+                        <div className="herramienta-item bg-[#d0fafc] p-4 rounded-lg text-center">
+                            <p className="text-lg font-semibold">Gestionar pedidos 📦</p>
+                            <br />
+                            <Link href={route('admin.pedidos')} className="mt-2 px-4 py-2 bg-[#A87B43] text-white rounded hover:bg-[#875d34]">
                                 Gestionar
                             </Link>
                         </div>
