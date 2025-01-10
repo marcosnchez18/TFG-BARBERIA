@@ -27,6 +27,25 @@ export default function NuevosServicios() {
     const handleSubmit = (e) => {
         e.preventDefault();
 
+        // Validar campos
+        if (!nombre || !descripcion || !precio || !duracion || !selectedBarbero) {
+            Swal.fire('Campos incompletos', 'Por favor, complete todos los campos y seleccione un barbero.', 'warning');
+            return;
+        }
+
+        // Validar que la duración sea un número entero positivo
+        if (isNaN(duracion) || duracion <= 0 || !Number.isInteger(Number(duracion))) {
+            Swal.fire('Duración inválida', 'La duración debe ser un número entero positivo.', 'warning');
+            return;
+        }
+
+        // Validar precio (número positivo)
+        if (isNaN(precio) || precio <= 0) {
+            Swal.fire('Precio inválido', 'El precio debe ser un número positivo.', 'warning');
+            return;
+        }
+
+        // Mostrar alert mientras se añade el servicio
         Swal.fire({
             title: 'Añadiendo Servicio',
             text: 'El servicio se está añadiendo junto con el barbero seleccionado.',
@@ -35,11 +54,6 @@ export default function NuevosServicios() {
             allowOutsideClick: false,
             allowEscapeKey: false
         });
-
-        if (!nombre || !descripcion || !precio || !duracion || !selectedBarbero) {
-            Swal.fire('Campos incompletos', 'Por favor, complete todos los campos y seleccione un barbero.', 'warning');
-            return;
-        }
 
         Inertia.post('/admin/servicios', {
             nombre,
@@ -70,10 +84,10 @@ export default function NuevosServicios() {
             }}>
             <NavigationAdmin admin={true} />
             <div className="container mx-auto p-8">
-            <div className="bg-white bg-opacity-80 p-8 rounded-lg shadow-lg w-full max-w-md mx-auto mt-20 relative">
-                <div className="absolute top-2 right-2">
-                    <Link href="/opciones" className="text-black-600 text-xl font-bold hover:text-gray-400">✕</Link>
-                </div>
+                <div className="bg-white bg-opacity-80 p-8 rounded-lg shadow-lg w-full max-w-md mx-auto mt-20 relative">
+                    <div className="absolute top-2 right-2">
+                        <Link href="/opciones" className="text-black-600 text-xl font-bold hover:text-gray-400">✕</Link>
+                    </div>
                     <h1 className="text-4xl font-extrabold text-center text-[#000000] mb-6">Añadir Nuevo Servicio</h1>
                     <form onSubmit={handleSubmit} className="p-8">
                         <div className="mb-6">
@@ -124,6 +138,7 @@ export default function NuevosServicios() {
                                 <FontAwesomeIcon icon={faClock} className="absolute left-3 top-3 text-gray-500" />
                                 <input
                                     type="number"
+                                    step="1"
                                     value={duracion}
                                     onChange={(e) => setDuracion(e.target.value)}
                                     className="w-full pl-10 px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#A87B43]"

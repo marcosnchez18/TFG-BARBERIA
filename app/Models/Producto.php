@@ -8,4 +8,25 @@ use Illuminate\Database\Eloquent\Model;
 class Producto extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'nombre', 'descripcion', 'precio', 'stock', 'proveedor_id'
+    ];
+
+    public function proveedor()
+    {
+        return $this->belongsTo(Proveedor::class, 'proveedor_id');
+    }
+
+    public function pedidos()
+    {
+        return $this->belongsToMany(Pedido::class, 'pedido_productos')
+            ->withPivot('cantidad', 'precio_unitario')
+            ->withTimestamps();
+    }
+
+    public function pedidosProveedores()
+    {
+        return $this->hasMany(PedidoProveedor::class, 'producto_id');
+    }
 }

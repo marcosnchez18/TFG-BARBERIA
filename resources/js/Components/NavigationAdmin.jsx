@@ -64,25 +64,31 @@ export default function NavigationAdmin() {
             </div>
 
             {/* Modal de confirmación de cierre de sesión */}
-            {showLogoutModal && (
-                <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-75">
-                    <div className="bg-white p-8 rounded-lg shadow-lg text-center">
-                        <p className="text-xl font-semibold mb-6" style={{ fontFamily: 'Times New Roman, serif' }}>¿Estás seguro que quieres cerrar sesión?</p>
-                        <button
-                            onClick={handleLogout}
-                            className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 mr-4"
-                        >
-                            Sí, cerrar sesión
-                        </button>
-                        <button
-                            onClick={() => setShowLogoutModal(false)}
-                            className="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600"
-                        >
-                            No, permanecer
-                        </button>
-                    </div>
-                </div>
-            )}
+{showLogoutModal && (
+    <div
+        className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-75 z-50"
+        style={{ zIndex: 9999 }} // Garantiza que el modal esté encima de todos los elementos
+    >
+        <div className="bg-white p-8 rounded-lg shadow-lg text-center relative">
+            <p className="text-xl font-semibold mb-6" style={{ fontFamily: 'Times New Roman, serif' }}>
+                ¿Estás seguro que quieres cerrar sesión?
+            </p>
+            <button
+                onClick={handleLogout}
+                className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 mr-4"
+            >
+                Sí, cerrar sesión
+            </button>
+            <button
+                onClick={() => setShowLogoutModal(false)}
+                className="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600"
+            >
+                No, permanecer
+            </button>
+        </div>
+    </div>
+)}
+
         </nav>
     );
 }

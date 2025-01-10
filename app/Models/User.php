@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Contracts\Auth\MustVerifyEmail;  // Importar MustVerifyEmail para la verificación de email
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -23,7 +24,6 @@ class User extends Authenticatable implements MustVerifyEmail  // Implementar Mu
         'password',
         'rol',
         'saldo',
-        'contador_ausencias',
         'estado',
         'numero_tarjeta_vip',
         'referido_por',
@@ -57,13 +57,14 @@ class User extends Authenticatable implements MustVerifyEmail  // Implementar Mu
     {
         parent::boot();
 
-        // Al crear un cliente, generamos automáticamente su número de tarjeta VIP
+
         static::creating(function ($user) {
-            if ($user->rol === 'cliente') {  // Solo para los clientes
+            if (in_array($user->rol, ['cliente', 'trabajador'])) {
                 $user->numero_tarjeta_vip = self::generateNumeroTarjetaVIP();
             }
         });
     }
+
 
     /**
      * Generar un número de tarjeta VIP único.
@@ -116,13 +117,41 @@ class User extends Authenticatable implements MustVerifyEmail  // Implementar Mu
     }
 
     public function servicios()
-{
-    return $this->belongsToMany(Servicio::class, 'servicio_usuario', 'usuario_id', 'servicio_id');
-}
+    {
+        return $this->belongsToMany(Servicio::class, 'servicio_usuario', 'usuario_id', 'servicio_id');
+    }
 
-public function ficha()
-{
-    return $this->hasOne(Ficha::class, 'user_id');
-}
+    public function ficha()
+    {
+        return $this->hasOne(Ficha::class, 'user_id');
+    }
 
+
+
+    public function pedidos()
+    {
+        return $this->hasMany(Pedido::class, 'user_id');
+    }
+
+
+    public function obtenerCitasCompletadas()
+    {
+        return $this->hasMany(Cita::class, 'usuario_id')->where('estado', 'completada');
+    }
+
+
+    public function obtenerCitasAusentes()
+    {
+        return $this->hasMany(Cita::class, 'usuario_id')->where('estado', 'ausente');
+    }
+
+    public function obtenerFechasCitasAusentes()
+    {
+        return $this->hasMany(Cita::class, 'usuario_id')
+            ->where('estado', 'ausente')
+            ->get()
+            ->map(function ($cita) {
+                return Carbon::parse($cita->fecha_hora_cita)->format('Y-m-d');
+            });
+    }
 }

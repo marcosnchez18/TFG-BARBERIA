@@ -9,15 +9,12 @@ class Ticket extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['pedido_id', 'codigo', 'total', 'fecha'];
+    protected $fillable = [
+        'pedido_id', 'codigo', 'total', 'fecha'
+    ];
 
-
-    protected static function booted()
+    public function pedido()
     {
-        static::creating(function ($ticket) {
-            if (empty($ticket->codigo)) {
-                $ticket->codigo = str_pad(rand(0, 99999999999), 11, '0', STR_PAD_LEFT);  
-            }
-        });
+        return $this->belongsTo(Pedido::class);
     }
 }

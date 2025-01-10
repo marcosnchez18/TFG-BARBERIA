@@ -27,9 +27,53 @@ class ProductoController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
-    {
-        //
+{
+    try {
+        // Validar los datos
+        $validated = $request->validate([
+            'nombre' => 'required|string|max:255',
+            'descripcion' => 'required|string',
+            'precio' => 'required|numeric',
+            'stock' => 'required|integer|min:1',
+            'proveedor_id' => 'required|exists:proveedores,id',
+            'imagen' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
+
+        // Crear el nuevo producto
+        $producto = new Producto();
+        $producto->nombre = $validated['nombre'];
+        $producto->descripcion = $validated['descripcion'];
+        $producto->precio = $validated['precio'];
+        $producto->stock = $validated['stock'];
+        $producto->proveedor_id = $validated['proveedor_id'];
+
+        // Subir la imagen si existe
+        if ($request->hasFile('imagen')) {
+            $imagePath = $request->file('imagen')->store('productos', 'public');
+            $producto->imagen = $imagePath;
+        }
+
+        // Guardar el producto en la base de datos
+        $producto->save();
+
+        // Responder con el mensaje de éxito
+        return redirect()->route('productos.index')->with('success', 'Producto registrado exitosamente.');
+
+    } catch (\Exception $e) {
+        // Si ocurre un error, devolver un mensaje genérico
+        return back()->with('error', 'Ocurrió un error en el servidor.');
     }
+}
+
+public function obtenerProductos()
+{
+    $productos = Producto::select('productos.*', 'proveedores.nombre as proveedor_nombre')
+        ->join('proveedores', 'productos.proveedor_id', '=', 'proveedores.id')
+        ->get();
+
+    return response()->json($productos);
+}
+
 
     /**
      * Display the specified resource.
@@ -58,8 +102,77 @@ class ProductoController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Producto $producto)
-    {
-        //
+    public function destroy($id)
+{
+    $producto = Producto::findOrFail($id);
+
+
+    $producto->delete();
+
+
+    return redirect()
+        ->route('admin.productos.editar')
+        ->with('message', 'Producto eliminado con éxito.');
+}
+
+public function updatePhoto(Request $request, $id)
+{
+    $request->validate([
+        'imagen' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+    ]);
+
+    $producto = Producto::findOrFail($id);
+
+    if ($request->hasFile('imagen')) {
+            $imagePath = $request->file('imagen')->store('productos', 'public');
+            $producto->imagen = $imagePath;
+        }
+
+    $producto->save();
+
+    return redirect()->back()->with('success', 'Foto actualizada con éxito.');
+}
+
+
+public function updateField(Request $request, $id)
+{
+
+    $request->validate([
+        'nombre' => 'nullable|string|max:255',
+        'descripcion' => 'nullable|string|max:500',
+        'precio' => 'nullable|numeric|min:0',
+        'stock' => 'nullable|integer|min:0',
+        'proveedor_id' => 'nullable|exists:proveedores,id',
+    ]);
+
+
+    $producto = Producto::findOrFail($id);
+
+
+    if ($request->has('nombre')) {
+        $producto->nombre = $request->nombre;
     }
+
+    if ($request->has('descripcion')) {
+        $producto->descripcion = $request->descripcion;
+    }
+
+    if ($request->has('precio')) {
+        $producto->precio = $request->precio;
+    }
+
+    if ($request->has('stock')) {
+        $producto->stock = $request->stock;
+    }
+
+    if ($request->has('proveedor_id')) {
+        $producto->proveedor_id = $request->proveedor_id;
+    }
+
+
+    $producto->save();
+
+    
+    return redirect()->back()->with('success', 'Producto actualizado con éxito.');
+}
 }

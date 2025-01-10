@@ -58,49 +58,74 @@ export default function Invitado() {
             </header>
 
             <section className="inicio-cliente-seccion container mx-auto mt-12 p-8">
-                <div className="inicio-cliente-opciones flex flex-wrap -mx-4">
-                    <div className="inicio-cliente-carta w-full md:w-1/3 p-4">
-                        <div className="inicio-cliente-carta-contenedor bg-white rounded-lg shadow-lg p-6 text-center transition-transform hover:scale-105">
-                            <h3 className="inicio-cliente-carta-titulo text-2xl font-semibold">Reservar Cita</h3>
-                            <p className="inicio-cliente-carta-descripcion mt-2 text-gray-600">
-                                Programa una cita con tu barbero de manera rápida.
-                            </p>
-                            <p className="inicio-cliente-carta-descripcion mt-2 text-gray-600">
-                                Recuerda que es necesario registrarse para obtener una cita.
-                            </p>
-                            <p className="inicio-cliente-carta-descripcion mt-2 text-gray-600">
-                                No obstante, puedes ver las horas disponibles de nuestros barberos.
-                            </p>
-                            <button
-                                onClick={() => window.open(route('servicios-invitado'), '_blank')}
-                                className="inicio-cliente-carta-boton mt-6 bg-blue-500 text-white px-6 py-3 rounded-md hover:bg-blue-600"
-                            >
-                                Ver disponibilidad
-                            </button>
+    <div className="inicio-cliente-opciones flex flex-wrap -mx-4">
 
-                        </div>
-                    </div>
+        {/* Reservar Cita */}
+        <div className="inicio-cliente-carta w-full md:w-1/3 p-4">
+            <div className="inicio-cliente-carta-contenedor bg-white rounded-lg shadow-lg p-6 text-center transition-transform hover:scale-105">
+                <h3 className="inicio-cliente-carta-titulo text-2xl font-semibold">Reservar Cita</h3>
+                <p className="inicio-cliente-carta-descripcion mt-2 text-gray-600">
+                    Programa una cita con tu barbero de manera rápida.
+                </p>
+                <p className="inicio-cliente-carta-descripcion mt-2 text-gray-600">
+                    Recuerda que es necesario registrarse para obtener una cita.
+                </p>
+                <p className="inicio-cliente-carta-descripcion mt-2 text-gray-600">
+                    No obstante, puedes ver las horas disponibles de nuestros barberos.
+                </p>
+                <button
+                    onClick={() => window.location.href = route('servicios-invitado')}
+                    className="inicio-cliente-carta-boton mt-6 bg-blue-500 text-white px-6 py-3 rounded-md hover:bg-blue-600"
+                >
+                    Ver disponibilidad
+                </button>
+            </div>
+        </div>
 
+        {/* Registro */}
+        <div className="inicio-cliente-carta w-full md:w-1/3 p-4">
+            <div className="inicio-cliente-carta-contenedor bg-white rounded-lg shadow-lg p-6 text-center transition-transform hover:scale-105">
+                <h3 className="inicio-cliente-carta-titulo text-2xl font-semibold">Regístrate para una mejor experiencia</h3>
+                <p className="inicio-cliente-carta-descripcion mt-2 text-gray-600">
+                    Aprovecha nuestras promociones exclusivas.
+                </p>
+                <p className="inicio-cliente-carta-descripcion mt-2 text-gray-600">
+                    Disfruta de nuestros beneficios y acumula saldo con tus citas.
+                </p>
+                <p className="inicio-cliente-carta-descripcion mt-2 text-gray-600">
+                    Te esperamos en la barbería del futuro.
+                </p>
+                <Link href={route('mis-datos')} className="inicio-cliente-carta-boton mt-6 bg-blue-500 text-white px-6 py-3 rounded-md hover:bg-blue-600">
+                    Regístrate
+                </Link>
+            </div>
+        </div>
 
-                    <div className="inicio-cliente-carta w-full md:w-1/3 p-4">
-                        <div className="inicio-cliente-carta-contenedor bg-white rounded-lg shadow-lg p-6 text-center transition-transform hover:scale-105">
-                            <h3 className="inicio-cliente-carta-titulo text-2xl font-semibold">Regístrate para una mejor experiencia</h3>
-                            <p className="inicio-cliente-carta-descripcion mt-2 text-gray-600">
-                                Aprobecha nustras promociones exclusivas.
-                            </p>
-                            <p className="inicio-cliente-carta-descripcion mt-2 text-gray-600">
-                                Disfruta de nuestros beneficios y acumula saldo con tus citas.
-                            </p>
-                            <p className="inicio-cliente-carta-descripcion mt-2 text-gray-600">
-                                Te esperamos en la barbería del futuro.
-                            </p>
-                            <Link href={route('mis-datos')} className="inicio-cliente-carta-boton mt-6 bg-blue-500 text-white px-6 py-3 rounded-md hover:bg-blue-600">
-                                Regístrate
-                            </Link>
-                        </div>
-                    </div>
-                </div>
-            </section>
+        {/* Tienda */}
+        <div className="inicio-cliente-carta w-full md:w-1/3 p-4">
+            <div className="inicio-cliente-carta-contenedor bg-white rounded-lg shadow-lg p-6 text-center transition-transform hover:scale-105">
+                <h3 className="inicio-cliente-carta-titulo text-2xl font-semibold">Visita Nuestra Tienda</h3>
+                <p className="inicio-cliente-carta-descripcion mt-2 text-gray-600">
+                    Descubre una selección de productos premium para el cuidado de tu barba y cabello.
+                </p>
+                <p className="inicio-cliente-carta-descripcion mt-2 text-gray-600">
+                    Compra online de manera fácil y segura.
+                </p>
+                <p className="inicio-cliente-carta-descripcion mt-2 text-gray-600">
+                    Calidad garantizada por nuestros barberos expertos.
+                </p>
+                <button
+                    onClick={() => window.location.href = '/barbershopinvitado'}
+                    className="inicio-cliente-carta-boton mt-6 bg-blue-500 text-white px-6 py-3 rounded-md hover:bg-blue-600"
+                >
+                    Explorar Tienda
+                </button>
+            </div>
+        </div>
+
+    </div>
+</section>
+
 
             <section className="inicio-cliente-seccion-promocion bg-blue-50 py-12 mt-12 text-center">
                 <h2 className="inicio-cliente-promocion-titulo text-3xl font-bold text-blue-700">

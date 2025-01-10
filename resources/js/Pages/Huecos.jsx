@@ -21,15 +21,58 @@ export default function Huecos() {
     const [horariosDisponibles, setHorariosDisponibles] = useState([]);
     const [barberos, setBarberos] = useState([]);
     const holidays = new Holidays('ES', 'AN', 'CA');
+    const today = dayjs().startOf('day');
+    const minDate = today.toDate();  // Fecha actual para el calculo
+    const maxDate = today.add(1, 'month').toDate();
+    const [descansos, setDescansos] = useState([]);
+    const [isLoadingCalendar, setIsLoadingCalendar] = useState(false); // Indica si el calendario está cargando
+    const [diasSinCitas, setDiasSinCitas] = useState([]); // Días sin citas disponibles
+    const [diasDescansoBarbero, setDiasDescansoBarbero] = useState([]);
+
+
 
     useEffect(() => {
-        // Cargar barberos activos
         axios.get('/api/public/barberos')
             .then(response => {
                 const barberosActivos = response.data.filter(barbero => barbero.estado === 'activo');
                 setBarberos(barberosActivos);
+                selectRandomBarberoAndService(barberosActivos);
             })
             .catch(error => console.error("Error al cargar los barberos:", error));
+    }, []);
+
+
+    const selectRandomBarberoAndService = async (barberosActivos) => {
+        if (barberosActivos.length > 0) {
+            const randomBarbero = barberosActivos[Math.floor(Math.random() * barberosActivos.length)];
+            setSelectedBarbero(randomBarbero);
+            axios
+                .get(`/api/public/barberos/${randomBarbero.id}/servicios`)
+                .then((response) => {
+                    const serviciosDisponibles = response.data;
+                    setServicios(serviciosDisponibles);
+                    const randomServicio = serviciosDisponibles[Math.floor(Math.random() * serviciosDisponibles.length)];
+                    setSelectedServicio(randomServicio);
+                    setSelectedServicioId(randomServicio.id || randomServicio.servicio_id);
+                    verificarDisponibilidadMensual();
+                })
+                .catch(() => {
+                });
+        }
+    };
+
+
+
+
+    useEffect(() => {
+        // Llamada a la API para obtener los días de descanso
+        axios.get('/api/public/descansos')  // Asegúrate de que la URL sea la correcta
+            .then(response => {
+                setDescansos(response.data);
+            })
+            .catch(error => {
+                console.error("Error al cargar los descansos:", error);
+            });
     }, []);
 
 
@@ -49,13 +92,29 @@ export default function Huecos() {
                 console.error("Error al cargar servicios del barbero:", error);
                 Swal.fire("Error", "No se pudieron cargar los servicios del barbero.", "error");
             });
+
+        // Obtener los días de descanso del barbero seleccionado
+        axios.get(`/api/public/descansos/${barbero.id}`)
+            .then(response => {
+                setDiasDescansoBarbero(response.data);  // Actualizar días de descanso del barbero
+            })
+            .catch(error => {
+                console.error("Error al cargar los días de descanso del barbero:", error);
+                Swal.fire("Error", "No se pudieron cargar los días de descanso del barbero.", "error");
+            });
     };
+
+
+
 
     const handleSelectServicio = (servicio) => {
         console.log("Servicio seleccionado:", servicio);
-        setSelectedServicio(servicio); // Guardar el objeto completo por si es necesario
-        setSelectedServicioId(servicio.id || servicio.servicio_id); // Guardar solo el ID
-        setStep(3); // Avanzar al siguiente paso
+        setSelectedServicio(servicio);
+        setSelectedServicioId(servicio.id || servicio.servicio_id);
+        setStep(3);
+
+        // Llamar a la función de disponibilidad
+        verificarDisponibilidadMensual();
     };
 
 
@@ -89,7 +148,7 @@ export default function Huecos() {
             return;
         }
 
-        const API_BASE_URL = `${window.location.origin}`; // Detectar automáticamente el dominio actual
+        const API_BASE_URL = `${window.location.origin}`;
 
         // Mostrar los datos que se están enviando a la API
         console.log('Datos enviados a la API:', {
@@ -122,14 +181,68 @@ export default function Huecos() {
             });
     };
 
+    const verificarDisponibilidadMensual = async () => {
+        setIsLoadingCalendar(true); // Indica que se está cargando el calendario
+
+        const fechas = [];
+        for (let i = 0; i <= 30; i++) {
+            const dia = dayjs().add(i, 'day').format('YYYY-MM-DD');
+            fechas.push(dia);
+        }
+
+        const diasSinCitasTemp = [];
+
+        await Promise.all(
+            fechas.map(async (fecha) => {
+                try {
+                    const response = await axios.get('/api/public/citas/disponibilidad', {
+                        params: {
+                            barbero_id: selectedBarbero.id,
+                            servicio_id: selectedServicioId,
+                            fecha: fecha,
+                        },
+                    });
+
+                    // Si no hay horarios disponibles para ese día, lo agregamos
+                    if (!response.data || response.data.length === 0) {
+                        diasSinCitasTemp.push(fecha);
+                    }
+                } catch (error) {
+                    console.error(`Error comprobando disponibilidad para ${fecha}:`, error);
+                }
+            })
+        );
+
+        console.log("Días sin citas después de la verificación:", diasSinCitasTemp);
+        setDiasSinCitas(diasSinCitasTemp);
+        setIsLoadingCalendar(false);
+    };
+
+
+
+
 
 
 
     const tileClassName = ({ date }) => {
         const dayOfWeek = dayjs(date).day();
+        const dateStr = dayjs(date).format('YYYY-MM-DD');
+
+        if (descansos.includes(dateStr)) {
+            return 'day-no-disponible';  // Clase CSS para marcar el día como no disponible
+        }
+
+        // Verificar si la fecha está en los descansos del barbero
+        if (diasDescansoBarbero.includes(dateStr)) {
+            return 'day-no-disponible';  // Clase CSS para marcar el día como no disponible (vacaciones o descanso)
+        }
 
         if (holidays.isHoliday(date) || dayOfWeek === 0) {
             return 'day-no-disponible';
+        }
+
+        if (diasSinCitas.includes(dateStr)) {
+            return 'day-sin-citas'; // Días sin citas
         }
 
         return null;
@@ -153,8 +266,26 @@ export default function Huecos() {
 
 
     const handleBack = () => {
-        setStep(prevStep => prevStep - 1);
+        setStep((prevStep) => {
+            const newStep = prevStep - 1;
+
+            // Restablecer el estado según el paso al que se regresa
+            if (newStep === 1) {
+                setSelectedBarbero(null); // Restablecer la selección del barbero
+                setServicios([]); // Limpiar los servicios disponibles
+            } else if (newStep === 2) {
+                setSelectedServicio(null); // Restablecer la selección del servicio
+                setSelectedServicioId(null); // Restablecer el ID del servicio seleccionado
+                setSelectedDate(null); // Limpiar la fecha seleccionada
+                setHorariosDisponibles([]); // Limpiar los horarios disponibles
+            } else if (newStep === 3) {
+                setSelectedTime(null); // Restablecer la hora seleccionada
+            }
+
+            return newStep;
+        });
     };
+
 
     return (
         <div className="elegir-cita-background">
@@ -165,99 +296,155 @@ export default function Huecos() {
                     <div className="barbero-selection">
                         <h3 className="text-2xl font-semibold text-center">¿Con quién quieres reservar la cita?</h3>
                         <div className="flex justify-around mt-6">
-                            {barberos.map(barbero => {
-                                // Asignar fotos específicas a José Ángel y Daniel Valle
-                                const imagenEspecial = barbero.nombre === 'José Ángel Sánchez Harana'
-                                    ? '/images/jose.png'
-                                    : barbero.nombre === 'Daniel Valle Vargas'
-                                        ? '/images/hector.png'
-                                        : null;
+                        {barberos.map(barbero => {
+    
+    const imagenFinal = barbero.imagen ? `/storage/${barbero.imagen}` : '/images/default-avatar.png';
 
-                                return (
-                                    <div
-                                        key={barbero.id}
-                                        className="barbero-card cursor-pointer hover:shadow-md transition-shadow rounded-lg p-4 text-center"
-                                        onClick={() => handleSelectBarbero(barbero)}
-                                    >
-                                        <img
-                                            src={imagenEspecial || (barbero.imagen ? `/storage/${barbero.imagen}` : '/images/default-avatar.png')} // Lógica para mostrar la imagen correcta
-                                            alt={barbero.nombre}
-                                            className="rounded-full w-32 h-32 mx-auto"
-                                        />
-                                        <h4 className="text-xl mt-4">{barbero.nombre}</h4>
-                                    </div>
-                                );
-                            })}
+    return (
+        <div
+            key={barbero.id}
+            className="barbero-card cursor-pointer hover:shadow-md transition-shadow rounded-lg p-4 text-center"
+            onClick={() => handleSelectBarbero(barbero)}
+        >
+            <img
+                src={imagenFinal}
+                alt={barbero.nombre}
+                className="rounded-full w-32 h-32 mx-auto"
+            />
+            <h4 className="text-xl mt-4">{barbero.nombre}</h4>
+        </div>
+    );
+})}
+
                         </div>
+
+                        <br /><br />
+                        <button
+    className="mt-6 px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition"
+    onClick={() => {
+        window.location.href = '/invitado';
+    }}
+>
+    Volver Atrás
+</button>
+
                     </div>
                 )}
                 {step === 2 && (
-    <div className="servicio-selection">
-        <h3 className="text-2xl font-semibold text-center">Seleccione un Servicio:</h3>
-        <div className="grid grid-cols-3 gap-6 mt-6">
-            {servicios.map(servicio => (
-                <div
-                key={servicio.id}
-                className="servicio-card cursor-pointer p-4 text-center rounded-lg border border-gray-300 hover:bg-blue-100 transition"
-                onClick={() => handleSelectServicio(servicio)} // Asegurarte que se pasa el objeto completo
-            >
-                <h4 className="text-xl font-bold">{servicio.nombre}</h4>
-                <h5 className="text-gray-600 mt-2 text-sm">{servicio.duracion} minutos</h5>
-                <p className="text-gray-600 mt-2">{servicio.precio}€</p>
-            </div>
+                    <div className="servicio-selection">
+                        <h3 className="text-2xl font-semibold text-center">Seleccione un Servicio:</h3>
+                        <div className="grid grid-cols-3 gap-6 mt-6">
+                            {servicios.map(servicio => (
+                                <div
+                                    key={servicio.id}
+                                    className="servicio-card cursor-pointer p-4 text-center rounded-lg border border-gray-300 hover:bg-blue-100 transition"
+                                    onClick={() => handleSelectServicio(servicio)} // Asegurarte que se pasa el objeto completo
+                                >
+                                    <h4 className="text-xl font-bold">{servicio.nombre}</h4>
+                                    <h5 className="text-gray-600 mt-2 text-sm">{servicio.duracion} minutos</h5>
+                                    <p className="text-gray-600 mt-2">{servicio.precio}€</p>
+                                </div>
 
-            ))}
-        </div>
-        <button
-            className="mt-6 px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition"
-            onClick={handleBack}
-        >
-            Volver Atrás
-        </button>
-    </div>
-)}
-{step === 3 && (
-    <div className="calendar-selection text-center">
-        <h3 className="text-2xl font-semibold">Selecciona el día:</h3>
-        <br /><br />
-        <div className="calendar-container mt-6 flex flex-col items-center">
-            <Calendar
-                onChange={handleSelectDate}
-                value={selectedDate}
-                minDate={new Date()}
-                tileClassName={tileClassName}
-            />
-        </div>
-        <br /><br />
-        {selectedDate && (
-    <div className="horarios-disponibles mt-4">
-        <h3 className="text-2xl font-semibold">Horarios disponibles:</h3>
-        {horariosDisponibles.length > 0 ? (
-            <div className="horarios-list mt-4 grid grid-cols-4 gap-4">
-                {horariosDisponibles.map((horario) => (
-                    <div
-                        key={horario}
-                        className="horario-item p-2 bg-blue-500 text-white rounded cursor-pointer"
-                        onClick={() => handleSelectHorario(horario)}
-                    >
-                        {horario}
+                            ))}
+                        </div>
+                        <button
+                            className="mt-6 px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition"
+                            onClick={handleBack}
+                        >
+                            Volver Atrás
+                        </button>
                     </div>
-                ))}
-            </div>
-        ) : (
-    <p className="text-red-500 mt-4">No hay horarios disponibles para esta fecha.</p>
-)}
+                )}
+                {step === 3 && (
+                    <div className="calendar-selection text-center">
+                        <h3 className="text-2xl font-semibold">Selecciona el día:</h3>
+                        <br /><br />
+                        <div className="calendar-container mt-6 flex flex-col items-center">
+                            {isLoadingCalendar ? (
+                                <p className="text-gray-500 text-xl">Cargando calendario...</p>
+                            ) : (
+                                <Calendar
+                                    onChange={handleSelectDate}
+                                    value={selectedDate}
+                                    minDate={minDate}
+                                    maxDate={maxDate}
+                                    tileClassName={tileClassName}
+                                    tileDisabled={({ date }) => {
+                                        const dateStr = dayjs(date).format('YYYY-MM-DD');
 
-            </div>
-        )}
-        <button
-            className="mt-6 px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition"
-            onClick={handleBack}
-        >
-            Volver Atrás
-        </button>
-    </div>
-)}
+                                        // Deshabilitar los días que están en descansos
+                                        if (descansos.includes(dateStr)) {
+                                            return true;
+                                        }
+
+                                        // Deshabilitar domingos
+                                        const dayOfWeek = dayjs(date).day();
+                                        if (dayOfWeek === 0) {
+                                            return true;
+                                        }
+
+                                        // No deshabilitar ningún otro día
+                                        return false;
+                                    }}
+                                />)}
+                            <style>
+                                {`
+
+
+    .day-sin-citas {
+        background-color: #d6d8d9 !important;
+        color: #6c757d !important;
+        border-radius: 50% !important;
+    }
+    .day-sin-citas:hover {
+        background-color: #c6c8ca !important;
+    }
+    `}
+                            </style>
+
+                        </div>
+                        <br /><br /><br />
+
+                        <div className="flex flex-col items-center mt-4">
+    <p className="mt-2 text-gray-600 text-sm flex items-center">
+        <span className="font-bold text-red-600 mr-2">🟥</span> Los días son festivos o días de descanso.
+    </p>
+    <p className="mt-2 text-gray-600 text-sm flex items-center">
+        <span className="font-bold text-gray-600 mr-2">🔘</span> Los días no tienen citas disponibles.
+    </p>
+</div>
+
+
+                        <br /><br />
+                        {selectedDate && (
+                            <div className="horarios-disponibles mt-4">
+                                <h3 className="text-2xl font-semibold">Horarios disponibles:</h3>
+                                {horariosDisponibles.length > 0 ? (
+                                    <div className="horarios-list mt-4 grid grid-cols-4 gap-4">
+                                        {horariosDisponibles.map((horario) => (
+                                            <div
+                                                key={horario}
+                                                className="horario-item p-2 bg-blue-500 text-white rounded cursor-pointer"
+                                                onClick={() => handleSelectHorario(horario)}
+                                            >
+                                                {horario}
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <p className="text-red-500 mt-4">No hay horarios disponibles para esta fecha.</p>
+                                )}
+
+                            </div>
+                        )}
+                        <button
+                            className="mt-6 px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition"
+                            onClick={handleBack}
+                        >
+                            Volver Atrás
+                        </button>
+                    </div>
+                )}
 
             </div>
             <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />

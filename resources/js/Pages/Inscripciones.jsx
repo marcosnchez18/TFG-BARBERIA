@@ -148,7 +148,6 @@ export default function Inscripciones({ oferta }) {
                         <ul className="mt-4 text-sm text-gray-600">
                             <li><strong>Duración:</strong> {oferta.duracion_meses} meses</li>
                             <li><strong>Vacantes:</strong> {oferta.numero_vacantes}</li>
-                            <li><strong>Máximo Inscripciones:</strong> {oferta.inscripciones_maximas}</li>
                         </ul>
                     </div>
                 </div>
@@ -187,15 +186,18 @@ export default function Inscripciones({ oferta }) {
                 <div className="text-center mt-8 py-10 bg-white mx-4 rounded-lg shadow-lg">
                     <h3 className="text-2xl font-bold text-gray-700 mb-6">Accede a Trabaja con nosotros en tu perfil:</h3>
                     <div className="flex flex-col items-center gap-4">
-                        <button
-                            onClick={() => {
+                    <button
+    onClick={() => {
+        axios.post('/guardar-ruta-sesion', { ruta: '/trabcli' }) // Guardar en la sesión
+            .then(() => {
+                window.location.href = '/login'; // Redirigir al login
+            });
+    }}
+    className="bg-gradient-to-r from-blue-500 to-blue-700 text-white px-6 py-3 rounded-full shadow-md transform hover:scale-105 transition duration-300"
+>
+    Inicia sesión para inscribirte a la oferta
+</button>
 
-                                window.location.href = '/trabcli';
-                            }}
-                            className="bg-gradient-to-r from-blue-500 to-blue-700 text-white px-6 py-3 rounded-full shadow-md transform hover:scale-105 transition duration-300"
-                        >
-                            Inicia sesión para inscribirte a la oferta
-                        </button>
 
                     </div>
                 </div>

@@ -16,6 +16,6 @@ class AdminMiddleware
             return $next($request); // Permitir acceso si es admin
         }
 
-        return redirect('/'); // Redirigir si no es admin
+        return abort(403); // Redirigir si no es admin
     }
 }

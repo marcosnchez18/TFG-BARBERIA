@@ -27,7 +27,7 @@ class OfertaController extends Controller
             'descripcion' => 'required|string',
             'duracion_meses' => 'required|integer|min:1',
             'numero_vacantes' => 'required|integer|min:1',
-            'inscripciones_maximas' => 'required|integer|min:1',
+
         ]);
 
         Oferta::create($request->all());
@@ -53,7 +53,6 @@ class OfertaController extends Controller
             'descripcion' => 'required|string',
             'duracion_meses' => 'required|integer|min:1',
             'numero_vacantes' => 'required|integer|min:1',
-            'inscripciones_maximas' => 'required|integer|min:1',
         ]);
 
         $oferta->update($request->all());

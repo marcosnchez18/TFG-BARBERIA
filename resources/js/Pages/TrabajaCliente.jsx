@@ -109,9 +109,7 @@ export default function TrabajaCliente({ ofertas }) {
                                         <li>
                                             <strong>Vacantes:</strong> {oferta.numero_vacantes}
                                         </li>
-                                        <li>
-                                            <strong>Máximo Inscripciones:</strong> {oferta.inscripciones_maximas}
-                                        </li>
+
                                     </ul>
                                     <button
                                         onClick={() => window.open(`/inscribirsecliente/${oferta.id}`, '_blank')}

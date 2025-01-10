@@ -16,6 +16,6 @@ class ClienteMiddleware
             return $next($request); // Permitir acceso si es cliente
         }
 
-        return redirect('/'); // Redirigir si no es cliente
+        return abort(403); // Redirigir si no es cliente
     }
 }

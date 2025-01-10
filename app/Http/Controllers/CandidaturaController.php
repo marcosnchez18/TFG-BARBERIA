@@ -168,6 +168,21 @@ public function obtenerMisCandidaturas()
     return response()->json($candidaturas);
 }
 
+public function destroy($localizador)
+{
+
+    $candidatura = Candidatura::where('localizador', $localizador)->first();
+
+    if (!$candidatura) {
+        return response()->json(['error' => 'Candidatura no encontrada.'], 404);
+    }
+
+    
+    $candidatura->delete();
+
+    return response()->json(['message' => 'Candidatura eliminada exitosamente.']);
+}
+
 
 public function guardarCandidaturalog(Request $request)
 {

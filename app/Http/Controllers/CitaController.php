@@ -264,28 +264,44 @@ class CitaController extends Controller
         return response()->json(['error' => 'No tienes citas para cancelar.'], 404);
     }
 
+    // Si el método de pago es adelantado, añadir el precio de la cita al saldo del usuario
+    if ($cita->metodo_pago === 'adelantado') {
+        $usuario = $cita->usuario;
+        $usuario->saldo += $cita->precio_cita;
+        $usuario->save();
+    }
 
+    // Si se aplicó un descuento, devolverlo al saldo del usuario
     if ($cita->descuento_aplicado > 0) {
         $usuario = $cita->usuario;
         $usuario->saldo += $cita->descuento_aplicado;
         $usuario->save();
     }
 
-
+    // Enviar correo al administrador
     $mensajeExplicacion = $request->input('mensajeExplicacion');
     $servicio = $cita->servicio ? $cita->servicio->nombre : 'No especificado';
     $barbero = $cita->barbero ? $cita->barbero->nombre : 'No especificado';
 
+    Mail::to('barbers18sanlucar@gmail.com')->send(new CancelacionCitaMail(
+        $cita->usuario,
+        $cita->fecha_hora_cita,
+        $servicio,
+        $barbero,
+        $mensajeExplicacion
+    ));
 
-    Mail::to('barbers18sanlucar@gmail.com')->send(new CancelacionCitaMail($cita->usuario, $cita->fecha_hora_cita, $servicio, $barbero, $mensajeExplicacion));
-
-
+    // Eliminar la cita
     $cita->delete();
 
     return response()->json([
         'success' => 'Cita cancelada exitosamente. Se ha solicitado la devolución del importe. Será ingresado en tu cuenta de PayPal de 3 a 5 días laborables.'
     ]);
+
+
+
 }
+
 
 
 
@@ -368,4 +384,49 @@ public function citasDelDia(Request $request)
 
         return response()->json($citas);
     }
+
+
+
+    public function obtenerCitasUsuario()
+{
+    $usuario = Auth::user();
+
+
+    $citas = Cita::where('usuario_id', $usuario->id)
+        ->orWhere('barbero_id', $usuario->id)
+        ->get(['fecha_hora_cita']);
+
+    return response()->json($citas);
+}
+
+public function getCitasBarberoActual()
+    {
+        $barberoId = Auth::id(); 
+
+        if (!$barberoId) {
+            return response()->json(['message' => 'Usuario no autenticado.'], 401);
+        }
+
+
+        $fechas = Cita::where('barbero_id', $barberoId)
+            ->selectRaw('DATE(fecha_hora_cita) as fecha')
+            ->groupBy('fecha')
+            ->pluck('fecha');
+
+        return response()->json($fechas);
+    }
+
+
+
+
+    public function getCitasTodos()
+    {
+
+        $fechas = Cita::selectRaw('DATE(fecha_hora_cita) as fecha')
+            ->groupBy('fecha')
+            ->pluck('fecha');
+
+        return response()->json($fechas);
+    }
+
 }

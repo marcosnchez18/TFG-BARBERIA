@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { usePage } from '@inertiajs/react';
 import dayjs from 'dayjs';
 import Calendar from 'react-calendar';
@@ -10,6 +10,7 @@ import Swal from 'sweetalert2';
 import axios from 'axios';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
 import 'dayjs/locale/es';
+import Holidays from 'date-holidays';
 import { Link } from '@inertiajs/react';
 
 dayjs.extend(localizedFormat);
@@ -19,34 +20,134 @@ export default function AdminDashboard() {
     const { user, citasHoy, nuevosUsuariosHoy, gananciasMes, nombreMesActual, valoracionMedia } = usePage().props;
     const [selectedDate, setSelectedDate] = useState(null);
     const [citasDia, setCitasDia] = useState([]);
+    const holidays = new Holidays('ES', 'AN', 'CA');
+
 
     const [showCalendar, setShowCalendar] = useState(false); // Para mostrar el calendario
     const [selectedDates, setSelectedDates] = useState([]); // Para almacenar los días seleccionados
+    const [highlightedDates, setHighlightedDates] = useState([]);
+    const [descansos, setDescansos] = useState([]);
+    const [descansosIndividuales, setDescansosIndividuales] = useState([]);
 
 
-    const handleDateChange = (date) => {
-        setSelectedDate(date);
-        const formattedDate = dayjs(date).format('YYYY-MM-DD');
 
-        axios.get(`/admin/citas/${formattedDate}`)
-            .then(response => {
+
+    const handleDateChange = async (date) => {
+        try {
+
+            setSelectedDate(date);
+
+
+            const formattedDate = dayjs(date).format('YYYY-MM-DD');
+
+
+            const response = await axios.get(`/admin/citas/${formattedDate}`);
+
+
+            if (response.data && Array.isArray(response.data)) {
                 setCitasDia(response.data);
-            })
-            .catch(() => {
+            } else {
+                console.warn('La API devolvió datos inesperados:', response.data);
                 setCitasDia([]);
+            }
+        } catch (error) {
+
+            console.error(`Error al obtener las citas para la fecha ${dayjs(date).format('LL')}:`, error);
+
+
+            setCitasDia([]);
+
+
+            Swal.fire({
+                title: 'Error',
+                text: 'No se pudieron cargar las citas para el día seleccionado.',
+                icon: 'error',
+                confirmButtonText: 'Aceptar',
             });
+        }
     };
 
-    const handleGuardarDescansos = () => {
-        axios.post('/admin/dias-descanso', { dias: selectedDates })
-            .then(() => {
-                Swal.fire('Días guardados', 'Los días de descanso se han guardado correctamente', 'success');
-                setShowCalendar(false); // Cerrar el calendario después de guardar
-            })
-            .catch(() => {
-                Swal.fire('Error', 'Hubo un problema al guardar los días de descanso', 'error');
-            });
+
+    const tileClassName = ({ date, view }) => {
+        if (view === 'month') {
+            const formattedDate = dayjs(date).format('YYYY-MM-DD');
+            const isSunday = dayjs(date).day() === 0;
+            const isHoliday = holidays.isHoliday(date);
+
+            if (descansos.includes(formattedDate)) {
+                return 'highlighted-descanso'; // Clase CSS para días de descanso
+            }
+
+            if (descansosIndividuales.includes(formattedDate)) {
+                return 'highlighted-descanso-indi'; // Clase CSS para descansos individuales
+            }
+
+            if (isSunday || isHoliday) {
+                return 'highlighted-holiday'; // Clase CSS para domingos y festivos
+            }
+
+            if (highlightedDates.includes(formattedDate)) {
+                return 'highlighted-date'; // Clase CSS para días con citas
+            }
+        }
+        return null;
     };
+
+
+    useEffect(() => {
+        axios.get('/api/citas-usuario')
+            .then(response => {
+                const dates = response.data.map(cita => dayjs(cita.fecha_hora_cita).format('YYYY-MM-DD'));
+                setHighlightedDates([...new Set(dates)]); // Guardar fechas únicas
+            })
+            .catch(error => console.error('Error al obtener las citas:', error));
+    }, []);
+
+    useEffect(() => {
+        axios.get('/api/admin/descansos')
+            .then(response => {
+                const descansoDates = response.data.map(fecha => dayjs(fecha).format('YYYY-MM-DD'));
+                setDescansos(descansoDates);
+            })
+            .catch(error => {
+                console.error('Error al obtener los días de descanso:', error);
+            });
+    }, []);
+
+    useEffect(() => {
+        axios.get('/api/admin/descansos-individuales')
+            .then(response => {
+                const individualDates = response.data.map(date => dayjs(date).format('YYYY-MM-DD'));
+                setDescansosIndividuales(individualDates); // Actualiza los descansos individuales
+            })
+            .catch(error => {
+                console.error('Error al obtener los días de descanso individuales:', error);
+            });
+    }, []);
+
+
+
+
+
+
+
+
+
+
+
+
+    useEffect(() => {
+        axios.get('/api/citas-usuario')
+            .then(response => {
+                // Extraer solo las fechas y formatearlas a 'YYYY-MM-DD'
+                const dates = response.data.map(cita => dayjs(cita.fecha_hora_cita).format('YYYY-MM-DD'));
+                setHighlightedDates([...new Set(dates)]); // Elimina duplicados
+            })
+            .catch(error => {
+                console.error('Error al obtener las citas:', error);
+            });
+    }, []);
+
 
 
     const handleCancelarCita = (id) => {
@@ -188,8 +289,83 @@ export default function AdminDashboard() {
                             onChange={handleDateChange}
                             value={selectedDate}
                             minDate={new Date(2000, 1, 1)}
-                            className="w-full max-w-xl mx-auto"
+                            className="calen-admin w-full max-w-xl mx-auto"
+                            tileClassName={tileClassName}
                         />
+                        <br /><br />
+                        <div>
+    <p className="flex items-center">
+        <span className="mr-2">🟢</span> Los días indican que tienes citas.
+    </p>
+    <p className="flex items-center">
+        <span className="mr-2">🟦</span> Un día es tu selección actual.
+    </p>
+    <p className="flex items-center">
+        <span className="mr-2">🟥</span> Los días son festivos locales.
+    </p>
+    <p className="flex items-center">
+        <span className="mr-2">🟧</span> Los días son descansos generales.
+    </p>
+    <p className="flex items-center">
+        <span className="mr-2">🟨</span> Los días son tus descansos propios.
+    </p>
+</div>
+
+
+                        <style>
+    {`
+        /* Días con citas: Verde */
+        .highlighted-date {
+            background-color: #28a745; /* Verde para días con citas */
+
+            border-radius: 50%; /* Círculo */
+        }
+        .highlighted-date:hover {
+            background-color: #218838; /* Verde más oscuro */
+        }
+
+        /* Festivos y domingos: Rojo */
+        .highlighted-holiday {
+            background-color: #fde2e2; /* Fondo rojo claro */
+            color: #c00; /* Rojo intenso */
+        }
+        .highlighted-holiday:hover {
+            background-color: #f8d7da; /* Fondo más oscuro */
+        }
+
+        /* Días de descanso: Naranja (cuadrados) */
+        .highlighted-descanso {
+            background-color: #ffa500; /* Naranja */
+
+            border-radius: 0; /* Sin bordes redondeados (cuadrados) */
+            transition: background-color 0.3s ease;
+        }
+        .highlighted-descanso:hover {
+            background-color: #ff8c00; /* Naranja más oscuro */
+        }
+/* Descansos individuales: Amarillo */
+.highlighted-descanso-indi {
+    background-color: #FFD700; /* Amarillo */
+    color: black;
+    border-radius: 0; /* Sin bordes redondeados */
+}
+
+.highlighted-descanso-indi:hover {
+    background-color: #FFC107; /* Amarillo más oscuro */
+}
+
+    `}
+</style>
+
+
+
+
+
+
+
+
+
+
                     </div>
                     <div className="citas-list mt-6 w-full max-w-2xl">
                         <h3 className="text-2xl font-semibold text-gray-700 mb-4 text-center">
@@ -245,9 +421,17 @@ export default function AdminDashboard() {
                     <div className="space-y-4">
 
                         <div className="herramienta-item bg-[#dafcd0] p-4 rounded-lg text-center">
-                            <p className="text-lg font-semibold">Gestiona tu Barbería</p>
+                            <p className="text-lg font-semibold">Gestiona tu Barbería ✂️</p>
                             <br />
                             <Link href={route('opciones')} className="mt-2 px-4 py-2 bg-[#A87B43] text-white rounded hover:bg-[#875d34]">
+                                Gestionar
+                            </Link>
+                        </div>
+
+                        <div className="herramienta-item bg-[#d0fafc] p-4 rounded-lg text-center">
+                            <p className="text-lg font-semibold">Gestionar pedidos 📦</p>
+                            <br />
+                            <Link href={route('admin.pedidos')} className="mt-2 px-4 py-2 bg-[#A87B43] text-white rounded hover:bg-[#875d34]">
                                 Gestionar
                             </Link>
                         </div>

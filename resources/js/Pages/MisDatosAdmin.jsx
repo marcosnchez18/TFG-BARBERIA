@@ -18,11 +18,14 @@ export default function MisDatosAdmin() {
     });
 
     const [selectedPhoto, setSelectedPhoto] = useState(null);
-    const [photoPreview, setPhotoPreview] = useState(admin.imagen || '/images/default-avatar.png');
+    const [photoPreview, setPhotoPreview] = useState(
+        admin.imagen ? `/storage/${admin.imagen}` : '/images/default-avatar.png'
+    );
+
     const { data, setData, patch, errors } = useForm({
         nombre: admin.nombre,
         email: admin.email,
-        
+
     });
 
     // Alternar estado de edición para un campo
@@ -52,9 +55,10 @@ export default function MisDatosAdmin() {
         const file = event.target.files[0];
         if (file) {
             setSelectedPhoto(file);
-            setPhotoPreview(URL.createObjectURL(file)); // Actualiza la vista previa
+            setPhotoPreview(URL.createObjectURL(file));
         }
     };
+
 
     const savePhotoChange = () => {
         if (!selectedPhoto) {
@@ -69,7 +73,17 @@ export default function MisDatosAdmin() {
             onSuccess: () => {
                 Swal.fire('¡Actualizado!', 'Foto actualizada con éxito.', 'success');
                 setSelectedPhoto(null);
-                setPhotoPreview(URL.createObjectURL(selectedPhoto)); // Actualiza la vista previa
+                Inertia.post(route('admin.actualizar-foto', admin.id), formData, {
+                    onSuccess: (page) => {
+                        Swal.fire('¡Actualizado!', 'Foto actualizada con éxito.', 'success');
+                        setSelectedPhoto(null);
+                        setPhotoPreview(`/storage/${page.props.admin.imagen}`); // Actualizar con la imagen subida
+                    },
+                    onError: () => {
+                        Swal.fire('Error', 'Hubo un problema al actualizar la foto. Inténtalo de nuevo.', 'error');
+                    },
+                });
+
             },
             onError: () => {
                 Swal.fire('Error', 'Hubo un problema al actualizar la foto. Inténtalo de nuevo.', 'error');
@@ -80,8 +94,9 @@ export default function MisDatosAdmin() {
 
     const cancelPhotoEdit = () => {
         setSelectedPhoto(null);
-        setPhotoPreview(admin.imagen || '/images/default-avatar.png'); // Restaura la foto original
+        setPhotoPreview(admin.imagen ? `/storage/${admin.imagen}` : '/images/default-avatar.png'); 
     };
+
 
     return (
         <div>
@@ -104,12 +119,12 @@ export default function MisDatosAdmin() {
                 >
                     <div className="text-center mb-8">
                         <label htmlFor="photo-input" className="cursor-pointer">
-                            <img
-                                src={photoPreview}
-                                alt="Foto de perfil"
-                                className="w-32 h-32 rounded-full mx-auto border-4 border-blue-500 shadow-md hover:opacity-80"
-                                title="Haz clic para cambiar la foto"
-                            />
+                        <img
+    src={photoPreview}
+    alt="Foto de perfil"
+    className="w-32 h-32 rounded-full mx-auto border-4 border-blue-500 shadow-md hover:opacity-80"
+/>
+
                         </label>
                         <input
                             id="photo-input"

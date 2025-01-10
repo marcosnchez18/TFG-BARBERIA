@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Descanso;
+use App\Models\DescansoIndividual;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -29,6 +30,39 @@ class DescansoController extends Controller
     $descansos = DB::table('descansos')->pluck('fecha');
     return response()->json($descansos);
 }
+
+public function getDescansosIndividuales()
+{
+    try {
+
+        $userId = auth()->id();
+
+        if (!$userId) {
+            return response()->json(['error' => 'Usuario no autenticado.'], 401);
+        }
+
+        $descansos = DescansoIndividual::where('user_id', $userId)->pluck('fecha');
+
+        return response()->json($descansos);
+    } catch (\Exception $e) {
+        return response()->json([
+            'error' => 'No se pudieron obtener los días de descanso individuales.',
+            'message' => $e->getMessage(),
+        ], 500);
+    }
+}
+
+
+public function getDescansosIndividuales2($id)
+{
+    $descansos = DB::table('descansos_individuales')
+        ->where('user_id', $id)
+        ->pluck('fecha');
+
+    return response()->json($descansos);
+}
+
+
 
 
     /**
@@ -81,5 +115,15 @@ class DescansoController extends Controller
     public function destroy(Descanso $descanso)
     {
         //
+    }
+
+    public function obtenerDiasDescanso($barberoId)
+    {
+        // Obtener todos los descansos del barbero
+        $descansos = DescansoIndividual::where('user_id', $barberoId)
+                                       ->pluck('fecha')
+                                       ->toArray();
+
+        return response()->json($descansos);
     }
 }

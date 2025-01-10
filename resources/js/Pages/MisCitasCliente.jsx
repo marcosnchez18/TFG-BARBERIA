@@ -1,8 +1,8 @@
+import React, { useState, useEffect } from 'react';
 
 import { usePage } from '@inertiajs/react';
 import Swal from 'sweetalert2';
 import axios from 'axios';
-import React, { useState, useEffect } from 'react';
 import { jsPDF } from 'jspdf';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
@@ -35,17 +35,80 @@ export default function MisCitasCliente() {
     const minDate = today.toDate();  // Fecha actual para el calculo
     const maxDate = today.add(1, 'month').toDate();  // Mismo día del siguiente mes para el calculo
     const [descansos, setDescansos] = useState([]);
+    const [highlightedDates, setHighlightedDates] = useState([]);
+    const [diasSinCitas, setDiasSinCitas] = useState([]);
+    const [isLoadingCalendar, setIsLoadingCalendar] = useState(true);
+
+
+
+    const verificarDisponibilidadMensual = async () => {
+        setIsLoadingCalendar(true); // Inicia la carga del calendario
+        const fechas = [];
+        for (let i = 0; i <= 30; i++) {
+            const dia = dayjs().add(i, 'day').format('YYYY-MM-DD');
+            fechas.push(dia);
+        }
+
+        const diasSinCitas = [];
+
+        await Promise.all(
+            fechas.map(async (fecha) => {
+                try {
+                    const response = await axios.get('/api/citas/disponibilidad', {
+                        params: {
+                            fecha,
+                            barbero_id: selectedCita.barbero.id,
+                            servicio_id: selectedServicio.id,
+                        },
+                    });
+                    if (response.data.length === 0) {
+                        diasSinCitas.push(fecha);
+                    }
+                } catch (error) {
+                    console.error(`Error comprobando disponibilidad para ${fecha}:`, error);
+                }
+            })
+        );
+
+        setDiasSinCitas(diasSinCitas); // Actualiza los días sin citas disponibles
+        setIsLoadingCalendar(false); // Finaliza la carga del calendario
+    };
+
+
+
 
     useEffect(() => {
-        // Llamada a la API para obtener los días de descanso
-        axios.get('/descansos')  // Asegúrate de que la URL sea la correcta
+        if (selectedCita && selectedCita.barbero) {
+            // Consulta los descansos del barbero seleccionado
+            axios.get(`/api/descansos/${selectedCita.barbero.id}`)
+                .then(response => {
+                    setDescansos(response.data); // Guardamos los días de descanso del barbero
+                })
+                .catch(error => {
+                    console.error("Error al cargar los descansos del barbero:", error);
+                });
+        }
+
+        // Consulta los descansos globales
+        axios.get('/api/descansos')
             .then(response => {
-                setDescansos(response.data);
+                setDescansos(prevDescansos => [...prevDescansos, ...response.data]);
             })
             .catch(error => {
-                console.error("Error al cargar los descansos:", error);
+                console.error("Error al cargar los descansos globales:", error);
             });
+    }, [selectedCita]);
+
+
+    useEffect(() => {
+        axios.get('/api/citas-usuario')
+            .then(response => {
+                const dates = response.data.map(cita => dayjs(cita.fecha_hora_cita).format('YYYY-MM-DD'));
+                setHighlightedDates([...new Set(dates)]); // Elimina duplicados
+            })
+            .catch(error => console.error('Error al obtener las citas:', error));
     }, []);
+
 
     useEffect(() => {
         fetch('/images/ruloo.jpg')
@@ -69,6 +132,13 @@ export default function MisCitasCliente() {
             })
             .catch(error => console.error("Error al cargar el QR:", error));
     }, []);
+
+    useEffect(() => {
+        if (selectedCita && selectedServicio) {
+            verificarDisponibilidadMensual();
+        }
+    }, [selectedCita, selectedServicio]);
+
 
 
     const citasOrdenadas = citas
@@ -135,10 +205,14 @@ export default function MisCitasCliente() {
     };
 
     const handleModifyClick = (cita) => {
+        // Restablecer estados relacionados con la cita anterior
         setSelectedCita(cita);
         setSelectedServicio(cita.servicio);
-        setShowModificar(true);
+        setSelectedDate(null); // Limpiar la fecha seleccionada
+        setHorariosDisponibles([]); // Limpiar los horarios disponibles
+        setShowModificar(true); // Mostrar la ventana de modificación
     };
+
 
     const handleDayClick = (date) => {
         const dayOfWeek = dayjs(date).day(); // Día de la semana
@@ -279,25 +353,37 @@ export default function MisCitasCliente() {
     };
 
     const tileClassName = ({ date }) => {
-        const dayOfWeek = dayjs(date).day(); // Día de la semana (0 = domingo)
-        const dateStr = dayjs(date).format('YYYY-MM-DD'); // Fecha en formato YYYY-MM-DD
+        const dayOfWeek = dayjs(date).day();
+        const dateStr = dayjs(date).format('YYYY-MM-DD');
 
-        // Marcar domingos
+        // Marcar domingos como no disponibles
         if (dayOfWeek === 0) {
-            return 'day-no-disponible text-red-500'; // Clase CSS para días no disponibles
+            return 'day-no-disponible text-red-500';
         }
 
         // Marcar festivos
         if (holidays.isHoliday(dateStr)) {
-            return 'day-no-disponible text-red-500'; // Clase CSS para festivos
+            return 'day-no-disponible text-red-500';
         }
 
+        // Marcar días con citas
+        if (highlightedDates.includes(dateStr)) {
+            return 'day-con-cita bg-blue-500 text-white';
+        }
+
+        // Marcar días sin citas disponibles
+        if (diasSinCitas.includes(dateStr)) {
+            return 'day-sin-citas text-gray-500';
+        }
+
+        // Marcar días de descanso
         if (descansos.includes(dateStr)) {
-            return 'day-no-disponible';  // Clase CSS para marcar el día como no disponible
+            return 'day-no-disponible';
         }
 
-        return null; // Clase por defecto para días disponibles
+        return null;
     };
+
 
 
 
@@ -306,7 +392,7 @@ export default function MisCitasCliente() {
     const generarPDF = (cita) => {
         const doc = new jsPDF();
 
-        // Añadir título y logo si está disponible
+
         doc.setFontSize(20);
         doc.text("Justificante de Pago", 105, 20, null, null, "center");
 
@@ -314,7 +400,7 @@ export default function MisCitasCliente() {
             doc.addImage(logoBase64, 'PNG', 15, 40, 180, 180);
         }
 
-        // Datos de la cita (agregados solo si están disponibles)
+
         doc.setFontSize(12);
         if (cita.usuario) doc.text(`Cliente: ${cita.usuario.nombre}`, 20, 80);
         if (cita.servicio) doc.text(`Servicio: ${cita.servicio.nombre}`, 20, 90);
@@ -324,14 +410,14 @@ export default function MisCitasCliente() {
         doc.text(`Estado: ${cita.estado}`, 20, 130);
         doc.text(`Precio: ${Number(cita.precio_cita || 0).toFixed(2)}€`, 20, 140);
 
-        // Mensaje de agradecimiento
+
         doc.setFontSize(14);
         doc.text("Gracias por confiar en nosotros. ¡Te esperamos en nuestra barbería!", 20, 160);
 
-        // Agregar QR si está disponible
-        const qrYOffset = 170; // Posición Y para el QR debajo del mensaje
+
+        const qrYOffset = 170;
         if (qrBase64) {
-            doc.addImage(qrBase64, 'PNG', 85, qrYOffset, 30, 30); // QR centrado
+            doc.addImage(qrBase64, 'PNG', 85, qrYOffset, 30, 30);
         }
 
         doc.save("Justificante_de_Pago.pdf");
@@ -381,34 +467,80 @@ export default function MisCitasCliente() {
                             </div>
                             <div className="calendar-selection text-center mt-6">
                                 <h3 className="text-xl font-semibold">Selecciona el Día:</h3>
-                                <Calendar
-                                    onClickDay={handleDayClick}
-                                    value={selectedDate}
+                                <br /><br />
+                                {isLoadingCalendar ? (
+                                    <p className="text-gray-500 text-xl">Cargando calendario...</p>
+                                ) : (
+                                    <Calendar
+                                        onClickDay={handleDayClick}
+                                        value={selectedDate}
+                                        tileClassName={tileClassName} // Resalta los días con citas
+                                        minDate={minDate}  // Solo permite seleccionar fechas a partir de hoy
+                                        maxDate={maxDate}  // Solo permite seleccionar fechas hasta el mismo día del siguiente mes
+                                        className="mx-auto"
+                                        tileDisabled={({ date }) => {
+                                            const dateStr = dayjs(date).format('YYYY-MM-DD');
 
-                                    tileClassName={tileClassName}
-                                    minDate={minDate}  // Solo permite seleccionar fechas a partir de hoy
-                                    maxDate={maxDate}  // Solo permite seleccionar fechas hasta el mismo día del siguiente mes
-                                    className="mx-auto"
-                                    tileDisabled={({ date }) => {
-                                        const dateStr = dayjs(date).format('YYYY-MM-DD');
+                                            // Deshabilitar los días que están en descansos
+                                            if (descansos.includes(dateStr)) {
+                                                return true;
+                                            }
 
-                                        // Deshabilitar los días que están en descansos
-                                        if (descansos.includes(dateStr)) {
-                                            return true;
-                                        }
+                                            // Deshabilitar domingos
+                                            const dayOfWeek = dayjs(date).day();
+                                            if (dayOfWeek === 0) {
+                                                return true;
+                                            }
 
-                                        // Deshabilitar domingos
-                                        const dayOfWeek = dayjs(date).day();
-                                        if (dayOfWeek === 0) {
-                                            return true;
-                                        }
+                                            return false; // El día está habilitado para citas
+                                        }}
+                                    />)}<style>
+                                    {`
 
-                                        // No deshabilitar ningún otro día
-                                        return false;
-                                    }}
-                                />
+
+    .day-con-cita {
+        background-color: #007bff !important;
+        color: white !important;
+        border-radius: 50% !important;
+    }
+
+    .day-con-cita:hover {
+        background-color: #0056b3 !important;
+    }
+
+    .day-sin-citas {
+        background-color: #e0e0e0 !important;
+        color: #808080 !important;
+        border-radius: 50% !important;
+    }
+
+    .day-sin-citas:hover {
+        background-color: #d6d6d6 !important;
+    }
+`}
+                                </style>
+
+
 
                             </div>
+                            <br /><br /><br />
+                            <div className="flex flex-col items-center mt-4 space-y-2">
+    <div className="flex items-center">
+        <span className="font-bold text-blue-600 w-6 text-center">🔵</span>
+        <p className="text-gray-600 text-sm">Los días tienen citas reservadas.</p>
+    </div>
+    <div className="flex items-center">
+        <span className="font-bold text-red-600 w-6 text-center">🟥</span>
+        <p className="text-gray-600 text-sm">Los días son festivos o días de descanso.</p>
+    </div>
+    <div className="flex items-center">
+        <span className="font-bold text-gray-600 w-6 text-center">🔘</span>
+        <p className="text-gray-600 text-sm">Los días no tienen citas disponibles.</p>
+    </div>
+</div>
+
+
+                            <br /><br />
                             {selectedDate && horariosDisponibles.length > 0 && (
                                 <div className="horarios-disponibles mt-4 grid grid-cols-4 gap-2 justify-center">
                                     {horariosDisponibles.map((hora) => (

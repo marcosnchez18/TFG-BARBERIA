@@ -23,6 +23,17 @@ export default function ElegirCita() {
     const today = dayjs().startOf('day');
     const [barberos, setBarberos] = useState([]);
     const [descansos, setDescansos] = useState([]);
+    const [highlightedDates, setHighlightedDates] = useState([]);
+
+    const [diasSinCitas, setDiasSinCitas] = useState([]);
+
+    const [isLoadingCalendar, setIsLoadingCalendar] = useState(true);
+
+    const [diasDescansoBarbero, setDiasDescansoBarbero] = useState([]);
+
+
+
+
 
 
     const holidays = new Holidays('ES', 'AN', 'CA');
@@ -47,8 +58,8 @@ export default function ElegirCita() {
     }, []);
 
     useEffect(() => {
-        // Llamada a la API para obtener los días de descanso
-        axios.get('/descansos')  // Asegúrate de que la URL sea la correcta
+
+        axios.get('/api/descansos')
             .then(response => {
                 setDescansos(response.data);
             })
@@ -56,6 +67,41 @@ export default function ElegirCita() {
                 console.error("Error al cargar los descansos:", error);
             });
     }, []);
+
+    const verificarDisponibilidadMensual = async () => {
+        setIsLoadingCalendar(true);
+        const diasSinCitasArray = [];
+
+        const fechas = [];
+        for (let i = 0; i <= 30; i++) {
+            const dia = dayjs().add(i, 'day').format('YYYY-MM-DD');
+            fechas.push(dia);
+        }
+
+        await Promise.all(
+            fechas.map(async (fecha) => {
+                try {
+                    const response = await axios.get('/api/citas/disponibilidad', {
+                        params: {
+                            barbero_id: selectedBarbero.id,
+                            servicio_id: selectedServicio.id,
+                            fecha: fecha,
+                        },
+                    });
+                    if (response.data.length === 0) {
+                        diasSinCitasArray.push(fecha); // Agrega días sin citas al array
+                    }
+                } catch (error) {
+                    console.error(`Error comprobando disponibilidad para ${fecha}:`, error);
+                }
+            })
+        );
+
+        setDiasSinCitas(diasSinCitasArray); // Actualiza el estado
+        setIsLoadingCalendar(false); // Finaliza la carga
+    };
+
+
 
 
 
@@ -88,6 +134,24 @@ export default function ElegirCita() {
             .catch(error => console.error("Error al cargar los barberos:", error));
     }, []);
 
+    useEffect(() => {
+        axios.get('/api/citas-usuario')
+            .then(response => {
+                const dates = response.data.map(cita => dayjs(cita.fecha_hora_cita).format('YYYY-MM-DD'));
+                setHighlightedDates([...new Set(dates)]); // Elimina duplicados
+            })
+            .catch(error => console.error('Error al obtener las citas:', error));
+    }, []);
+
+
+    useEffect(() => {
+        if (selectedBarbero && selectedServicio) {
+            verificarDisponibilidadMensual();
+        }
+    }, [selectedBarbero, selectedServicio]);
+
+
+
 
 
 
@@ -102,18 +166,28 @@ export default function ElegirCita() {
             return 'day-no-disponible';  // Clase CSS para marcar el día como no disponible
         }
 
+        // Verificar si la fecha está en los descansos del barbero
+        if (diasDescansoBarbero.includes(dateStr)) {
+            return 'day-no-disponible';  // Clase CSS para marcar el día como no disponible (vacaciones o descanso)
+        }
+
         // Marcar días festivos o domingos como no disponibles
         if (holidays.isHoliday(date) || dayOfWeek === 0) {
             return 'day-no-disponible'; // Clase CSS para días no disponibles
         }
 
-        // Marcar días completos sin disponibilidad
-        if (disponibilidadDias[dateStr]?.completo) {
+        // Resaltar días con citas
+        if (highlightedDates.includes(dateStr)) {
+            return 'day-con-cita'; // Clase CSS para días con citas
+        }
+
+        if (diasSinCitas.includes(dateStr)) {
             return 'day-sin-citas'; // Clase CSS para días sin citas
         }
 
         return null; // Día disponible
     };
+
 
     const tileDisabled = ({ date }) => {
         const dateStr = dayjs(date).format('YYYY-MM-DD');
@@ -125,6 +199,7 @@ export default function ElegirCita() {
 
         return false; // El día está habilitado para hacer una cita
     };
+
 
 
 
@@ -145,7 +220,18 @@ export default function ElegirCita() {
                 console.error("Error al cargar servicios del barbero:", error);
                 Swal.fire("Error", "No se pudieron cargar los servicios del barbero.", "error");
             });
+
+        // Obtener los días de descanso del barbero seleccionado
+        axios.get(`/api/descansos/${barbero.id}`)
+            .then(response => {
+                setDiasDescansoBarbero(response.data);  // Actualizar días de descanso del barbero
+            })
+            .catch(error => {
+                console.error("Error al cargar los días de descanso del barbero:", error);
+                Swal.fire("Error", "No se pudieron cargar los días de descanso del barbero.", "error");
+            });
     };
+
 
 
     const handleSelectServicio = (servicio) => {
@@ -277,6 +363,9 @@ export default function ElegirCita() {
                                         axios.patch(`/citas/${response.data.cita_id}/actualizar-metodo-pago`, { metodo_pago: 'adelantado' })
                                             .then(() => {
                                                 Swal.fire('Pago completado', `Gracias ${details.payer.name.given_name}!`, 'success');
+                                                setTimeout(() => {
+                                                    window.location.href = '/reservar-cita';
+                                                }, 2500);
                                             });
                                     });
                                 },
@@ -284,6 +373,9 @@ export default function ElegirCita() {
                                     axios.patch(`/citas/${response.data.cita_id}/actualizar-metodo-pago`, { metodo_pago: 'efectivo' })
                                         .then(() => {
                                             Swal.fire('Pago cancelado', 'Puedes pagar en efectivo al llegar a la cita.', 'info');
+                                            setTimeout(() => {
+                                                window.location.href = '/reservar-cita';
+                                            }, 2500);
                                         });
                                 },
                                 onError: function (err) {
@@ -291,6 +383,9 @@ export default function ElegirCita() {
                                     Swal.fire('Error', 'Hubo un problema con el pago. Inténtalo de nuevo.', 'error');
                                 }
                             }).render('#paypal-button-container');
+                        },
+                        didClose: () => {
+                            window.location.href = '/reservar-cita';
                         }
                     });
                 });
@@ -316,8 +411,28 @@ export default function ElegirCita() {
 
 
 
+    //const handleBack = () => {
+       // setStep(prevStep => prevStep - 1);
+    //};
+
     const handleBack = () => {
-        setStep(prevStep => prevStep - 1);
+        setStep((prevStep) => {
+            const newStep = prevStep - 1;
+
+            // Restablecer el estado según el paso al que se regresa
+            if (newStep === 1) {
+                setSelectedBarbero(null); // Restablecer la selección del barbero
+                setServicios([]); // Limpiar los servicios disponibles
+            } else if (newStep === 2) {
+                setSelectedServicio(null); // Restablecer la selección del servicio
+                setSelectedDate(null); // Limpiar la fecha seleccionada
+                setHorariosDisponibles([]); // Limpiar los horarios disponibles
+            } else if (newStep === 3) {
+                setSelectedTime(null); // Restablecer la hora seleccionada
+            }
+
+            return newStep;
+        });
     };
 
     return (
@@ -330,29 +445,26 @@ export default function ElegirCita() {
                     <div className="barbero-selection">
                         <h3 className="text-2xl font-semibold text-center">¿Con quién quieres reservar la cita?</h3>
                         <div className="flex justify-around mt-6">
-                            {barberos.map(barbero => {
-                                // Asignar fotos específicas a José Ángel y Daniel Valle
-                                const imagenEspecial = barbero.nombre === 'José Ángel Sánchez Harana'
-                                    ? '/images/jose.png'
-                                    : barbero.nombre === 'Daniel Valle Vargas'
-                                        ? '/images/hector.png'
-                                        : null;
+                        {barberos.map(barbero => {
+    
+    const imagenFinal = barbero.imagen ? `/storage/${barbero.imagen}` : '/images/default-avatar.png';
 
-                                return (
-                                    <div
-                                        key={barbero.id}
-                                        className="barbero-card cursor-pointer hover:shadow-md transition-shadow rounded-lg p-4 text-center"
-                                        onClick={() => handleSelectBarbero(barbero)}
-                                    >
-                                        <img
-                                            src={imagenEspecial || (barbero.imagen ? `/storage/${barbero.imagen}` : '/images/default-avatar.png')} // Lógica para mostrar la imagen correcta
-                                            alt={barbero.nombre}
-                                            className="rounded-full w-32 h-32 mx-auto"
-                                        />
-                                        <h4 className="text-xl mt-4">{barbero.nombre}</h4>
-                                    </div>
-                                );
-                            })}
+    return (
+        <div
+            key={barbero.id}
+            className="barbero-card cursor-pointer hover:shadow-md transition-shadow rounded-lg p-4 text-center"
+            onClick={() => handleSelectBarbero(barbero)}
+        >
+            <img
+                src={imagenFinal}
+                alt={barbero.nombre}
+                className="rounded-full w-32 h-32 mx-auto"
+            />
+            <h4 className="text-xl mt-4">{barbero.nombre}</h4>
+        </div>
+    );
+})}
+
 
 
 
@@ -386,36 +498,66 @@ export default function ElegirCita() {
                         <h3 className="text-2xl font-semibold">Selecciona el día:</h3>
                         <br /><br />
                         <div className="calendar-container mt-6 flex flex-col items-center">
-                            <Calendar
-                                onChange={handleSelectDate}
-                                value={selectedDate}
-                                minDate={minDate}  // Solo permite seleccionar fechas a partir de hoy
-                                maxDate={maxDate}  // Solo permite seleccionar fechas hasta el mismo día del siguiente mes
-                                tileClassName={tileClassName}
-                                tileDisabled={({ date }) => {
-                                    const dateStr = dayjs(date).format('YYYY-MM-DD');
+                            {isLoadingCalendar ? (
+                                <p className="text-center text-xl text-gray-500">Cargando calendario...</p>
+                            ) : (
 
-                                    // Deshabilitar los días que están en descansos
-                                    if (descansos.includes(dateStr)) {
-                                        return true;
-                                    }
+                                <Calendar
+                                    onChange={handleSelectDate}
+                                    value={selectedDate}
+                                    minDate={minDate}  // Solo permite seleccionar fechas a partir de hoy
+                                    maxDate={maxDate}  // Solo permite seleccionar fechas hasta el mismo día del siguiente mes
+                                    tileClassName={tileClassName} // Resalta días con citas
+                                    tileDisabled={tileDisabled} // Deshabilita días no disponibles
+                                />
+                            )}
 
-                                    // Deshabilitar domingos
-                                    const dayOfWeek = dayjs(date).day();
-                                    if (dayOfWeek === 0) {
-                                        return true;
-                                    }
+                            <style>
+                                {`
 
-                                    // Deshabilitar los días completos sin citas disponibles
-                                    if (disponibilidadDias[dateStr]?.completo) {
-                                        return true;
-                                    }
 
-                                    // No deshabilitar ningún otro día
-                                    return false;
-                                }}
-                            />
+    .day-con-cita {
+        background-color: #007bff !important;
+        color: white !important;
+        border-radius: 50% !important;
+    }
+
+    .day-con-cita:hover {
+        background-color: #0056b3 !important;
+    }
+
+    .day-sin-citas {
+    background-color: #6c757d !important; /* Gris oscuro */
+    color: white !important;
+    border-radius: 50% !important;
+}
+.day-sin-citas:hover {
+    background-color: #5a6268 !important; /* Gris más oscuro al pasar el cursor */
+}
+
+
+`}
+                            </style>
+
+
                         </div>
+                        <br /><br /><br />
+                        <div className="flex flex-col items-center mt-4 space-y-2">
+    <div className="flex items-center">
+        <span className="font-bold text-blue-600 w-6 text-center">🔵</span>
+        <p className="text-gray-600 text-sm">Los días tienen citas reservadas.</p>
+    </div>
+    <div className="flex items-center">
+        <span className="font-bold text-red-600 w-6 text-center">🟥</span>
+        <p className="text-gray-600 text-sm">Los días son festivos o días de descanso.</p>
+    </div>
+    <div className="flex items-center">
+        <span className="font-bold text-gray-600 w-6 text-center">🔘</span>
+        <p className="text-gray-600 text-sm">Los días no tienen citas disponibles.</p>
+    </div>
+</div>
+
+
                         <br /><br />
                         {selectedDate && horariosDisponibles.length > 0 && (
                             <div className="horarios-container mt-4 grid grid-cols-4 gap-2">

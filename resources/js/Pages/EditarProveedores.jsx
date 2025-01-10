@@ -33,7 +33,109 @@ export default function EditarProveedores({ proveedores }) {
         });
     };
 
+
+
+    const validateNIF = (nif) => {
+        if (!/^\d{8}[A-Z]$/.test(nif)) return false;
+
+        const letras = 'TRWAGMYFPDXBNJZSQVHLCKE';
+        const numero = parseInt(nif.slice(0, -1), 10);
+        const letraCalculada = letras[numero % 23];
+        return letraCalculada === nif.slice(-1);
+    };
+
+    const validateCIF = (cif) => {
+        if (!/^[ABCDEFGHJKLMNPQRSUVW]\d{7}[A-J0-9]$/.test(cif)) return false;
+
+        const letras = 'JABCDEFGHI';
+        const letra = cif.charAt(0);
+        const numeros = cif.slice(1, -1);
+        const control = cif.slice(-1);
+
+        let sumaPar = 0;
+        let sumaImpar = 0;
+
+        for (let i = 0; i < numeros.length; i++) {
+            const digito = parseInt(numeros[i], 10);
+            if (i % 2 === 0) { // Posiciones impares (pares en índice)
+                const doble = digito * 2;
+                sumaImpar += Math.floor(doble / 10) + (doble % 10);
+            } else {
+                sumaPar += digito;
+            }
+        }
+
+        const sumaTotal = sumaPar + sumaImpar;
+        const digitoControl = (10 - (sumaTotal % 10)) % 10;
+
+        if (/[A-J]/.test(control)) {
+            return letras[digitoControl] === control;
+        } else {
+            return String(digitoControl) === control;
+        }
+    };
+
+
+
+
+
+
     const saveFieldChange = (id) => {
+        // Validar campos según el tipo
+        if (editableField === 'nif') {
+            if (!editableValue) {
+                Swal.fire('Error', 'El NIF no puede estar vacío.', 'error');
+                return;
+            }
+            if (!validateNIF(editableValue)) {
+                Swal.fire('Error', 'El NIF introducido no es válido.', 'error');
+                return;
+            }
+        }
+
+        if (editableField === 'cif') {
+            if (!editableValue) {
+                Swal.fire('Error', 'El CIF no puede estar vacío.', 'error');
+                return;
+            }
+            if (!validateCIF(editableValue)) {
+                Swal.fire('Error', 'El CIF introducido no es válido.', 'error');
+                return;
+            }
+        }
+
+        if (editableField === 'email') {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!editableValue) {
+                Swal.fire('Error', 'El correo electrónico no puede estar vacío.', 'error');
+                return;
+            }
+            if (!emailRegex.test(editableValue)) {
+                Swal.fire('Error', 'El correo electrónico introducido no es válido.', 'error');
+                return;
+            }
+        }
+
+        if (editableField === 'telefono') {
+            const telefonoRegex = /^[0-9]{9}$/;
+            if (!editableValue) {
+                Swal.fire('Error', 'El teléfono no puede estar vacío.', 'error');
+                return;
+            }
+            if (!telefonoRegex.test(editableValue)) {
+                Swal.fire('Error', 'El teléfono introducido no es válido. Debe contener 9 dígitos.', 'error');
+                return;
+            }
+        }
+
+        if (editableField === 'nombre' || editableField === 'contacto' || editableField === 'direccion') {
+            if (!editableValue) {
+                Swal.fire('Error', `El campo ${editableField} no puede estar vacío.`, 'error');
+                return;
+            }
+        }
+
+        // Enviar la solicitud para guardar los cambios
         const data = { [editableField]: editableValue };
 
         Inertia.patch(route('proveedores.updateField', id), data, {
@@ -43,14 +145,22 @@ export default function EditarProveedores({ proveedores }) {
                 setEditableField(null);
                 setEditableValue('');
             },
+            onError: (errors) => {
+                Swal.fire('Error', 'No se pudo actualizar el campo. Por favor, revisa los datos e intenta nuevamente.', 'error');
+            },
         });
     };
+
+
 
     const filteredProveedores = proveedores.filter((proveedor) =>
         proveedor.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
         proveedor.contacto.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        proveedor.email.toLowerCase().includes(searchTerm.toLowerCase())
+        proveedor.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (proveedor.nif && proveedor.nif.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (proveedor.cif && proveedor.cif.toLowerCase().includes(searchTerm.toLowerCase()))
     );
+
 
     return (
         <div
@@ -85,7 +195,11 @@ export default function EditarProveedores({ proveedores }) {
                             <tr className="bg-[#464242] text-white">
                                 <th className="border border-gray-300 px-4 py-2">Nombre</th>
                                 <th className="border border-gray-300 px-4 py-2">Contacto</th>
+                                <th className="border border-gray-300 px-4 py-2">NIF</th>
+                                <th className="border border-gray-300 px-4 py-2">CIF</th>
                                 <th className="border border-gray-300 px-4 py-2">Correo</th>
+                                <th className="border border-gray-300 px-4 py-2">Teléfono</th>
+                                <th className="border border-gray-300 px-4 py-2">Dirección</th>
                                 <th className="border border-gray-300 px-4 py-2">Acción</th>
 
                             </tr>
@@ -180,10 +294,145 @@ export default function EditarProveedores({ proveedores }) {
                                     </td>
 
                                     <td className="border border-gray-300 px-4 py-2">
-                                        {editableId === proveedor.id && editableField === 'email' ? (
+    {editableId === proveedor.id && editableField === 'nif' ? (
+        <div className="flex items-center">
+            <input
+                type="text"
+                value={editableValue}
+                onChange={(e) => setEditableValue(e.target.value)}
+                className="border rounded p-1"
+            />
+            <button
+                onClick={() => saveFieldChange(proveedor.id)}
+                className="ml-2 bg-green-500 text-white px-2 py-1 rounded"
+            >
+                ✔️
+            </button>
+            <button
+                onClick={() => {
+                    setEditableId(null);
+                    setEditableField(null);
+                    setEditableValue('');
+                }}
+                className="ml-2 bg-red-500 text-white px-2 py-1 rounded"
+            >
+                ✖️
+            </button>
+        </div>
+    ) : (
+        <div className="flex items-center">
+            {proveedor.nif}
+            <button
+                onClick={() => {
+                    setEditableId(proveedor.id);
+                    setEditableField('nif');
+                    setEditableValue(proveedor.nif || '');
+                }}
+                className="ml-2 text-blue-500 hover:text-blue-700"
+            >
+                ✏️
+            </button>
+        </div>
+    )}
+</td>
+
+<td className="border border-gray-300 px-4 py-2">
+    {editableId === proveedor.id && editableField === 'cif' ? (
+        <div className="flex items-center">
+            <input
+                type="text"
+                value={editableValue}
+                onChange={(e) => setEditableValue(e.target.value)}
+                className="border rounded p-1"
+            />
+            <button
+                onClick={() => saveFieldChange(proveedor.id)}
+                className="ml-2 bg-green-500 text-white px-2 py-1 rounded"
+            >
+                ✔️
+            </button>
+            <button
+                onClick={() => {
+                    setEditableId(null);
+                    setEditableField(null);
+                    setEditableValue('');
+                }}
+                className="ml-2 bg-red-500 text-white px-2 py-1 rounded"
+            >
+                ✖️
+            </button>
+        </div>
+    ) : (
+        <div className="flex items-center">
+            {proveedor.cif}
+            <button
+                onClick={() => {
+                    setEditableId(proveedor.id);
+                    setEditableField('cif');
+                    setEditableValue(proveedor.cif || '');
+                }}
+                className="ml-2 text-blue-500 hover:text-blue-700"
+            >
+                ✏️
+            </button>
+        </div>
+    )}
+</td>
+
+
+<td className="border border-gray-300 px-4 py-2">
+    {editableId === proveedor.id && editableField === 'email' ? (
+        <div className="flex items-center">
+            <input
+                type="text"
+                value={editableValue}
+                onChange={(e) => setEditableValue(e.target.value)}
+                className="border rounded p-1"
+            />
+            <button
+                onClick={() => saveFieldChange(proveedor.id)}
+                className="ml-2 bg-green-500 text-white px-2 py-1 rounded"
+            >
+                ✔️
+            </button>
+            <button
+                onClick={() => {
+                    setEditableId(null);
+                    setEditableField(null);
+                    setEditableValue('');
+                }}
+                className="ml-2 bg-red-500 text-white px-2 py-1 rounded"
+            >
+                ✖️
+            </button>
+        </div>
+    ) : (
+        <div className="flex items-center">
+            {proveedor.email}
+            <button
+                onClick={() => {
+                    setEditableId(proveedor.id);
+                    setEditableField('email');
+                    setEditableValue(proveedor.email || '');
+                }}
+                className="ml-2 text-blue-500 hover:text-blue-700"
+            >
+                ✏️
+            </button>
+        </div>
+    )}
+</td>
+
+
+
+
+
+
+                                    <td className="border border-gray-300 px-4 py-2">
+                                        {editableId === proveedor.id && editableField === 'telefono' ? (
                                             <div className="flex items-center">
                                                 <input
-                                                    type="email"
+                                                    type="text"
                                                     value={editableValue}
                                                     onChange={(e) => setEditableValue(e.target.value)}
                                                     className="border rounded p-1"
@@ -207,12 +456,56 @@ export default function EditarProveedores({ proveedores }) {
                                             </div>
                                         ) : (
                                             <div className="flex items-center">
-                                                {proveedor.email}
+                                                {proveedor.telefono}
                                                 <button
                                                     onClick={() => {
                                                         setEditableId(proveedor.id);
-                                                        setEditableField('email');
-                                                        setEditableValue(proveedor.email);
+                                                        setEditableField('telefono');
+                                                        setEditableValue(proveedor.telefono);
+                                                    }}
+                                                    className="ml-2 text-blue-500 hover:text-blue-700"
+                                                >
+                                                    ✏️
+                                                </button>
+                                            </div>
+                                        )}
+                                    </td>
+
+
+                                    <td className="border border-gray-300 px-4 py-2">
+                                        {editableId === proveedor.id && editableField === 'direccion' ? (
+                                            <div className="flex items-center">
+                                                <input
+                                                    type="text"
+                                                    value={editableValue}
+                                                    onChange={(e) => setEditableValue(e.target.value)}
+                                                    className="border rounded p-1"
+                                                />
+                                                <button
+                                                    onClick={() => saveFieldChange(proveedor.id)}
+                                                    className="ml-2 bg-green-500 text-white px-2 py-1 rounded"
+                                                >
+                                                    ✔️
+                                                </button>
+                                                <button
+                                                    onClick={() => {
+                                                        setEditableId(null);
+                                                        setEditableField(null);
+                                                        setEditableValue('');
+                                                    }}
+                                                    className="ml-2 bg-red-500 text-white px-2 py-1 rounded"
+                                                >
+                                                    ✖️
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <div className="flex items-center">
+                                                {proveedor.direccion}
+                                                <button
+                                                    onClick={() => {
+                                                        setEditableId(proveedor.id);
+                                                        setEditableField('direccion');
+                                                        setEditableValue(proveedor.direccion);
                                                     }}
                                                     className="ml-2 text-blue-500 hover:text-blue-700"
                                                 >

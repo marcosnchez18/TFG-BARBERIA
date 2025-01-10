@@ -12,7 +12,6 @@ export default function Empleo({ ofertas }) {
         descripcion: '',
         duracion_meses: '',
         numero_vacantes: '',
-        inscripciones_maximas: '',
     });
 
     const [isEditing, setIsEditing] = useState(false);
@@ -35,10 +34,7 @@ export default function Empleo({ ofertas }) {
             Swal.fire('Error', 'Debe haber al menos una vacante.', 'error');
             return false;
         }
-        if (!data.inscripciones_maximas || data.inscripciones_maximas <= 0) {
-            Swal.fire('Error', 'El número máximo de inscripciones debe ser mayor a 0.', 'error');
-            return false;
-        }
+
         return true;
     };
 
@@ -79,7 +75,6 @@ export default function Empleo({ ofertas }) {
             descripcion: oferta.descripcion,
             duracion_meses: oferta.duracion_meses,
             numero_vacantes: oferta.numero_vacantes,
-            inscripciones_maximas: oferta.inscripciones_maximas,
         });
     };
 
@@ -166,18 +161,7 @@ export default function Empleo({ ofertas }) {
                                 <span className="portal-error">{errors.numero_vacantes}</span>
                             )}
                         </div>
-                        <div className="mt-4">
-                            <label className="portal-label block text-lg">Máximo de inscripciones</label>
-                            <input
-                                type="number"
-                                value={data.inscripciones_maximas}
-                                onChange={(e) => setData('inscripciones_maximas', e.target.value)}
-                                className="portal-input w-full p-2 border rounded"
-                            />
-                            {errors.inscripciones_maximas && (
-                                <span className="portal-error">{errors.inscripciones_maximas}</span>
-                            )}
-                        </div>
+
                         <button
                             type="submit"
                             className="portal-boton mt-4 text-white px-4 py-2 rounded bg-blue-500 hover:bg-blue-600"
@@ -206,8 +190,7 @@ export default function Empleo({ ofertas }) {
                                 <h3 className="portal-oferta-titulo text-xl font-semibold">{oferta.nombre}</h3>
                                 <p className="portal-oferta-descripcion">{oferta.descripcion}</p>
                                 <small className="portal-oferta-detalles">
-                                    Duración: {oferta.duracion_meses} meses | Vacantes: {oferta.numero_vacantes} | Máximo
-                                    Inscripciones: {oferta.inscripciones_maximas}
+                                    Duración: {oferta.duracion_meses} meses | Vacantes: {oferta.numero_vacantes}
                                 </small>
                                 <div className="portal-oferta-acciones mt-2 flex justify-end gap-2">
                                     <button

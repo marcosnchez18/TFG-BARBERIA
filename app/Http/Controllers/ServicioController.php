@@ -2,10 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Cita;
 use App\Models\Servicio;
+use App\Models\User;
 use Illuminate\Support\Facades\File;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
+use App\Mail\CitaCanceladaPorServicio;
 
 class ServicioController extends Controller
 {
@@ -23,6 +28,13 @@ class ServicioController extends Controller
     public function create()
     {
         return Inertia::render('NuevosServicios');
+    }
+
+    public function createTrab()
+    {
+        return Inertia::render('NuevosServiciosTrab', [
+            'auth' => ['user' => Auth::user()]
+        ]);
     }
 
     /**
@@ -48,6 +60,26 @@ class ServicioController extends Controller
     return redirect()->route('admin.servicios.create')->with('success', 'Servicio creado correctamente.');
 }
 
+
+public function storeTrab(Request $request)
+{
+    $validated = $request->validate([
+        'nombre' => 'required|string|max:255',
+        'descripcion' => 'nullable|string',
+        'precio' => 'required|numeric|min:0',
+        'duracion' => 'required|integer|min:1',
+        'barbero' => 'required|exists:users,id' // Validar que el ID del barbero exista
+    ]);
+
+    $servicio = Servicio::create($validated);
+
+    // Relación con la tabla pivote
+    $servicio->barberos()->attach($validated['barbero']);
+
+    $this->actualizarServiciosJson();
+
+    return redirect()->route('trabajador.servicios.create')->with('success', 'Servicio creado correctamente.');
+}
     /**
      * Actualiza el archivo JSON con los servicios actuales de la base de datos.
      */
@@ -74,18 +106,38 @@ class ServicioController extends Controller
         ]);
     }
 
-    public function destroy($id)
-    {
 
-        $servicio = Servicio::findOrFail($id);
-        $servicio->delete();
+public function destroy($id)
+{
+    $servicio = Servicio::findOrFail($id);
 
+    // Verificar si hay citas futuras con este servicio
+    $citasFuturas = Cita::where('servicio_id', $id)
+        ->where('fecha_hora_cita', '>', now())
+        ->get();
 
-        $this->actualizarServiciosJson();
+    if ($citasFuturas->isNotEmpty()) {
+        // Enviar un correo electrónico a cada usuario afectado
+        foreach ($citasFuturas as $cita) {
+            $usuario = User::find($cita->usuario_id);
 
+            if ($usuario) {
+                Mail::to($usuario->email)->send(new CitaCanceladaPorServicio($usuario, $servicio, $cita));
+            }
+        }
 
-        return redirect()->route('admin.servicios.editar')->with('success', 'Servicio eliminado correctamente.');
+        // Cancelar todas las citas futuras de este servicio
+        Cita::where('servicio_id', $id)
+            ->where('fecha_hora_cita', '>', now())
+            ->delete();
     }
+
+    // Eliminar el servicio
+    $servicio->delete();
+    $this->actualizarServiciosJson();
+
+    return redirect()->route('admin.servicios.editar')->with('success', 'Servicio eliminado correctamente.');
+}
 
 
 

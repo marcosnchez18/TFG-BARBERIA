@@ -15,14 +15,26 @@ class ClienteController extends Controller
 {
     // Método para mostrar todos los clientes
     public function index()
-    {
-        $clientes = User::where('rol', 'cliente')
-            ->get(['id', 'nombre', 'email', 'numero_tarjeta_vip', 'saldo', 'contador_ausencias', 'estado']);
+{
+    $clientes = User::where('rol', 'cliente')
+        ->get(['id', 'nombre', 'email', 'numero_tarjeta_vip', 'saldo', 'estado'])
+        ->map(function($cliente) {
+            // Contar las citas completadas
+            $cliente->citas_completadas = $cliente->obtenerCitasCompletadas()->count();
 
-        return Inertia::render('ClientesAdmin', [
-            'clientes' => $clientes
-        ]);
-    }
+            $cliente->citas_ausentes = $cliente->obtenerCitasAusentes()->count();
+
+            $cliente->fechas_ausentes = $cliente->obtenerFechasCitasAusentes();
+
+            return $cliente;
+        });
+
+    return Inertia::render('ClientesAdmin', [
+        'clientes' => $clientes
+    ]);
+}
+
+
 
     // Método para eliminar un cliente
     public function destroy($id)

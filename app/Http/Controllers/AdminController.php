@@ -13,6 +13,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\CancelacionCitaCliente;
+use App\Mail\WelcomeMail;
+use App\Models\DescansoIndividual;
+use Illuminate\Auth\Events\Registered;
 
 class AdminController extends Controller
 {
@@ -58,6 +63,48 @@ class AdminController extends Controller
         ]);
     }
 
+    public function dashboardTrabajador()
+    {
+        $barberoId = Auth::id();
+        $today = Carbon::today();
+        $startOfMonth = $today->copy()->startOfMonth();
+        $endOfMonth = $today->copy()->endOfMonth();
+
+        // Mes actual en español
+        $nombreMesActual = $today->locale('es')->translatedFormat('F');
+
+        // Contar citas de hoy para el barbero logueado
+        $citasHoy = Cita::whereDate('fecha_hora_cita', $today)
+            ->where('barbero_id', $barberoId)
+            ->count();
+
+        // Contar usuarios nuevos hoy con rol de cliente
+        $nuevosUsuariosHoy = User::where('rol', 'cliente')
+            ->whereDate('created_at', $today)
+            ->count();
+
+        // Ganancias del mes actual basadas en la columna precio_cita
+        $gananciasMes = Cita::where('barbero_id', $barberoId)
+            ->whereBetween('fecha_hora_cita', [$startOfMonth, $endOfMonth])
+            ->sum('precio_cita');
+
+        // Calcular valoración media de citas completadas del barbero
+        $valoracionMedia = Cita::where('barbero_id', $barberoId)
+            ->where('estado', 'completada')
+            ->whereNotNull('valoracion')
+            ->avg('valoracion');
+
+        return Inertia::render('TrabajadorDashboard', [
+            'user' => Auth::user(),
+            'citasHoy' => $citasHoy,
+            'nuevosUsuariosHoy' => $nuevosUsuariosHoy,
+            'gananciasMes' => $gananciasMes,
+            'nombreMesActual' => ucfirst($nombreMesActual),
+            'valoracionMedia' => $valoracionMedia ? round($valoracionMedia, 2) : 0,
+
+        ]);
+    }
+
     public function citasBarbero()
     {
         if (Auth::user()->rol !== 'admin') {
@@ -76,6 +123,25 @@ class AdminController extends Controller
 
         return response()->json($citas);
     }
+
+    public function citasBarberoTrabajador()
+{
+    if (Auth::user()->rol !== 'trabajador') {
+        return response()->json(['error' => 'Acceso no autorizado'], 403);
+    }
+
+    $barberoId = Auth::id();
+    $hoy = Carbon::now()->toDateString(); // Obtiene la fecha de hoy en formato YYYY-MM-DD
+
+    // Obtener todas las citas del barbero logueado para hoy (independientemente del estado)
+    $citas = Cita::where('barbero_id', $barberoId)
+        ->whereDate('fecha_hora_cita', $hoy) // Filtra SOLO las de hoy
+        ->with(['usuario:id,nombre', 'servicio:id,nombre'])
+        ->orderBy('fecha_hora_cita', 'asc')
+        ->get();
+
+    return response()->json($citas);
+}
 
     public function cambiarEstado(Request $request, $id)
 {
@@ -103,22 +169,32 @@ class AdminController extends Controller
 
 
 
-    public function cancelarCita($id)
+public function cancelarCita($id)
 {
     $cita = Cita::findOrFail($id);
+    $usuario = $cita->usuario;
+
+    // Verifica si el método de pago es adelantado y devuelve el precio de la cita al saldo del usuario
+    if ($cita->metodo_pago === 'adelantado') {
+        $usuario->saldo += $cita->precio_cita;
+        $usuario->save();
+    }
 
     // Verifica si la cita tiene un descuento aplicado y devuelve el saldo al usuario
     if ($cita->descuento_aplicado > 0) {
-        $usuario = $cita->usuario;
         $usuario->saldo += $cita->descuento_aplicado;
         $usuario->save();
     }
+
+    // Envía un correo al cliente notificándole la cancelación
+    Mail::to($usuario->email)->send(new CancelacionCitaCliente($cita));
 
     // Elimina la cita
     $cita->delete();
 
     return response()->json(['message' => 'Cita cancelada exitosamente.']);
 }
+
 
 
     public function citasPorDia($fecha)
@@ -189,33 +265,44 @@ public function createBarbero()
 
 
     public function store(Request $request)
-    {
-        // Validar los datos del formulario
-        $request->validate([
-            'nombre' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|confirmed|min:6', // La contraseña debe confirmarse
-            'imagen' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Validar que la imagen sea válida
-        ]);
+{
+    // Validar los datos del formulario
+    $request->validate([
+        'nombre' => 'required|string|max:255',
+        'email' => 'required|string|email|max:255|unique:users',
+        'password' => 'required|string|confirmed|min:6', // La contraseña debe confirmarse
+        'imagen' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Validar que la imagen sea válida
+    ]);
 
-        // Manejar la imagen si existe
-        $imagenPath = null;
-        if ($request->hasFile('imagen')) {
-            $imagenPath = $request->file('imagen')->store('images', 'public');
-        }
-
-        // Crear un nuevo usuario con el rol de "trabajador"
-        User::create([
-            'nombre' => $request->nombre,
-            'email' => $request->email,
-            'password' => Hash::make($request->password), // Encriptar la contraseña
-            'rol' => 'trabajador', // Asignar el rol fijo de trabajador
-            'imagen' => $imagenPath, // Guardar la ruta de la imagen si se proporcionó
-        ]);
-
-        // Redirigir con un mensaje de éxito
-        return response()->json(['message' => 'Barbero creado exitosamente'], 201);
+    // Manejar la imagen si existe
+    $imagenPath = null;
+    if ($request->hasFile('imagen')) {
+        $imagenPath = $request->file('imagen')->store('images', 'public');
     }
+
+    // Crear un nuevo usuario con el rol de "trabajador"
+    $user = User::create([
+        'nombre' => $request->nombre,
+        'email' => $request->email,
+        'password' => Hash::make($request->password), // Encriptar la contraseña
+        'rol' => 'trabajador', // Asignar el rol fijo de trabajador
+        'imagen' => $imagenPath, // Guardar la ruta de la imagen si se proporcionó
+    ]);
+
+    // Enviar correo de bienvenida y verificación
+    Mail::to($user->email)->send(new WelcomeMail($user));
+
+    // Activar el evento de registro para generar el enlace de verificación
+    event(new Registered($user));
+
+
+
+    // Redirigir al usuario a la página para verificar su correo electrónico
+    return redirect()->route('verification.notice');
+    return response()->json(['message' => 'Barbero creado exitosamente'], 201);
+}
+        // Redirigir con un mensaje de éxito
+
 
     public function editarBarberos()
     {
@@ -377,6 +464,46 @@ public function getServiciosPorBarbero($barberoId)
     return response()->json($citas);
 }
 
+public function citasBarberiaTrab(Request $request)
+{
+
+    $usuario = Auth::user();
+
+    // Verificar si el usuario es un trabajador
+    if (!$usuario || $usuario->rol !== 'trabajador') {
+        return response()->json(['error' => 'Acceso no autorizado'], 403);
+    }
+
+    // Obtener los filtros del request
+    $servicioId = $request->input('servicio_id');
+    $estado = $request->input('estado');
+    $fechaDia = $request->input('fecha_dia');
+    $fechaMes = $request->input('fecha_mes');
+
+
+    $query = Cita::with(['usuario', 'barbero', 'servicio'])
+        ->where('barbero_id', $usuario->id);
+
+    if ($servicioId) {
+        $query->where('servicio_id', $servicioId);
+    }
+    if ($estado) {
+        $query->where('estado', $estado);
+    }
+    if ($fechaDia) {
+        $query->whereDate('fecha_hora_cita', $fechaDia);
+    }
+    if ($fechaMes) {
+        $query->whereYear('fecha_hora_cita', substr($fechaMes, 0, 4))
+              ->whereMonth('fecha_hora_cita', substr($fechaMes, 5, 2));
+    }
+
+
+    $citas = $query->get();
+
+    return response()->json($citas);
+}
+
 
 public function cambiarMetodoPago(Request $request, $id)
 {
@@ -431,20 +558,22 @@ public function misDatos()
     public function actualizarFoto(Request $request, $id)
 {
     $request->validate([
-        'imagen' => 'required|image|mimes:jpg,jpeg,png|max:2048', // Valida que sea una imagen
+        'imagen' => 'required|image|mimes:jpg,jpeg,png|max:2048', // Validar que sea una imagen
     ]);
 
-    $admin = User::findOrFail($id); // Encuentra al administrador por su ID
+    $trabajador = User::findOrFail($id); // Encuentra al trabajador por su ID
 
-    // Elimina la foto anterior si no es la predeterminada
-    if ($admin->imagen && $admin->imagen !== '/images/default-avatar.png') {
-        Storage::delete($admin->imagen);
+    // Elimina la foto anterior si existe y no es la predeterminada
+    if ($trabajador->imagen && !str_contains($trabajador->imagen, 'default-avatar.png')) {
+        Storage::disk('public')->delete($trabajador->imagen);
     }
 
-    // Guarda la nueva foto
-    $path = $request->file('imagen')->store('public/perfiles'); // Guardar en la carpeta "perfiles"
-    $admin->imagen = Storage::url($path); // Almacena la URL de acceso público en la base de datos
-    $admin->save();
+    // Guarda la nueva foto en la misma carpeta que en `store()`
+    $path = $request->file('imagen')->store('images', 'public');
+
+    // Actualiza la imagen en la base de datos
+    $trabajador->imagen = $path; // Solo la ruta relativa dentro de 'storage/app/public'
+    $trabajador->save();
 
     return back()->with('success', 'Foto de perfil actualizada correctamente.');
 }
@@ -456,19 +585,25 @@ public function misDatos()
 
 public function guardarDiasDescanso(Request $request)
 {
-    $dias = $request->input('dias');  // Obtén los días enviados desde el frontend
+    $dias = $request->input('dias');
 
-    // Asegúrate de que la lista de días tenga al menos 1 día seleccionado
     if (count($dias) > 0) {
         // Si solo hay un día seleccionado, lo guardamos directamente
         if (count($dias) == 1) {
             $fechaDescanso = Carbon::parse($dias[0])->addDay()->format('Y-m-d'); // Sumar 1 día al solo seleccionado
 
-            // Verificar si ya existe el día
-            $existe = Descanso::where('fecha', $fechaDescanso)->exists();
+            // Verificar si ya existe el día de descanso
+            $existeDescanso = Descanso::where('fecha', $fechaDescanso)->exists();
 
-            if ($existe) {
+            if ($existeDescanso) {
                 return response()->json(['message' => 'Este día ya está registrado como descanso', 'dia' => $fechaDescanso], 400);
+            }
+
+            // Verificar si hay citas en ese día
+            $existeCita = Cita::whereDate('fecha_hora_cita', $fechaDescanso)->exists();
+
+            if ($existeCita) {
+                return response()->json(['message' => 'No se puede registrar este día como descanso porque ya existen citas programadas', 'dia' => $fechaDescanso], 400);
             }
 
             // Si no existe, guardamos el día de descanso
@@ -480,20 +615,25 @@ public function guardarDiasDescanso(Request $request)
             $fechaInicio = Carbon::parse($dias[0])->addDay();  // Sumamos 1 día al primer día del rango
             $fechaFin = Carbon::parse(end($dias));  // Último día del rango
 
-            // Asegúrate de que el rango es válido (fecha de inicio menor que la de fin)
             if ($fechaInicio->greaterThan($fechaFin)) {
                 return response()->json(['message' => 'La fecha de inicio no puede ser mayor que la de fin'], 400);
             }
 
-            // Iteramos desde la fecha de inicio hasta la fecha final
             while ($fechaInicio->lte($fechaFin)) {
                 $fechaDescanso = $fechaInicio->format('Y-m-d');
 
-                // Verificar si ya existe el día
-                $existe = Descanso::where('fecha', $fechaDescanso)->exists();
+                // Verificar si ya existe el día de descanso
+                $existeDescanso = Descanso::where('fecha', $fechaDescanso)->exists();
 
-                if ($existe) {
+                if ($existeDescanso) {
                     return response()->json(['message' => 'Este día ya está registrado como descanso', 'dia' => $fechaDescanso], 400);
+                }
+
+                // Verificar si hay citas en ese día
+                $existeCita = Cita::whereDate('fecha_hora_cita', $fechaDescanso)->exists();
+
+                if ($existeCita) {
+                    return response()->json(['message' => "No se puede registrar el descanso porque ya existen citas programadas el día $fechaDescanso", 'dia' => $fechaDescanso], 400);
                 }
 
                 // Si no existe, guardamos el día de descanso
@@ -505,11 +645,10 @@ public function guardarDiasDescanso(Request $request)
                 $fechaInicio->addDay();  // Sumamos 1 día a cada día dentro del rango
             }
 
-            // Asegúrate de guardar el último día del rango (fechaFin)
             $fechaDescanso = $fechaFin->format('Y-m-d');
-            $existe = Descanso::where('fecha', $fechaDescanso)->exists();
+            $existeDescanso = Descanso::where('fecha', $fechaDescanso)->exists();
 
-            if (!$existe) {
+            if (!$existeDescanso) {
                 Descanso::create([
                     'fecha' => $fechaDescanso,
                 ]);
@@ -519,6 +658,94 @@ public function guardarDiasDescanso(Request $request)
 
     return response()->json(['message' => 'Días guardados correctamente'], 200);
 }
+
+
+public function guardarDescansoIndividual(Request $request)
+{
+    $userId = $request->input('user_id');
+    $dias = $request->input('dias');
+
+    if (!$userId) {
+        return response()->json(['message' => 'El ID del usuario es requerido.'], 400);
+    }
+
+    if (count($dias) == 0) {
+        return response()->json(['message' => 'Por favor, selecciona al menos un día de descanso'], 400);
+    }
+
+    // Comprobamos si solo hay un día o un rango de días
+    if (count($dias) == 1) {
+        // Si solo hay un día seleccionado, verificamos y guardamos
+        $fechaDescanso = Carbon::parse($dias[0])->addDay()->format('Y-m-d'); // Sumar 1 día al día seleccionado
+
+        // Verificar si hay citas en ese día
+        $citaExistente = Cita::where('barbero_id', $userId)
+            ->whereDate('fecha_hora_cita', $fechaDescanso)
+            ->exists();
+
+        if ($citaExistente) {
+            return response()->json(['message' => 'No se puede registrar el descanso porque ya hay citas ese día. Cancela las citas primero.'], 400);
+        }
+
+        // Verificar si ya existe el día para este usuario
+        $existe = DescansoIndividual::where('user_id', $userId)
+            ->where('fecha', $fechaDescanso)
+            ->exists();
+
+        if ($existe) {
+            return response()->json(['message' => 'Este día ya está registrado como descanso para este usuario', 'fecha' => $fechaDescanso], 400);
+        }
+
+        // Si no hay citas y no existe el descanso, lo guardamos
+        DescansoIndividual::create([
+            'user_id' => $userId,
+            'fecha' => $fechaDescanso,
+        ]);
+
+    } else {
+        // Si hay un rango de días, verificamos y guardamos cada día
+        $fechaInicio = Carbon::parse($dias[0])->addDay();  // Sumamos 1 día al primer día del rango
+        $fechaFin = Carbon::parse(end($dias));  // Último día del rango
+
+        if ($fechaInicio->greaterThan($fechaFin)) {
+            return response()->json(['message' => 'La fecha de inicio no puede ser mayor que la de fin'], 400);
+        }
+
+        while ($fechaInicio->lte($fechaFin)) {
+            $fechaDescanso = $fechaInicio->format('Y-m-d');
+
+            // Verificar si hay citas en ese día
+            $citaExistente = Cita::where('barbero_id', $userId)
+                ->whereDate('fecha_hora_cita', $fechaDescanso)
+                ->exists();
+
+            if ($citaExistente) {
+                return response()->json(['message' => "No se puede registrar el descanso porque ya hay citas el día $fechaDescanso. Cancela las citas primero."], 400);
+            }
+
+            // Verificar si ya existe el descanso para este usuario
+            $existe = DescansoIndividual::where('user_id', $userId)
+                ->where('fecha', $fechaDescanso)
+                ->exists();
+
+            if (!$existe) {
+                // Si no existe el descanso, lo guardamos
+                DescansoIndividual::create([
+                    'user_id' => $userId,
+                    'fecha' => $fechaDescanso,
+                ]);
+            }
+
+            // Avanzamos al siguiente día
+            $fechaInicio->addDay();
+        }
+    }
+
+    return response()->json(['message' => 'Días de descanso guardados correctamente para el usuario'], 200);
+}
+
+
+
 
 
 }
