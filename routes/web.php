@@ -380,8 +380,9 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
 
     Route::get('/api/admin/ver-pedido/{id}', [PedidoController::class, 'show'])->name('pedido.admin.show');
 
-    Route::patch('/api/admin/cancelar-pedido/{id}', [PedidoController::class, 'cancelarAdmin'])
-    ->name('api.admin.cancelar.pedido');
+    Route::patch('/api/admin/pedidos/{id}/estado', [PedidoController::class, 'actualizarEstado'])
+    ->name('api.admin.pedidos.estado');
+
 
 });
 

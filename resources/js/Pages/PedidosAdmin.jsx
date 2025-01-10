@@ -54,6 +54,25 @@ export default function PedidosAdmin() {
         setPaginaActual(nuevaPagina);
     };
 
+    const actualizarEstadoPedido = (pedidoId, nuevoEstado) => {
+        axios
+            .patch(`/api/admin/pedidos/${pedidoId}/estado`, { estado: nuevoEstado })
+            .then((response) => {
+                Swal.fire('¡Éxito!', 'El estado del pedido ha sido actualizado.', 'success');
+
+                // Actualizar el estado en el frontend
+                setPedidos((prevPedidos) =>
+                    prevPedidos.map((pedido) =>
+                        pedido.id === pedidoId ? { ...pedido, estado: nuevoEstado } : pedido
+                    )
+                );
+            })
+            .catch((error) => {
+                Swal.fire('Error', error.response?.data?.error || 'No se pudo actualizar el estado.', 'error');
+            });
+    };
+
+
     const ordenarPedidos = (filtro) => {
         const pedidosOrdenados = [...pedidos];
 
@@ -270,17 +289,19 @@ export default function PedidosAdmin() {
                                                 {dayjs(pedido.created_at).format('D/M/YYYY')}
                                             </td>
                                             <td className="py-2 px-4 text-center">
-                                                {pedido.estado === 'pendiente' ? (
-                                                    <button
-                                                        onClick={() => cancelarPedido(pedido.id)}
-                                                        className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition"
-                                                    >
-                                                        Cancelar
-                                                    </button>
-                                                ) : (
-                                                    <span className="text-gray-500 italic">No disponible</span>
-                                                )}
-                                            </td>
+    <select
+        className="border rounded-lg px-8 py-1 text-sm bg-gray-100"
+        value={pedido.estado}
+        onChange={(e) => actualizarEstadoPedido(pedido.id, e.target.value)}
+    >
+        {['pendiente', 'enviado', 'entregado', 'cancelado'].map((estado) => (
+            <option key={estado} value={estado}>
+                {estado.charAt(0).toUpperCase() + estado.slice(1)}
+            </option>
+        ))}
+    </select>
+</td>
+
 
 
                                         </tr>

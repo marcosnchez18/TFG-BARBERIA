@@ -219,29 +219,31 @@ public function cancelar($id)
 }
 
 
-public function cancelarAdmin($id)
+public function actualizarEstado(Request $request, $id)
 {
     $pedido = Pedido::findOrFail($id);
 
-    if ($pedido->estado !== 'pendiente') {
-        return response()->json(['error' => 'Solo se pueden cancelar pedidos pendientes.'], 403);
+    // Lista de estados permitidos
+    $estadosValidos = ['pendiente', 'enviado', 'entregado', 'cancelado'];
+    if (!in_array($request->estado, $estadosValidos)) {
+        return response()->json(['error' => 'Estado no válido.'], 400);
     }
 
-    $usuario = User::find($pedido->user_id); // Buscar al usuario manualmente
+    // Si el estado cambia a "cancelado" y el pedido estaba en "pendiente", reembolsar saldo
+    if ($request->estado === 'cancelado' && $pedido->estado === 'pendiente') {
+        $usuario = User::find($pedido->user_id); // Buscar el usuario
 
-    if (!$usuario) {
-        return response()->json(['error' => 'No se encontró el usuario asociado al pedido.'], 404);
+        if ($usuario) {
+            $usuario->saldo += $pedido->total; // Reembolsar saldo
+            $usuario->save();
+        }
     }
 
-    // Cancelar pedido
-    $pedido->estado = 'cancelado';
+    // Actualizar estado del pedido
+    $pedido->estado = $request->estado;
     $pedido->save();
 
-    // Reembolsar saldo al usuario
-    $usuario->saldo += $pedido->total;
-    $usuario->save();
-
-    return response()->json(['message' => 'Pedido cancelado correctamente.'], 200);
+    return response()->json(['message' => 'Estado actualizado correctamente.'], 200);
 }
 
 
