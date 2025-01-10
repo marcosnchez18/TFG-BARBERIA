@@ -68,6 +68,16 @@ export default function Navigation() {
                     style={{ fontFamily: 'Times New Roman, serif' }}
                 >
                     <ul className="flex flex-col md:flex-row md:space-x-4 mt-4 md:mt-0 space-y-2 md:space-y-0">
+
+                        <li>
+                            <Link
+                                href={route('barbershopinvitado')}
+                                className="text-lg md:text-xl text-white hover:text-gray-400"
+                            >
+                                BarberShop
+                            </Link>
+                        </li>
+
                         <li>
                             <Link
                                 href={route('sobre-nosotros')}

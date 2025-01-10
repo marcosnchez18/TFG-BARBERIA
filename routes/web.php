@@ -383,6 +383,10 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
     Route::patch('/api/admin/pedidos/{id}/estado', [PedidoController::class, 'actualizarEstado'])
     ->name('api.admin.pedidos.estado');
 
+    Route::post('/api/admin/pedido/{id}/reembolso', [PedidoController::class, 'emitirReembolso'])
+    ->name('admin.pedido.reembolso');
+
+
 
 });
 
@@ -473,6 +477,20 @@ Route::middleware(['auth', 'verified', 'trabajador'])->group(function () {
 
     Route::patch('/trabajador/actualizar-datos', [AdminController::class, 'actualizarDatos'])->name('trabajador.actualizar-datos');
     Route::post('/trabajador/actualizar-foto/{id}', [AdminController::class, 'actualizarFoto'])->name('trabajador.actualizar-foto');
+
+    Route::get('/trabajador/pedidos', [PedidoController::class, 'pedidosTrabVista'])
+        ->name('trabajador.pedidos');
+
+    Route::get('/api/trabajador/pedidos', [PedidoController::class, 'getPedidosAdmin'])
+        ->name('api.trabajador.pedidos');
+
+    Route::patch('/api/trabajador/pedidos/{id}/estado', [PedidoController::class, 'actualizarEstado'])
+        ->name('api.trabajador.pedidos.estado');
+
+    Route::post('/api/trabajador/pedido/{id}/reembolso', [PedidoController::class, 'emitirReembolso'])
+        ->name('trabajador.pedido.reembolso');
+
+    Route::get('/api/trabajador/ver-pedido/{id}', [PedidoController::class, 'show'])->name('pedido.trabajador.show');
 });
 
 
@@ -605,3 +623,11 @@ Route::post('/guardar-ruta-sesion', function (Illuminate\Http\Request $request) 
     session(['ruta_despues_login' => $request->ruta]);
     return response()->json(['success' => true]);       // Variable de sesión
 });
+
+
+Route::get('/barbershopinvitado', function () {
+    return Inertia::render('ShopInvitado');
+})->name('barbershopinvitado');
+
+
+Route::get('/api/public/productos', [ProductoController::class, 'obtenerProductos'])->name('public.productos.obtener');

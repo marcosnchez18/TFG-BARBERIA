@@ -420,7 +420,15 @@ export default function TrabajadorDashboard() {
                             <p className="text-lg font-semibold">Gestiona tu Barbería</p>
                             <br />
                             <Link href={route('opciones-trabajador')} className="mt-2 px-4 py-2 bg-[#A87B43] text-white rounded hover:bg-[#875d34]">
-                                Gestionar
+                                Gestionar ✂️
+                            </Link>
+                        </div>
+
+                        <div className="herramienta-item bg-[#d0fcfc] p-4 rounded-lg text-center">
+                            <p className="text-lg font-semibold">Gestionar Pedidos</p>
+                            <br />
+                            <Link href={route('trabajador.pedidos')} className="mt-2 px-4 py-2 bg-[#A87B43] text-white rounded hover:bg-[#875d34]">
+                                Gestionar 📦
                             </Link>
                         </div>
 

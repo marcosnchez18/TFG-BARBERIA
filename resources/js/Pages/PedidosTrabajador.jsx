@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import NavigationAdmin from '../Components/NavigationAdmin';
+import NavigationTrabajador from '../Components/NavigationTrabajador';
 import '../../css/Barber.css';
 import WhatsAppButton from '@/Components/Wasa';
 import SobreNosotros from '@/Components/Sobrenosotros';
@@ -10,7 +10,7 @@ import Swal from 'sweetalert2';
 
 
 
-export default function PedidosAdmin() {
+export default function PedidosTrabajador() {
     const [pedidos, setPedidos] = useState([]);
     const [paginaActual, setPaginaActual] = useState(1);
     const pedidosPorPagina = 4;
@@ -26,7 +26,7 @@ export default function PedidosAdmin() {
 
 
     useEffect(() => {
-        axios.get('/api/admin/pedidos') // Cambiado a la ruta correcta
+        axios.get('/api/trabajador/pedidos') // Cambiado a la ruta correcta
             .then(response => {
                 if (Array.isArray(response.data)) {
                     setPedidos(response.data);
@@ -56,7 +56,7 @@ export default function PedidosAdmin() {
 
     const actualizarEstadoPedido = (pedidoId, nuevoEstado) => {
         axios
-            .patch(`/api/admin/pedidos/${pedidoId}/estado`, { estado: nuevoEstado })
+            .patch(`/api/trabajador/pedidos/${pedidoId}/estado`, { estado: nuevoEstado })
             .then((response) => {
                 Swal.fire('¡Éxito!', 'El estado del pedido ha sido actualizado.', 'success');
 
@@ -74,7 +74,7 @@ export default function PedidosAdmin() {
 
     const emitirReembolso = (pedidoId) => {
         axios
-            .post(`/api/admin/pedido/${pedidoId}/reembolso`)
+            .post(`/api/trabajador/pedido/${pedidoId}/reembolso`)
             .then((response) => {
                 Swal.fire('Reembolso exitoso', response.data.message, 'success');
 
@@ -109,9 +109,13 @@ export default function PedidosAdmin() {
         setPedidos(pedidosOrdenados);
     };
 
-    
+
+
+
+
+
     const handleVerPedido = (pedidoId) => {
-        axios.get(`/api/admin/ver-pedido/${pedidoId}`)
+        axios.get(`/api/trabajador/ver-pedido/${pedidoId}`)
             .then(response => {
                 setPedidoSeleccionado(response.data);
                 setModalVisible(true);
@@ -129,7 +133,7 @@ export default function PedidosAdmin() {
 
     return (
         <div>
-            <NavigationAdmin />
+            <NavigationTrabajador />
 
             <div
                 className="flex flex-col min-h-screen"

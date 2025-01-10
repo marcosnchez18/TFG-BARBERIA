@@ -71,6 +71,11 @@ public function pedidosAdminVista()
     return Inertia::render('PedidosAdmin');
 }
 
+public function pedidosTrabVista()
+{
+    return Inertia::render('PedidosTrabajador');
+}
+
 
 
     /**
@@ -111,6 +116,7 @@ public function pedidosAdminVista()
                     : $direccionRecogida,
 
                 'codigo_pedido' => $codigoPedido, // Usar el código generado
+                'reembolso_realizado' => false,
             ]);
 
             // Insertar cada producto en la tabla `pedido_productos`
@@ -229,22 +235,44 @@ public function actualizarEstado(Request $request, $id)
         return response()->json(['error' => 'Estado no válido.'], 400);
     }
 
-    // Si el estado cambia a "cancelado" y el pedido estaba en "pendiente", reembolsar saldo
-    if ($request->estado === 'cancelado' && $pedido->estado === 'pendiente') {
-        $usuario = User::find($pedido->user_id); // Buscar el usuario
-
-        if ($usuario) {
-            $usuario->saldo += $pedido->total; // Reembolsar saldo
-            $usuario->save();
-        }
-    }
-
-    // Actualizar estado del pedido
+    // Actualizar solo el estado del pedido sin afectar el saldo
     $pedido->estado = $request->estado;
     $pedido->save();
 
     return response()->json(['message' => 'Estado actualizado correctamente.'], 200);
 }
+
+public function emitirReembolso($id)
+{
+    $pedido = Pedido::findOrFail($id);
+
+    // Verificar que el pedido está cancelado
+    if ($pedido->estado !== 'cancelado') {
+        return response()->json(['error' => 'Solo se pueden reembolsar pedidos cancelados.'], 403);
+    }
+
+    // Verificar si ya ha sido reembolsado
+    if ($pedido->reembolso_realizado) {
+        return response()->json(['error' => 'El pedido ya ha sido reembolsado.'], 400);
+    }
+
+    // Obtener usuario asociado
+    $usuario = User::find($pedido->user_id);
+    if (!$usuario) {
+        return response()->json(['error' => 'Usuario no encontrado.'], 404);
+    }
+
+    // Reembolsar el saldo al usuario
+    $usuario->saldo += $pedido->total;
+    $usuario->save();
+
+    // Marcar el pedido como reembolsado
+    $pedido->reembolso_realizado = true;
+    $pedido->save();
+
+    return response()->json(['message' => 'Reembolso emitido correctamente.'], 200);
+}
+
 
 
 

@@ -75,6 +75,15 @@ export default function Navigation() {
                                 Home
                             </Link>
                         </li>
+
+                        <li>
+                            <Link
+                                href={route('barbershopinvitado')}
+                                className="text-lg md:text-xl text-white hover:text-gray-400"
+                            >
+                                BarberShop
+                            </Link>
+                        </li>
                         <li>
                             <Link
                                 href={route('sobre-nosotros')}
