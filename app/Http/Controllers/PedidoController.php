@@ -294,16 +294,22 @@ public function realizarPedido(Request $request)
     foreach ($request->productos as $item) {
         $producto = Producto::findOrFail($item['producto_id']);
 
+        // Asegurar que el precio del proveedor está disponible
+        if (!$producto->precio_proveedor) {
+            return response()->json(['error' => 'El producto ' . $producto->nombre . ' no tiene un precio de proveedor asignado.'], 400);
+        }
+
         PedidoProveedor::create([
             'proveedor_id' => $producto->proveedor_id,
             'producto_id' => $producto->id,
             'cantidad' => $item['cantidad'],
-            'total' => $producto->precio * $item['cantidad']
+            'total' => $producto->precio_proveedor * $item['cantidad'] // Ahora usa precio_proveedor
         ]);
     }
 
     return response()->json(['message' => 'Pedido realizado correctamente.'], 201);
 }
+
 
 
 

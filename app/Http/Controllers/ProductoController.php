@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\PedidoProducto;
+use App\Models\PedidoProveedor;
 use App\Models\Producto;
 use Illuminate\Http\Request;
 
@@ -109,14 +111,38 @@ public function obtenerProductos()
 {
     $producto = Producto::findOrFail($id);
 
+    // Verificar si el producto está en un pedido de cliente con estado 'pendiente'
+    $pedidoClientePendiente = PedidoProducto::where('producto_id', $id)
+        ->whereHas('pedido', function ($query) {
+            $query->where('estado', 'pendiente');
+        })
+        ->exists();
 
+    // Verificar si el producto está en un pedido de proveedor con estado 'pendiente'
+    $pedidoProveedorPendiente = PedidoProveedor::where('producto_id', $id)
+        ->where('estado', 'pendiente')
+        ->exists();
+
+    if ($pedidoClientePendiente) {
+        return redirect()
+            ->route('admin.productos.editar')
+            ->with('message', 'No se puede eliminar el producto porque está en pedidos pendientes de clientes.');
+    }
+
+    if ($pedidoProveedorPendiente) {
+        return redirect()
+            ->route('admin.productos.editar')
+            ->with('message', 'No se puede eliminar el producto porque está en pedidos pendientes de proveedores.');
+    }
+
+    // Si el producto no está en pedidos pendientes, proceder con la eliminación
     $producto->delete();
-
 
     return redirect()
         ->route('admin.productos.editar')
         ->with('message', 'Producto eliminado con éxito.');
 }
+
 
 public function updatePhoto(Request $request, $id)
 {
@@ -162,7 +188,7 @@ public function updateField(Request $request, $id)
         $producto->precio = $request->precio;
     }
 
-    if ($request->has('precio_proveedor')) { 
+    if ($request->has('precio_proveedor')) {
         $producto->precio_proveedor = $request->precio_proveedor;
     }
 

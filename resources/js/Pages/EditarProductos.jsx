@@ -35,10 +35,24 @@ export default function EditarProductos({ productos }) {
                     onSuccess: () => {
                         Swal.fire('Eliminado', 'Producto eliminado con éxito.', 'success');
                     },
+                    onError: (errors) => {
+                        if (errors.error) {
+                            Swal.fire({
+                                title: 'No se puede eliminar',
+                                text: errors.error, // Mensaje específico del backend
+                                icon: 'error',
+                                confirmButtonColor: '#3085d6',
+                                confirmButtonText: 'Entendido'
+                            });
+                        } else {
+                            Swal.fire('Error', 'Ocurrió un problema al eliminar el producto.', 'error');
+                        }
+                    }
                 });
             }
         });
     };
+
 
 
 
