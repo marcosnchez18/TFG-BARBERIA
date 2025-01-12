@@ -14,30 +14,25 @@ export default function PedidosInventario() {
     const [filtroFecha, setFiltroFecha] = useState('');
 
     const añadirStock = (codigo_pedido) => {
-        Swal.fire({
-            title: '¿Añadir stock?',
-            text: 'Esto sumará las cantidades del pedido al inventario.',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Sí, añadir stock',
-            cancelButtonText: 'Cancelar',
-        }).then((result) => {
-            if (result.isConfirmed) {
-                axios.post(`/admin/pedidos-proveedores/${codigo_pedido}/añadir-stock`)
-                    .then(() => {
-                        Swal.fire('¡Éxito!', 'El stock ha sido actualizado.', 'success');
+        axios.post(`/admin/pedidos-proveedores/${codigo_pedido}/añadir-stock`)
+            .then(response => {
+                Swal.fire('¡Stock actualizado!', response.data.message, 'success');
 
-                        // Opcional: actualizar la lista de pedidos para reflejar los cambios
-                        setPedidos(prevPedidos => prevPedidos.map(pedido =>
-                            pedido.codigo_pedido === codigo_pedido ? { ...pedido, stock_actualizado: true } : pedido
-                        ));
-                    })
-                    .catch(() => {
-                        Swal.fire('Error', 'No se pudo actualizar el stock.', 'error');
-                    });
-            }
-        });
+                // Actualizar el estado de todos los pedidos con el mismo codigo_pedido
+                setPedidos(prevPedidos =>
+                    prevPedidos.map(pedido =>
+                        pedido.codigo_pedido === codigo_pedido
+                            ? { ...pedido, stock_añadido: true } // ✅ Oculta el botón
+                            : pedido
+                    )
+                );
+            })
+            .catch(error => {
+                Swal.fire('Error', error.response?.data?.message || 'No se pudo añadir el stock.', 'error');
+            });
     };
+
+
 
 
     useEffect(() => {
@@ -67,6 +62,7 @@ export default function PedidosInventario() {
                     estado: pedido.estado,
                     proveedor: pedido.proveedor,
                     fecha: pedido.created_at,
+                    stock_añadido: pedido.stock_añadido, // ✅ Almacenar stock_añadido
                     productos: []
                 };
             }
@@ -82,6 +78,7 @@ export default function PedidosInventario() {
 
         setPedidos(Object.values(pedidosAgrupados));
     };
+
 
     // Aplicar filtros antes de paginar
     const pedidosFiltrados = pedidos.filter(pedido => {
@@ -237,15 +234,17 @@ export default function PedidosInventario() {
         ))}
     </select>
 
-    {/* Mostrar el botón "Añadir Stock" SOLO cuando el pedido ha sido entregado */}
-    {pedido.estado === 'entregado' && !pedido.stock_actualizado && (
-        <button
-            onClick={() => añadirStock(pedido.codigo_pedido)}
-            className="mt-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition"
-        >
-            Añadir Stock
-        </button>
-    )}
+    {pedido.estado === 'entregado' && !pedido.stock_añadido && (
+    <button
+        onClick={() => añadirStock(pedido.codigo_pedido)}
+        className="mt-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition"
+    >
+        Añadir Stock
+    </button>
+)}
+
+
+
 </td>
 
                                         </tr>

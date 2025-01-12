@@ -32,8 +32,14 @@ class PedidoProveedorController extends Controller
 
 public function añadirStock($codigo_pedido)
 {
-    // Obtener todos los pedidos con el mismo código de pedido
-    $pedidos = PedidoProveedor::where('codigo_pedido', $codigo_pedido)->get();
+    // Obtener todos los pedidos con el mismo código
+    $pedidos = PedidoProveedor::where('codigo_pedido', $codigo_pedido)
+        ->where('stock_añadido', false) // Solo procesar los que aún no han añadido stock
+        ->get();
+
+    if ($pedidos->isEmpty()) {
+        return response()->json(['message' => 'El stock ya ha sido añadido previamente.'], 400);
+    }
 
     foreach ($pedidos as $pedido) {
         // Buscar el producto correspondiente
@@ -43,11 +49,19 @@ public function añadirStock($codigo_pedido)
             // Sumar la cantidad del pedido al stock del producto
             $producto->stock += $pedido->cantidad;
             $producto->save();
+
+            // Marcar el pedido como "stock añadido"
+            $pedido->stock_añadido = true;
+            $pedido->save();
         }
     }
 
-    return response()->json(['message' => 'Stock actualizado correctamente.']);
+    return response()->json([
+        'message' => 'Stock añadido correctamente.',
+        'codigo_pedido' => $codigo_pedido
+    ]);
 }
+
 
 
 
