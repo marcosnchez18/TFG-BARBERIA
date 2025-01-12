@@ -22,7 +22,7 @@ export default function PedidosInventario() {
                 setPedidos(prevPedidos =>
                     prevPedidos.map(pedido =>
                         pedido.codigo_pedido === codigo_pedido
-                            ? { ...pedido, stock_añadido: true } // ✅ Oculta el botón
+                            ? { ...pedido, stock_añadido: true } //ocultar el boton
                             : pedido
                     )
                 );
@@ -54,30 +54,38 @@ export default function PedidosInventario() {
 
     // Agrupar pedidos por codigo_pedido
     const agruparPedidos = (pedidos) => {
-        const pedidosAgrupados = pedidos.reduce((acc, pedido) => {
-            const { codigo_pedido } = pedido;
-            if (!acc[codigo_pedido]) {
-                acc[codigo_pedido] = {
-                    codigo_pedido,
-                    estado: pedido.estado,
-                    proveedor: pedido.proveedor,
-                    fecha: pedido.created_at,
-                    stock_añadido: pedido.stock_añadido, // ✅ Almacenar stock_añadido
-                    productos: []
-                };
-            }
-            acc[codigo_pedido].productos.push({
-                id: pedido.producto.id,
-                nombre: pedido.producto.nombre,
-                cantidad: pedido.cantidad,
-                precio_unitario: pedido.producto.precio_proveedor,
-                imagen: pedido.producto.imagen
-            });
-            return acc;
-        }, {});
+    const pedidosAgrupados = pedidos.reduce((acc, pedido) => {
+        const { codigo_pedido } = pedido;
+        if (!acc[codigo_pedido]) {
+            acc[codigo_pedido] = {
+                codigo_pedido,
+                estado: pedido.estado,
+                proveedor: pedido.proveedor,
+                fecha: pedido.created_at,
+                stock_añadido: pedido.stock_añadido,
+                productos: [],
+                total: 0 // Inicializar el total
+            };
+        }
 
-        setPedidos(Object.values(pedidosAgrupados));
-    };
+        // Agregar productos y sumar el total del pedido
+        const totalProducto = pedido.cantidad * pedido.producto.precio_proveedor;
+        acc[codigo_pedido].productos.push({
+            id: pedido.producto.id,
+            nombre: pedido.producto.nombre,
+            cantidad: pedido.cantidad,
+            precio_unitario: pedido.producto.precio_proveedor,
+            imagen: pedido.producto.imagen
+        });
+
+        acc[codigo_pedido].total += totalProducto; // Sumar al total del pedido
+
+        return acc;
+    }, {});
+
+    setPedidos(Object.values(pedidosAgrupados));
+};
+
 
 
     // Aplicar filtros antes de paginar
@@ -175,6 +183,7 @@ export default function PedidosInventario() {
                                         <th className="py-2 px-4 border">Proveedor</th>
                                         <th className="py-2 px-4 border">Estado</th>
                                         <th className="py-2 px-4 border">Fecha</th>
+                                        <th className="py-2 px-4 border">Total (€)</th>
                                         <th className="py-2 px-4 border">Productos</th>
                                         <th className="py-2 px-4 border">Acciones</th>
                                     </tr>
@@ -204,6 +213,9 @@ export default function PedidosInventario() {
                                             <td className="py-2 px-4 text-center">
                                                 {dayjs(pedido.fecha).format('D/M/YYYY')}
                                             </td>
+                                            <td className="py-2 px-4 text-center font-bold text-gray-800">
+                {pedido.total.toFixed(2)} € 
+            </td>
                                             <td className="py-2 px-4">
                                                 {pedido.productos.map(producto => (
                                                     <div key={producto.id} className="flex items-center space-x-3">
