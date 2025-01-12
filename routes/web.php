@@ -394,6 +394,18 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
 
     Route::post('/api/admin/pedidos-proveedores', [PedidoController::class, 'realizarPedido']);
 
+    Route::get('/admin/gestionpedido/proveedor', function () {
+        return Inertia::render('PedidosInventario');
+    })->name('admin.gestionpedido.proveedor');
+
+    Route::get('/admin/pedidos-proveedores', [PedidoProveedorController::class, 'index'])
+        ->name('admin.pedidos-proveedores');
+
+    Route::patch('/admin/pedidos-proveedores/{codigo_pedido}/estado', [PedidoProveedorController::class, 'actualizarEstado'])
+        ->name('admin.pedidos-proveedores.actualizarEstado');
+
+    Route::post('/admin/pedidos-proveedores/{codigo_pedido}/añadir-stock', [PedidoProveedorController::class, 'añadirStock'])
+    ->name('admin.pedidos-proveedores.añadirStock');
 
 
 });

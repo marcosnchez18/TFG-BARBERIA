@@ -291,23 +291,29 @@ public function realizarPedido(Request $request)
         'productos.*.cantidad' => 'integer|min:1'
     ]);
 
+    // Generar un código único para el pedido
+    do {
+        $codigoPedido = str_pad(mt_rand(0, 9999999999999999), 16, '0', STR_PAD_LEFT);
+    } while (PedidoProveedor::where('codigo_pedido', $codigoPedido)->exists());
+
     foreach ($request->productos as $item) {
         $producto = Producto::findOrFail($item['producto_id']);
 
-        // Asegurar que el precio del proveedor está disponible
+        // Verificar que el producto tiene precio de proveedor
         if (!$producto->precio_proveedor) {
             return response()->json(['error' => 'El producto ' . $producto->nombre . ' no tiene un precio de proveedor asignado.'], 400);
         }
 
         PedidoProveedor::create([
+            'codigo_pedido' => $codigoPedido, // Asignamos el mismo código a todos los productos del pedido
             'proveedor_id' => $producto->proveedor_id,
             'producto_id' => $producto->id,
             'cantidad' => $item['cantidad'],
-            'total' => $producto->precio_proveedor * $item['cantidad'] // Ahora usa precio_proveedor
+            'total' => $producto->precio_proveedor * $item['cantidad']
         ]);
     }
 
-    return response()->json(['message' => 'Pedido realizado correctamente.'], 201);
+    return response()->json(['message' => 'Pedido realizado correctamente.', 'codigo_pedido' => $codigoPedido], 201);
 }
 
 
