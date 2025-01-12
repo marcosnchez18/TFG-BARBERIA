@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Mail\PedidoRealizadoMail;
 use App\Models\Pedido;
 use App\Models\PedidoProducto;
+use App\Models\PedidoProveedor;
 use App\Models\Producto;
 use App\Models\Recibo;
 use App\Models\User;
@@ -211,18 +212,18 @@ public function cancelar($id)
         return response()->json(['error' => 'Solo se pueden cancelar pedidos pendientes.'], 403);
     }
 
+    // Restaurar el stock de los productos del pedido
+    foreach ($pedido->productos as $producto) {
+        $producto->increment('stock', $producto->pivot->cantidad);
+    }
+
     // Actualizar estado del pedido
     $pedido->estado = 'cancelado';
     $pedido->save();
 
-    // Reembolsar el saldo al usuario
-    $usuario = $pedido->user; // Asegúrate de tener la relación `usuario` configurada
-    $usuario->saldo += $pedido->total;
-    $usuario->save();
-
-    return response()->json(['message' => 'Pedido cancelado correctamente.'], 200);
-
+    return response()->json(['message' => 'Pedido cancelado correctamente y stock restaurado.'], 200);
 }
+
 
 
 public function actualizarEstado(Request $request, $id)
@@ -235,12 +236,20 @@ public function actualizarEstado(Request $request, $id)
         return response()->json(['error' => 'Estado no válido.'], 400);
     }
 
-    // Actualizar solo el estado del pedido sin afectar el saldo
+    // Si el pedido pasa a "cancelado", restaurar el stock de los productos
+    if ($pedido->estado !== 'cancelado' && $request->estado === 'cancelado') {
+        foreach ($pedido->productos as $producto) {
+            $producto->increment('stock', $producto->pivot->cantidad);
+        }
+    }
+
+    // Actualizar solo el estado del pedido
     $pedido->estado = $request->estado;
     $pedido->save();
 
     return response()->json(['message' => 'Estado actualizado correctamente.'], 200);
 }
+
 
 public function emitirReembolso($id)
 {
@@ -271,6 +280,29 @@ public function emitirReembolso($id)
     $pedido->save();
 
     return response()->json(['message' => 'Reembolso emitido correctamente.'], 200);
+}
+
+
+public function realizarPedido(Request $request)
+{
+    $request->validate([
+        'productos' => 'required|array',
+        'productos.*.producto_id' => 'exists:productos,id',
+        'productos.*.cantidad' => 'integer|min:1'
+    ]);
+
+    foreach ($request->productos as $item) {
+        $producto = Producto::findOrFail($item['producto_id']);
+
+        PedidoProveedor::create([
+            'proveedor_id' => $producto->proveedor_id,
+            'producto_id' => $producto->id,
+            'cantidad' => $item['cantidad'],
+            'total' => $producto->precio * $item['cantidad']
+        ]);
+    }
+
+    return response()->json(['message' => 'Pedido realizado correctamente.'], 201);
 }
 
 

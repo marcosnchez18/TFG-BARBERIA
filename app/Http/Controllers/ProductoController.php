@@ -33,7 +33,8 @@ class ProductoController extends Controller
         $validated = $request->validate([
             'nombre' => 'required|string|max:255',
             'descripcion' => 'required|string',
-            'precio' => 'required|numeric',
+            'precio' => 'required|numeric|min:0',
+            'precio_proveedor' => 'required|numeric|min:0', // Nuevo campo
             'stock' => 'required|integer|min:1',
             'proveedor_id' => 'required|exists:proveedores,id',
             'imagen' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
@@ -44,6 +45,7 @@ class ProductoController extends Controller
         $producto->nombre = $validated['nombre'];
         $producto->descripcion = $validated['descripcion'];
         $producto->precio = $validated['precio'];
+        $producto->precio_proveedor = $validated['precio_proveedor']; // Nuevo campo
         $producto->stock = $validated['stock'];
         $producto->proveedor_id = $validated['proveedor_id'];
 
@@ -64,6 +66,7 @@ class ProductoController extends Controller
         return back()->with('error', 'Ocurrió un error en el servidor.');
     }
 }
+
 
 public function obtenerProductos()
 {
@@ -136,18 +139,16 @@ public function updatePhoto(Request $request, $id)
 
 public function updateField(Request $request, $id)
 {
-
     $request->validate([
         'nombre' => 'nullable|string|max:255',
         'descripcion' => 'nullable|string|max:500',
         'precio' => 'nullable|numeric|min:0',
+        'precio_proveedor' => 'nullable|numeric|min:0',
         'stock' => 'nullable|integer|min:0',
         'proveedor_id' => 'nullable|exists:proveedores,id',
     ]);
 
-
     $producto = Producto::findOrFail($id);
-
 
     if ($request->has('nombre')) {
         $producto->nombre = $request->nombre;
@@ -161,6 +162,10 @@ public function updateField(Request $request, $id)
         $producto->precio = $request->precio;
     }
 
+    if ($request->has('precio_proveedor')) { 
+        $producto->precio_proveedor = $request->precio_proveedor;
+    }
+
     if ($request->has('stock')) {
         $producto->stock = $request->stock;
     }
@@ -169,10 +174,9 @@ public function updateField(Request $request, $id)
         $producto->proveedor_id = $request->proveedor_id;
     }
 
-
     $producto->save();
 
-    
     return redirect()->back()->with('success', 'Producto actualizado con éxito.');
 }
+
 }

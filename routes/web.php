@@ -15,6 +15,7 @@ use App\Http\Controllers\FichaClienteController;
 use App\Http\Controllers\FichaController;
 use App\Http\Controllers\OfertaController;
 use App\Http\Controllers\PedidoController;
+use App\Http\Controllers\PedidoProveedorController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\RecompensaController;
@@ -386,6 +387,13 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
     Route::post('/api/admin/pedido/{id}/reembolso', [PedidoController::class, 'emitirReembolso'])
     ->name('admin.pedido.reembolso');
 
+    Route::get('/admin/pedido/proveedor', function () {
+        return Inertia::render('PedidosProveedores');
+    })->name('admin.pedido.proveedor');
+
+
+    Route::post('/api/admin/pedidos-proveedores', [PedidoController::class, 'realizarPedido']);
+
 
 
 });
@@ -621,7 +629,7 @@ Route::get('/api/public/barberos/{barberoId}/servicios', [RecompensaController::
 
 Route::post('/guardar-ruta-sesion', function (Illuminate\Http\Request $request) {
     session(['ruta_despues_login' => $request->ruta]);
-    return response()->json(['success' => true]);       // Variable de sesión
+    return response()->json(['success' => true]);       // Variable de sesión trabajar
 });
 
 

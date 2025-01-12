@@ -17,6 +17,8 @@ export default function AltaProducto() {
     const [proveedores, setProveedores] = useState([]);
     const [selectedProveedor, setSelectedProveedor] = useState('');
     const [imagen, setImagen] = useState(null);
+    const [precioProveedor, setPrecioProveedor] = useState('');
+
 
     useEffect(() => {
         // Cargar los proveedores desde la API
@@ -37,6 +39,12 @@ export default function AltaProducto() {
             Swal.fire('Precio inválido', 'Por favor, ingrese un precio válido.', 'warning');
             return false;
         }
+
+        if (isNaN(precioProveedor) || parseFloat(precioProveedor) <= 0) {
+            Swal.fire('Precio del proveedor inválido', 'Ingrese un precio válido.', 'warning');
+            return false;
+        }
+
 
         // Validación de stock (debe ser un número entero)
         if (!Number.isInteger(Number(stock)) || Number(stock) <= 0) {
@@ -72,6 +80,8 @@ export default function AltaProducto() {
         formData.append('nombre', nombre);
         formData.append('descripcion', descripcion);
         formData.append('precio', precio);
+        formData.append('precio_proveedor', precioProveedor);
+
         formData.append('stock', stock);
         formData.append('proveedor_id', selectedProveedor);
         if (imagen) {
@@ -97,6 +107,7 @@ export default function AltaProducto() {
                 setNombre('');
                 setDescripcion('');
                 setPrecio('');
+                setPrecioProveedor('');
                 setStock('');
                 setSelectedProveedor('');
                 setImagen(null);
@@ -174,6 +185,23 @@ export default function AltaProducto() {
                                 />
                             </div>
                         </div>
+
+                        <div className="mb-6">
+    <label className="block text-gray-700 font-bold mb-2">Precio del Proveedor (€):</label>
+    <div className="relative">
+        <FontAwesomeIcon icon={faEuroSign} className="absolute left-3 top-3 text-gray-500" />
+        <input
+            type="number"
+            step="0.01"
+            value={precioProveedor}
+            onChange={(e) => setPrecioProveedor(e.target.value)}
+            className="w-full pl-10 px-4 py-3 border rounded-lg"
+            placeholder="Ej. 15.99"
+            required
+        />
+    </div>
+</div>
+
                         <div className="mb-6">
                             <label className="block text-gray-700 font-bold mb-2">Stock:</label>
                             <div className="relative">

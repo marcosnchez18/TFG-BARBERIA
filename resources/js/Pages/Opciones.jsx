@@ -751,6 +751,16 @@ const [citasVioleta, setCitasVioleta] = useState([]);
                         </Link>
                     </div>
 
+                    <div className="herramienta-item bg-[#e8feff] p-4 rounded-lg text-center">
+                    <FontAwesomeIcon icon={faPlusCircle} className="text-[#6c757d] text-4xl mb-2" />
+
+                        <p className="text-lg font-semibold">Pedidos a proveedores</p>
+                        <br />
+                        <Link href={route('admin.pedido.proveedor')} className="mt-2 px-4 py-2 bg-[#A87B43] text-white rounded hover:bg-[#e0a800]">
+                            Pedir
+                        </Link>
+                    </div>
+
 
 
 
