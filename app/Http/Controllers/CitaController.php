@@ -401,7 +401,7 @@ public function citasDelDia(Request $request)
 
 public function getCitasBarberoActual()
     {
-        $barberoId = Auth::id(); 
+        $barberoId = Auth::id();
 
         if (!$barberoId) {
             return response()->json(['message' => 'Usuario no autenticado.'], 401);
@@ -428,5 +428,26 @@ public function getCitasBarberoActual()
 
         return response()->json($fechas);
     }
+
+    public function obtenerCaja(Request $request)
+{
+    $mes = $request->query('mes');
+    $año = $request->query('año');
+
+    $citas = DB::table('citas')
+        ->select(
+            DB::raw("SUM(CASE WHEN metodo_pago = 'efectivo' THEN precio_cita ELSE 0 END) as efectivo"),
+            DB::raw("SUM(CASE WHEN metodo_pago = 'tarjeta' THEN precio_cita ELSE 0 END) as tarjeta"),
+            DB::raw("SUM(CASE WHEN metodo_pago = 'adelantado' THEN precio_cita ELSE 0 END) as paypal"),
+            DB::raw("SUM(precio_cita) as total")
+        )
+        ->where('estado', 'completada')
+        ->whereYear('fecha_hora_cita', $año)
+        ->whereMonth('fecha_hora_cita', $mes)
+        ->first();
+
+    return response()->json($citas);
+}
+
 
 }

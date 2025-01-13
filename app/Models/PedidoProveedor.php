@@ -10,7 +10,7 @@ class PedidoProveedor extends Model
     use HasFactory;
 
     protected $fillable = [
-        'proveedor_id', 'producto_id', 'cantidad', 'estado', 'total'
+        'proveedor_id', 'producto_id', 'cantidad', 'estado', 'total', 'codigo_pedido'
     ];
 
     protected $table = 'pedidos_proveedores';

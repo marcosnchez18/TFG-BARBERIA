@@ -15,6 +15,7 @@ use App\Http\Controllers\FichaClienteController;
 use App\Http\Controllers\FichaController;
 use App\Http\Controllers\OfertaController;
 use App\Http\Controllers\PedidoController;
+use App\Http\Controllers\PedidoProveedorController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\RecompensaController;
@@ -386,6 +387,47 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
     Route::post('/api/admin/pedido/{id}/reembolso', [PedidoController::class, 'emitirReembolso'])
     ->name('admin.pedido.reembolso');
 
+    Route::get('/admin/pedido/proveedor', function () {
+        return Inertia::render('PedidosProveedores');
+    })->name('admin.pedido.proveedor');
+
+
+    Route::post('/api/admin/pedidos-proveedores', [PedidoController::class, 'realizarPedido']);
+
+    Route::get('/admin/gestionpedido/proveedor', function () {
+        return Inertia::render('PedidosInventario');
+    })->name('admin.gestionpedido.proveedor');
+
+    Route::get('/admin/pedidos-proveedores', [PedidoProveedorController::class, 'index'])
+        ->name('admin.pedidos-proveedores');
+
+    Route::patch('/admin/pedidos-proveedores/{codigo_pedido}/estado', [PedidoProveedorController::class, 'actualizarEstado'])
+        ->name('admin.pedidos-proveedores.actualizarEstado');
+
+    Route::post('/admin/pedidos-proveedores/{codigo_pedido}/añadir-stock', [PedidoProveedorController::class, 'añadirStock'])
+    ->name('admin.pedidos-proveedores.añadirStock');
+
+    Route::get('/caja', function () {
+        return Inertia::render('ControlCaja');
+    })->name('caja');
+
+    Route::get('/api/caja', [CitaController::class, 'obtenerCaja']);
+
+    Route::get('/api/beneficio-pedidos', [PedidoController::class, 'obtenerBeneficioPedidos']);
+
+    Route::get('/api/gastos-proveedores', [PedidoController::class, 'obtenerGastosProveedores']);
+
+    Route::get('/ganancias/personales', function () {
+        return Inertia::render('GananciasPersonales');
+    })->name('ganancias.personales');
+
+    Route::get('/api/ganancias-barbero', [AdminController::class, 'obtenerGananciasBarbero']);
+
+    Route::get('/api/productos-bajo-stock', [ProductoController::class, 'obtenerProductosBajoStock']);
+
+
+
+
 
 
 });
@@ -491,6 +533,36 @@ Route::middleware(['auth', 'verified', 'trabajador'])->group(function () {
         ->name('trabajador.pedido.reembolso');
 
     Route::get('/api/trabajador/ver-pedido/{id}', [PedidoController::class, 'show'])->name('pedido.trabajador.show');
+
+    Route::get('/ganancias/trabajador/personales', function () {
+        return Inertia::render('GananciasPersonalesTrabajador');
+    })->name('ganancias.trabajador.personales');
+
+    Route::get('/api/ganancias-trabajador', [AdminController::class, 'obtenerGananciasBarbero']);
+
+    Route::get('/api/barbero-logueado', [AdminController::class, 'obtenerBarberoLogueado']);
+
+    Route::get('/inventario/trabajador', function () {
+        return Inertia::render('PedidosInventarioTrabajador');
+    })->name('inventario.trabajador');
+
+
+
+    Route::get('/trabajador/pedidos-proveedores', [PedidoProveedorController::class, 'index'])
+        ->name('trabajador.pedidos-proveedores');
+
+    Route::patch('/trabajador/pedidos-proveedores/{codigo_pedido}/estado', [PedidoProveedorController::class, 'actualizarEstado'])
+        ->name('trabajador.pedidos-proveedores.actualizarEstado');
+
+    Route::post('/trabajador/pedidos-proveedores/{codigo_pedido}/añadir-stock', [PedidoProveedorController::class, 'añadirStock'])
+    ->name('trabajador.pedidos-proveedores.añadirStock');
+
+
+    Route::get('/api/trab/productos-bajo-stock', [ProductoController::class, 'obtenerProductosBajoStock']);
+
+
+
+
 });
 
 
@@ -621,7 +693,7 @@ Route::get('/api/public/barberos/{barberoId}/servicios', [RecompensaController::
 
 Route::post('/guardar-ruta-sesion', function (Illuminate\Http\Request $request) {
     session(['ruta_despues_login' => $request->ruta]);
-    return response()->json(['success' => true]);       // Variable de sesión
+    return response()->json(['success' => true]);       // Variable de sesión trabajar
 });
 
 

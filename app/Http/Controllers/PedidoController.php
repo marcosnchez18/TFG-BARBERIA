@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Mail\PedidoRealizadoMail;
 use App\Models\Pedido;
 use App\Models\PedidoProducto;
+use App\Models\PedidoProveedor;
 use App\Models\Producto;
 use App\Models\Recibo;
 use App\Models\User;
@@ -211,18 +212,18 @@ public function cancelar($id)
         return response()->json(['error' => 'Solo se pueden cancelar pedidos pendientes.'], 403);
     }
 
+    // Restaurar el stock de los productos del pedido
+    foreach ($pedido->productos as $producto) {
+        $producto->increment('stock', $producto->pivot->cantidad);
+    }
+
     // Actualizar estado del pedido
     $pedido->estado = 'cancelado';
     $pedido->save();
 
-    // Reembolsar el saldo al usuario
-    $usuario = $pedido->user; // Asegúrate de tener la relación `usuario` configurada
-    $usuario->saldo += $pedido->total;
-    $usuario->save();
-
-    return response()->json(['message' => 'Pedido cancelado correctamente.'], 200);
-
+    return response()->json(['message' => 'Pedido cancelado correctamente y stock restaurado.'], 200);
 }
+
 
 
 public function actualizarEstado(Request $request, $id)
@@ -235,12 +236,20 @@ public function actualizarEstado(Request $request, $id)
         return response()->json(['error' => 'Estado no válido.'], 400);
     }
 
-    // Actualizar solo el estado del pedido sin afectar el saldo
+    // Si el pedido pasa a "cancelado", restaurar el stock de los productos
+    if ($pedido->estado !== 'cancelado' && $request->estado === 'cancelado') {
+        foreach ($pedido->productos as $producto) {
+            $producto->increment('stock', $producto->pivot->cantidad);
+        }
+    }
+
+    // Actualizar solo el estado del pedido
     $pedido->estado = $request->estado;
     $pedido->save();
 
     return response()->json(['message' => 'Estado actualizado correctamente.'], 200);
 }
+
 
 public function emitirReembolso($id)
 {
@@ -272,6 +281,90 @@ public function emitirReembolso($id)
 
     return response()->json(['message' => 'Reembolso emitido correctamente.'], 200);
 }
+
+
+public function realizarPedido(Request $request)
+{
+    $request->validate([
+        'productos' => 'required|array',
+        'productos.*.producto_id' => 'exists:productos,id',
+        'productos.*.cantidad' => 'integer|min:1'
+    ]);
+
+    // Generar un código único para el pedido
+    do {
+        $codigoPedido = str_pad(mt_rand(0, 9999999999999999), 16, '0', STR_PAD_LEFT);
+    } while (PedidoProveedor::where('codigo_pedido', $codigoPedido)->exists());
+
+    foreach ($request->productos as $item) {
+        $producto = Producto::findOrFail($item['producto_id']);
+
+        // Verificar que el producto tiene precio de proveedor
+        if (!$producto->precio_proveedor) {
+            return response()->json(['error' => 'El producto ' . $producto->nombre . ' no tiene un precio de proveedor asignado.'], 400);
+        }
+
+        PedidoProveedor::create([
+            'codigo_pedido' => $codigoPedido, // Asignamos el mismo código a todos los productos del pedido
+            'proveedor_id' => $producto->proveedor_id,
+            'producto_id' => $producto->id,
+            'cantidad' => $item['cantidad'],
+            'total' => $producto->precio_proveedor * $item['cantidad']
+        ]);
+    }
+
+    return response()->json(['message' => 'Pedido realizado correctamente.', 'codigo_pedido' => $codigoPedido], 201);
+}
+
+
+
+
+public function obtenerGastosProveedores(Request $request)
+{
+    $mes = $request->query('mes');
+    $año = $request->query('año');
+
+    $gastos = DB::table('pedidos_proveedores')
+        ->whereYear('created_at', $año)
+        ->whereMonth('created_at', $mes)
+        ->where('estado', 'entregado') // Solo pedidos recibidos
+        ->selectRaw('SUM(total) as total_gastado, COUNT(DISTINCT codigo_pedido) as total_pedidos')
+        ->first();
+
+    return response()->json([
+        'total_gastado' => $gastos->total_gastado ?? 0,
+        'total_pedidos' => $gastos->total_pedidos ?? 0
+    ]);
+}
+
+
+public function obtenerBeneficioPedidos(Request $request)
+{
+    $mes = $request->query('mes');
+    $año = $request->query('año');
+
+    $beneficios = DB::table('pedido_productos')
+        ->join('productos', 'pedido_productos.producto_id', '=', 'productos.id')
+        ->join('pedidos', 'pedido_productos.pedido_id', '=', 'pedidos.id')
+        ->whereYear('pedidos.created_at', $año)
+        ->whereMonth('pedidos.created_at', $mes)
+        ->where('pedidos.estado', 'entregado') // Solo pedidos completados
+        ->selectRaw('
+            SUM(pedido_productos.cantidad * pedido_productos.precio_unitario) as ingresos_brutos,
+            SUM(pedido_productos.cantidad * productos.precio_proveedor) as costos
+        ')
+        ->first();
+
+    $ganancia_neta = $beneficios->ingresos_brutos - $beneficios->costos;
+
+    return response()->json([
+        'ingresos_brutos' => $beneficios->ingresos_brutos,
+        'costos' => $beneficios->costos,
+        'ganancia_neta' => $ganancia_neta
+    ]);
+}
+
+
 
 
 

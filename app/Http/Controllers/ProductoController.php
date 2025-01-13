@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\PedidoProducto;
+use App\Models\PedidoProveedor;
 use App\Models\Producto;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class ProductoController extends Controller
@@ -33,7 +36,8 @@ class ProductoController extends Controller
         $validated = $request->validate([
             'nombre' => 'required|string|max:255',
             'descripcion' => 'required|string',
-            'precio' => 'required|numeric',
+            'precio' => 'required|numeric|min:0',
+            'precio_proveedor' => 'required|numeric|min:0', // Nuevo campo
             'stock' => 'required|integer|min:1',
             'proveedor_id' => 'required|exists:proveedores,id',
             'imagen' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
@@ -44,6 +48,7 @@ class ProductoController extends Controller
         $producto->nombre = $validated['nombre'];
         $producto->descripcion = $validated['descripcion'];
         $producto->precio = $validated['precio'];
+        $producto->precio_proveedor = $validated['precio_proveedor']; // Nuevo campo
         $producto->stock = $validated['stock'];
         $producto->proveedor_id = $validated['proveedor_id'];
 
@@ -64,6 +69,7 @@ class ProductoController extends Controller
         return back()->with('error', 'Ocurrió un error en el servidor.');
     }
 }
+
 
 public function obtenerProductos()
 {
@@ -106,14 +112,53 @@ public function obtenerProductos()
 {
     $producto = Producto::findOrFail($id);
 
+    // Verificar si el producto está en un pedido de cliente con estado 'pendiente'
+    $pedidoClientePendiente = PedidoProducto::where('producto_id', $id)
+        ->whereHas('pedido', function ($query) {
+            $query->where('estado', 'pendiente');
+        })
+        ->exists();
 
+    // Verificar si el producto está en un pedido de proveedor con estado 'pendiente'
+    $pedidoProveedorPendiente = PedidoProveedor::where('producto_id', $id)
+        ->where('estado', 'pendiente')
+        ->exists();
+
+    if ($pedidoClientePendiente) {
+        return redirect()
+            ->route('admin.productos.editar')
+            ->with('message', 'No se puede eliminar el producto porque está en pedidos pendientes de clientes.');
+    }
+
+    if ($pedidoProveedorPendiente) {
+        return redirect()
+            ->route('admin.productos.editar')
+            ->with('message', 'No se puede eliminar el producto porque está en pedidos pendientes de proveedores.');
+    }
+
+    // Si el producto no está en pedidos pendientes, proceder con la eliminación
     $producto->delete();
-
 
     return redirect()
         ->route('admin.productos.editar')
         ->with('message', 'Producto eliminado con éxito.');
 }
+
+public function obtenerProductosBajoStock(): JsonResponse
+    {
+        // Define el umbral de bajo stock
+        $umbral = 5;
+
+        // Consulta los productos con stock menor al umbral
+        $productos = Producto::where('stock', '<', $umbral)
+            ->get(['id', 'nombre', 'stock', 'imagen']); // Asegúrate de que el campo 'imagen' existe en tu modelo
+
+        // Retorna los datos en formato JSON
+        return response()->json($productos);
+    }
+
+
+
 
 public function updatePhoto(Request $request, $id)
 {
@@ -136,18 +181,16 @@ public function updatePhoto(Request $request, $id)
 
 public function updateField(Request $request, $id)
 {
-
     $request->validate([
         'nombre' => 'nullable|string|max:255',
         'descripcion' => 'nullable|string|max:500',
         'precio' => 'nullable|numeric|min:0',
+        'precio_proveedor' => 'nullable|numeric|min:0',
         'stock' => 'nullable|integer|min:0',
         'proveedor_id' => 'nullable|exists:proveedores,id',
     ]);
 
-
     $producto = Producto::findOrFail($id);
-
 
     if ($request->has('nombre')) {
         $producto->nombre = $request->nombre;
@@ -161,6 +204,10 @@ public function updateField(Request $request, $id)
         $producto->precio = $request->precio;
     }
 
+    if ($request->has('precio_proveedor')) {
+        $producto->precio_proveedor = $request->precio_proveedor;
+    }
+
     if ($request->has('stock')) {
         $producto->stock = $request->stock;
     }
@@ -169,10 +216,9 @@ public function updateField(Request $request, $id)
         $producto->proveedor_id = $request->proveedor_id;
     }
 
-
     $producto->save();
 
-    
     return redirect()->back()->with('success', 'Producto actualizado con éxito.');
 }
+
 }

@@ -11,6 +11,8 @@ export default function EditarProductos({ productos }) {
     const [searchTerm, setSearchTerm] = useState('');
     const [editableId, setEditableId] = useState(null);
     const [editableField, setEditableField] = useState(null);
+    const [precioProveedor, setPrecioProveedor] = useState('');
+
     const [editableValue, setEditableValue] = useState('');
     const [editingPhotoId, setEditingPhotoId] = useState(null);
     const [selectedPhoto, setSelectedPhoto] = useState(null);
@@ -33,10 +35,24 @@ export default function EditarProductos({ productos }) {
                     onSuccess: () => {
                         Swal.fire('Eliminado', 'Producto eliminado con éxito.', 'success');
                     },
+                    onError: (errors) => {
+                        if (errors.error) {
+                            Swal.fire({
+                                title: 'No se puede eliminar',
+                                text: errors.error, // Mensaje específico del backend
+                                icon: 'error',
+                                confirmButtonColor: '#3085d6',
+                                confirmButtonText: 'Entendido'
+                            });
+                        } else {
+                            Swal.fire('Error', 'Ocurrió un problema al eliminar el producto.', 'error');
+                        }
+                    }
                 });
             }
         });
     };
+
 
 
 
@@ -54,6 +70,12 @@ export default function EditarProductos({ productos }) {
             Swal.fire('Error', 'Por favor ingresa un precio válido.', 'error');
             return false;
         }
+
+        if (editableField === 'precio_proveedor' && (isNaN(editableValue) || parseFloat(editableValue) <= 0)) {
+            Swal.fire('Error', 'Ingrese un precio de proveedor válido.', 'error');
+            return false;
+        }
+
 
         // Validación para stock (no puede ser decimal ni negativo)
         if (editableField === 'stock') {
@@ -181,6 +203,8 @@ export default function EditarProductos({ productos }) {
                                 <th className="border border-gray-300 px-4 py-2">Nombre</th>
                                 <th className="border border-gray-300 px-4 py-2">Descripción</th>
                                 <th className="border border-gray-300 px-4 py-2">Precio</th>
+                                <th className="border border-gray-300 px-4 py-2">Precio Proveedor</th>
+
                                 <th className="border border-gray-300 px-4 py-2">Proveedor</th>
                                 <th className="border border-gray-300 px-4 py-2">Stock</th>
                                 <th className="border border-gray-300 px-4 py-2 text-center">Acciones</th>
@@ -346,6 +370,50 @@ export default function EditarProductos({ productos }) {
                                             </div>
                                         )}
                                     </td>
+
+                                    <td className="border border-gray-300 px-4 py-2">
+    {editableId === producto.id && editableField === 'precio_proveedor' ? (
+        <div className="flex items-center">
+            <input
+                type="number"
+                value={editableValue}
+                onChange={(e) => setEditableValue(e.target.value)}
+                className="border rounded p-1"
+            />
+            <button
+                onClick={() => saveFieldChange(producto.id)}
+                className="ml-2 bg-green-500 text-white px-2 py-1 rounded"
+            >
+                ✔️
+            </button>
+            <button
+                onClick={() => {
+                    setEditableId(null);
+                    setEditableField(null);
+                    setEditableValue('');
+                }}
+                className="ml-2 bg-red-500 text-white px-2 py-1 rounded"
+            >
+                ✖️
+            </button>
+        </div>
+    ) : (
+        <div className="flex items-center">
+            {producto.precio_proveedor} €
+            <button
+                onClick={() => {
+                    setEditableId(producto.id);
+                    setEditableField('precio_proveedor');
+                    setEditableValue(producto.precio_proveedor);
+                }}
+                className="ml-2 text-blue-500"
+            >
+                ✏️
+            </button>
+        </div>
+    )}
+</td>
+
 
                                     <td className="border border-gray-300 px-4 py-2">
                                         {editableId === producto.id && editableField === 'proveedor_id' ? (

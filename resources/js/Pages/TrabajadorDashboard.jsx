@@ -29,6 +29,10 @@ export default function TrabajadorDashboard() {
     const [descansos, setDescansos] = useState([]);
     const [descansosIndividuales, setDescansosIndividuales] = useState([]);
 
+    const [productosBajoStock, setProductosBajoStock] = useState([]);
+    const [notificacionVisible, setNotificacionVisible] = useState(true);
+
+
 
 
 
@@ -125,6 +129,20 @@ export default function TrabajadorDashboard() {
             });
     }, []);
 
+    useEffect(() => {
+        const fetchProductosBajoStock = async () => {
+            try {
+                const response = await axios.get('/api/trab/productos-bajo-stock');
+                setProductosBajoStock(response.data);
+            } catch (error) {
+                console.error('Error al obtener productos con bajo stock:', error);
+            }
+        };
+
+        fetchProductosBajoStock();
+    }, []);
+
+
 
 
 
@@ -216,6 +234,57 @@ export default function TrabajadorDashboard() {
         );
     };
 
+    const renderNotificacionBajoStock = () => {
+        if (!notificacionVisible || productosBajoStock.length === 0) return null;
+
+        return (
+            <div className="fixed top-4 right-4 bg-white p-4 shadow-lg rounded-lg animate-slide-in z-50 max-w-xs">
+                <div className="flex justify-between items-center">
+                    <h3 className="font-bold text-red-600">⚠️ Productos con bajo stock</h3>
+                    <button
+                        onClick={() => setNotificacionVisible(false)}
+                        className="text-red-500 hover:text-red-700 text-xl font-bold"
+                        aria-label="Cerrar notificación"
+                    >
+                        ×
+                    </button>
+                </div>
+                <ul className="space-y-2 mt-2">
+                    {productosBajoStock.map((producto) => (
+                        <li
+                            key={producto.id}
+                            className="flex items-center animate-pulse hover:animate-none transition duration-300 ease-in-out"
+                        >
+                            <img
+                                src={producto.imagen ? `/storage/${producto.imagen}` : '/images/default-product.jpg'}
+                                alt={producto.nombre}
+                                onError={(e) => (e.target.src = '/images/default-product.jpg')}
+                                className="w-12 h-12 rounded-full object-cover mr-3 shadow-md hover:scale-105 transition-transform duration-300 ease-in-out"
+                            />
+                            <div>
+                                <p className="font-semibold text-gray-700 hover:text-gray-900">{producto.nombre}</p>
+                                <p className="text-sm text-gray-500">
+                                    Stock:
+                                    <span
+                                        className={`ml-1 font-bold ${
+                                            producto.stock < 5 ? 'text-red-500' : 'text-green-500'
+                                        }`}
+                                    >
+                                        {producto.stock}
+                                    </span>
+                                </p>
+                            </div>
+                        </li>
+                    ))}
+                </ul>
+                <p className="mt-2 text-sm text-gray-600">
+                    Por favor, realiza un pedido a tus proveedores.
+                </p>
+            </div>
+        );
+    };
+
+
     const Star = ({ filled = false, half = false }) => (
         <svg
             width="24"
@@ -238,6 +307,26 @@ export default function TrabajadorDashboard() {
         </svg>
     );
 
+    <style>
+{`
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateX(100%);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    .animate-slide-in {
+        animation: slideIn 0.5s ease-out;
+    }
+`}
+</style>
+
+
     return (
         <div className="admin-dashboard bg-gray-100 min-h-screen"
             style={{
@@ -246,6 +335,7 @@ export default function TrabajadorDashboard() {
                 backgroundAttachment: 'fixed',
             }}>
             <NavigationTrabajador admin={true} />
+            {renderNotificacionBajoStock()} {/* Renderiza la notificación de bajo stock */}
 
             <div className="container mx-auto flex flex-col lg:flex-row mt-12 p-8 bg-white rounded-lg shadow-lg w-full justify-between">
 
@@ -257,9 +347,12 @@ export default function TrabajadorDashboard() {
                             <p className="text-xl font-semibold text-[#A87B43]">Citas Hoy</p>
                             <span className="text-3xl font-bold">{citasHoy}</span>
                         </div>
-                        <div className="stat bg-[#EFE3F0] p-4 rounded-lg text-center">
-                            <p className="text-xl font-semibold text-[#A87B43]">Ganancias de {nombreMesActual}</p>
-                            <span className="text-3xl font-bold">€{gananciasMes}</span>
+                        <div className="herramienta-item bg-[#f4fcd0] p-4 rounded-lg text-center">
+                            <p className="text-lg font-semibold">Revisa tus Ganancias 💰</p>
+                            <br />
+                            <Link href={route('ganancias.trabajador.personales')} className="mt-2 px-4 py-2 bg-[#A87B43] text-white rounded hover:bg-[#875d34]">
+                                Revisar
+                            </Link>
                         </div>
                         <div className="stat bg-[#F3F1E4] p-4 rounded-lg text-center">
                             <p className="text-xl font-semibold text-[#A87B43]">Valoración media</p>
@@ -429,6 +522,14 @@ export default function TrabajadorDashboard() {
                             <br />
                             <Link href={route('trabajador.pedidos')} className="mt-2 px-4 py-2 bg-[#A87B43] text-white rounded hover:bg-[#875d34]">
                                 Gestionar 📦
+                            </Link>
+                        </div>
+
+                        <div className="herramienta-item bg-[#e7d0fc] p-4 rounded-lg text-center">
+                            <p className="text-lg font-semibold">Gestionar Inventario pedidos 🗠</p>
+                            <br />
+                            <Link href={route('inventario.trabajador')} className="mt-2 px-4 py-2 bg-[#A87B43] text-white rounded hover:bg-[#875d34]">
+                                Gestionar
                             </Link>
                         </div>
 
