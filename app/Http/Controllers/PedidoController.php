@@ -110,7 +110,7 @@ public function pedidosTrabVista()
             $pedido = Pedido::create([
                 'user_id' => auth()->id(),
                 'estado' => 'pendiente',
-                'total' => $total, // Ahora almacena el total real del pedido
+                'total' => $total, // Ahora almacena el total real del pdido
                 'metodo_entrega' => $request->metodo_entrega,
                 'direccion_entrega' => $request->metodo_entrega === 'envio'
                     ? $request->direccion
