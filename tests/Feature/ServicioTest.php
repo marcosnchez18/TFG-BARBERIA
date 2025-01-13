@@ -9,24 +9,16 @@ use Tests\TestCase;
 
 class ServicioTest extends TestCase
 {
-    use DatabaseTransactions; // No borra la base de datos, solo revierte cambios después del test
+    use DatabaseTransactions;
 
     /** @test */
     public function un_administrador_puede_crear_un_nuevo_servicio()
     {
         // Crear un usuario administrador
-        $admin = User::factory()->create([
-            'nombre' => 'Admin Test',
-            'rol' => 'admin',
-            'estado' => 'activo'
-        ]);
+        $admin = User::factory()->create(['rol' => 'admin', 'estado' => 'activo']);
 
         // Crear un barbero
-        $barbero = User::factory()->create([
-            'nombre' => 'Barbero Test',
-            'rol' => 'trabajador',
-            'estado' => 'activo'
-        ]);
+        $barbero = User::factory()->create(['rol' => 'trabajador', 'estado' => 'activo']);
 
         // Datos del servicio a crear
         $datosServicio = [
@@ -38,12 +30,10 @@ class ServicioTest extends TestCase
         ];
 
         // Enviar la solicitud POST como el administrador
-        $response = $this->actingAs($admin)
-            ->post(route('admin.servicios.store'), $datosServicio);
-
-        // Verificar que redirige correctamente y muestra mensaje de éxito
-        $response->assertRedirect(route('admin.servicios.create'));
-        $response->assertSessionHas('success', 'Servicio creado correctamente.');
+        $this->actingAs($admin)
+            ->post(route('admin.servicios.store'), $datosServicio)
+            ->assertRedirect(route('admin.servicios.create')) // Comprobamos que redirige correctamente
+            ->assertSessionHas('success', 'Servicio creado correctamente.');
 
         // Verificar que el servicio se haya guardado en la base de datos
         $this->assertDatabaseHas('servicios', [
@@ -62,17 +52,35 @@ class ServicioTest extends TestCase
     public function no_se_puede_crear_un_servicio_con_datos_invalidos()
     {
         // Crear un usuario administrador
-        $admin = User::factory()->create([
-            'nombre' => 'Admin Test',
-            'rol' => 'admin',
-            'estado' => 'activo'
-        ]);
+        $admin = User::factory()->create(['rol' => 'admin', 'estado' => 'activo']);
 
         // Enviar una solicitud POST con datos incompletos
-        $response = $this->actingAs($admin)
-            ->post(route('admin.servicios.store'), []);
+        $this->actingAs($admin)
+            ->post(route('admin.servicios.store'), [])
+            ->assertSessionHasErrors(['nombre', 'precio', 'duracion', 'barbero']);
+    }
 
-        // Verificar que los errores de validación aparecen en la sesión
-        $response->assertSessionHasErrors(['nombre', 'precio', 'duracion', 'barbero']);
+    /** @test */
+    public function un_cliente_no_puede_crear_un_servicio()
+    {
+        // Crear un usuario con rol de cliente
+        $cliente = User::factory()->create(['rol' => 'cliente', 'estado' => 'activo']);
+
+        // Crear un barbero
+        $barbero = User::factory()->create(['rol' => 'trabajador', 'estado' => 'activo']);
+
+        // Datos del servicio a crear
+        $datosServicio = [
+            'nombre' => 'Corte VIP',
+            'descripcion' => 'Un corte de pelo exclusivo con acabado premium.',
+            'precio' => 35.00,
+            'duracion' => 45,
+            'barbero' => $barbero->id,
+        ];
+
+        // Intentar crear un servicio como cliente (debe fallar con un código 403)
+        $this->actingAs($cliente)
+            ->post(route('admin.servicios.store'), $datosServicio)
+            ->assertStatus(403); // El usuario no autorizado debe recibir un error 403
     }
 }
