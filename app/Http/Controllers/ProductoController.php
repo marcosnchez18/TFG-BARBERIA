@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\PedidoProducto;
 use App\Models\PedidoProveedor;
 use App\Models\Producto;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class ProductoController extends Controller
@@ -142,6 +143,21 @@ public function obtenerProductos()
         ->route('admin.productos.editar')
         ->with('message', 'Producto eliminado con éxito.');
 }
+
+public function obtenerProductosBajoStock(): JsonResponse
+    {
+        // Define el umbral de bajo stock
+        $umbral = 5;
+
+        // Consulta los productos con stock menor al umbral
+        $productos = Producto::where('stock', '<', $umbral)
+            ->get(['id', 'nombre', 'stock', 'imagen']); // Asegúrate de que el campo 'imagen' existe en tu modelo
+
+        // Retorna los datos en formato JSON
+        return response()->json($productos);
+    }
+
+
 
 
 public function updatePhoto(Request $request, $id)

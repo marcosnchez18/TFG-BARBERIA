@@ -28,6 +28,23 @@ export default function AdminDashboard() {
     const [highlightedDates, setHighlightedDates] = useState([]);
     const [descansos, setDescansos] = useState([]);
     const [descansosIndividuales, setDescansosIndividuales] = useState([]);
+    const [productosBajoStock, setProductosBajoStock] = useState([]);
+    const [notificacionVisible, setNotificacionVisible] = useState(true);
+
+
+useEffect(() => {
+    const fetchProductosBajoStock = async () => {
+        try {
+            const response = await axios.get('/api/productos-bajo-stock');
+            setProductosBajoStock(response.data);
+        } catch (error) {
+            console.error('Error al obtener productos con bajo stock:', error);
+        }
+    };
+
+    fetchProductosBajoStock();
+}, []);
+
 
 
 
@@ -66,6 +83,58 @@ export default function AdminDashboard() {
             });
         }
     };
+
+    const renderNotificacionBajoStock = () => {
+        if (!notificacionVisible || productosBajoStock.length === 0) return null;
+
+        return (
+            <div className="fixed top-4 right-4 bg-white p-4 shadow-lg rounded-lg animate-slide-in z-50 max-w-xs">
+                <div className="flex justify-between items-center">
+                    <h3 className="font-bold text-red-600">⚠️ Productos con bajo stock</h3>
+                    <button
+                        onClick={() => setNotificacionVisible(false)}
+                        className="text-red-500 hover:text-red-700 text-xl font-bold"
+                        aria-label="Cerrar notificación"
+                    >
+                        ×
+                    </button>
+                </div>
+                <ul className="space-y-2 mt-2">
+                    {productosBajoStock.map((producto) => (
+                        <li
+                            key={producto.id}
+                            className="flex items-center animate-pulse hover:animate-none transition duration-300 ease-in-out"
+                        >
+                            <img
+                                src={producto.imagen ? `/storage/${producto.imagen}` : '/images/default-product.jpg'}
+                                alt={producto.nombre}
+                                onError={(e) => (e.target.src = '/images/default-product.jpg')}
+                                className="w-12 h-12 rounded-full object-cover mr-3 shadow-md hover:scale-105 transition-transform duration-300 ease-in-out"
+                            />
+                            <div>
+                                <p className="font-semibold text-gray-700 hover:text-gray-900">{producto.nombre}</p>
+                                <p className="text-sm text-gray-500">
+                                    Stock:
+                                    <span
+                                        className={`ml-1 font-bold ${
+                                            producto.stock < 5 ? 'text-red-500' : 'text-green-500'
+                                        }`}
+                                    >
+                                        {producto.stock}
+                                    </span>
+                                </p>
+                            </div>
+                        </li>
+                    ))}
+                </ul>
+                <p className="mt-2 text-sm text-gray-600">
+                    Por favor, realiza un pedido a tus proveedores.
+                </p>
+            </div>
+        );
+    };
+
+
 
 
     const tileClassName = ({ date, view }) => {
@@ -237,6 +306,25 @@ export default function AdminDashboard() {
             />
         </svg>
     );
+    <style>
+    {`
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .animate-slide-in {
+            animation: slideIn 0.5s ease-out;
+        }
+    `}
+</style>
+
 
     return (
         <div className="admin-dashboard bg-gray-100 min-h-screen"
@@ -246,6 +334,7 @@ export default function AdminDashboard() {
                 backgroundAttachment: 'fixed',
             }}>
             <NavigationAdmin admin={true} />
+            {renderNotificacionBajoStock()} {/* Notificación de bajo stock */}
 
             <div className="container mx-auto flex flex-col lg:flex-row mt-12 p-8 bg-white rounded-lg shadow-lg w-full justify-between">
 

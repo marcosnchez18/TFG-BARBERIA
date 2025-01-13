@@ -423,6 +423,8 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
 
     Route::get('/api/ganancias-barbero', [AdminController::class, 'obtenerGananciasBarbero']);
 
+    Route::get('/api/productos-bajo-stock', [ProductoController::class, 'obtenerProductosBajoStock']);
+
 
 
 
@@ -554,6 +556,9 @@ Route::middleware(['auth', 'verified', 'trabajador'])->group(function () {
 
     Route::post('/trabajador/pedidos-proveedores/{codigo_pedido}/añadir-stock', [PedidoProveedorController::class, 'añadirStock'])
     ->name('trabajador.pedidos-proveedores.añadirStock');
+
+
+    Route::get('/api/trab/productos-bajo-stock', [ProductoController::class, 'obtenerProductosBajoStock']);
 
 
 
