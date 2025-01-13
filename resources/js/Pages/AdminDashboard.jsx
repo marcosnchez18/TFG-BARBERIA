@@ -262,9 +262,17 @@ export default function AdminDashboard() {
                             <span className="text-3xl font-bold">{nuevosUsuariosHoy}</span>
                         </div>
                         <div className="herramienta-item bg-[#d0fce1] p-4 rounded-lg text-center">
-                            <p className="text-lg font-semibold">Revisa tus Ganancias 💰</p>
+                            <p className="text-lg font-semibold">Beneficios Barbería 💵</p>
                             <br />
                             <Link href={route('caja')} className="mt-2 px-4 py-2 bg-[#A87B43] text-white rounded hover:bg-[#875d34]">
+                                Revisar
+                            </Link>
+                        </div>
+
+                        <div className="herramienta-item bg-[#f4fcd0] p-4 rounded-lg text-center">
+                            <p className="text-lg font-semibold">Revisa tus Ganancias 💰</p>
+                            <br />
+                            <Link href={route('ganancias.personales')} className="mt-2 px-4 py-2 bg-[#A87B43] text-white rounded hover:bg-[#875d34]">
                                 Revisar
                             </Link>
                         </div>

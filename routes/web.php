@@ -417,6 +417,13 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
 
     Route::get('/api/gastos-proveedores', [PedidoController::class, 'obtenerGastosProveedores']);
 
+    Route::get('/ganancias/personales', function () {
+        return Inertia::render('GananciasPersonales');
+    })->name('ganancias.personales');
+
+    Route::get('/api/ganancias-barbero', [AdminController::class, 'obtenerGananciasBarbero']);
+
+
 
 
 

@@ -235,15 +235,15 @@ export default function ControlCaja() {
                         </div>
                     </div>
 
-                                <br /><br />
+                    <br /><br />
                     <div className="flex justify-center mb-6">
-    <button
-        onClick={volver}
-        className="bg-gray-700 hover:bg-gray-800 text-white font-bold py-2 px-4 rounded-lg flex items-center shadow-lg transition duration-300 ease-in-out"
-    >
-        ⬅️ Volver
-    </button>
-</div>
+                        <button
+                            onClick={volver}
+                            className="bg-gray-700 hover:bg-gray-800 text-white font-bold py-2 px-4 rounded-lg flex items-center shadow-lg transition duration-300 ease-in-out"
+                        >
+                            ⬅️ Volver
+                        </button>
+                    </div>
 
                 </div>
 
