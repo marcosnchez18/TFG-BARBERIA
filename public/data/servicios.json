@@ -68,5 +68,12 @@
         "precio": "2.00",
         "descripcion": "Pon tu bigote a punto",
         "duracion": 5
+    },
+    {
+        "id": 15,
+        "nombre": "Corte Cl\u00e1sico",
+        "precio": "25.00",
+        "descripcion": "Un corte de pelo tradicional con un acabado moderno.",
+        "duracion": 30
     }
 ]
