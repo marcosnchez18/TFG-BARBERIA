@@ -64,6 +64,20 @@ class AdminController extends Controller
         ]);
     }
 
+    public function obtenerBarberoLogueado()
+{
+    $usuario = Auth::user();
+
+    if ($usuario && $usuario->rol === 'trabajador') {
+        return response()->json([
+            'id' => $usuario->id,
+            'nombre' => $usuario->name
+        ]);
+    }
+
+    return response()->json(['error' => 'No autorizado'], 403);
+}
+
     public function dashboardTrabajador()
     {
         $barberoId = Auth::id();

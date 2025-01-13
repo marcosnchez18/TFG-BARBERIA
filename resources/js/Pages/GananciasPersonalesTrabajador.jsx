@@ -8,11 +8,13 @@ import { Inertia } from '@inertiajs/inertia';
 
 import { FaUser, FaCalendarAlt, FaMoneyBillWave, FaCreditCard, FaCashRegister } from "react-icons/fa";
 
-export default function ControlGanancias() {
+export default function GananciasPersonalesTrabajador() {
     const [mes, setMes] = useState(new Date().getMonth() + 1);
     const [año, setAño] = useState(new Date().getFullYear());
     const [barberoId, setBarberoId] = useState('');
     const [barberos, setBarberos] = useState([]);
+    const [barberoLogueado, setBarberoLogueado] = useState(null);
+
 
     const [datos, setDatos] = useState({
         citas_realizadas: 0,
@@ -46,6 +48,20 @@ export default function ControlGanancias() {
         };
         obtenerBarberos();
     }, []);
+
+    useEffect(() => {
+        const obtenerBarberoLogueado = async () => {
+            try {
+                const response = await axios.get('/api/barbero-logueado');
+                setBarberoLogueado(response.data.id);
+                setBarberoId(response.data.id); // Seleccionarlo por defecto
+            } catch (error) {
+                Swal.fire('Error', 'No se pudo obtener el barbero logueado', 'error');
+            }
+        };
+        obtenerBarberoLogueado();
+    }, []);
+
 
     // Obtener los datos de ganancias del barbero seleccionado
     const obtenerDatos = async () => {
@@ -85,17 +101,22 @@ export default function ControlGanancias() {
                         <div className="bg-gray-800 p-4 rounded-lg shadow-md">
                             <label className="text-lg font-semibold">✂️ Barbero:</label>
                             <select
-                                value={barberoId}
-                                onChange={(e) => setBarberoId(e.target.value)}
-                                className="ml-2 p-2 rounded bg-gray-700 text-white focus:outline-none"
-                            >
-                                <option value="">Seleccionar</option>
-                                {barberos.map(barbero => (
-                                    <option key={barbero.id} value={barbero.id}>
-                                        {barbero.nombre}
-                                    </option>
-                                ))}
-                            </select>
+    value={barberoId}
+    onChange={(e) => setBarberoId(e.target.value)}
+    className="ml-2 p-2 rounded bg-gray-700 text-white focus:outline-none"
+>
+    {barberos.map(barbero => (
+        <option
+            key={barbero.id}
+            value={barbero.id}
+            disabled={barbero.id !== barberoLogueado}
+            className={barbero.id !== barberoLogueado ? "text-red-500" : ""}
+        >
+            {barbero.nombre}
+        </option>
+    ))}
+</select>
+
                         </div>
 
                         <div className="bg-gray-800 p-4 rounded-lg shadow-md">

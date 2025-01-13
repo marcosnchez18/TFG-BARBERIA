@@ -537,6 +537,9 @@ Route::middleware(['auth', 'verified', 'trabajador'])->group(function () {
     })->name('ganancias.trabajador.personales');
 
     Route::get('/api/ganancias-trabajador', [AdminController::class, 'obtenerGananciasBarbero']);
+
+    Route::get('/api/barbero-logueado', [AdminController::class, 'obtenerBarberoLogueado']);
+
 });
 
 
