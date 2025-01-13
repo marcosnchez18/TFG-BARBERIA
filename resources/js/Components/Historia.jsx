@@ -1,5 +1,5 @@
 import React from 'react';
-import '../../css/Barber.css'; // Asegúrate de importar el archivo CSS
+import '../../css/Barber.css'; 
 
 export default function NuestraHistoria() {
     return (
