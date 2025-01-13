@@ -531,6 +531,12 @@ Route::middleware(['auth', 'verified', 'trabajador'])->group(function () {
         ->name('trabajador.pedido.reembolso');
 
     Route::get('/api/trabajador/ver-pedido/{id}', [PedidoController::class, 'show'])->name('pedido.trabajador.show');
+
+    Route::get('/ganancias/trabajador/personales', function () {
+        return Inertia::render('GananciasPersonalesTrabajador');
+    })->name('ganancias.trabajador.personales');
+
+    Route::get('/api/ganancias-trabajador', [AdminController::class, 'obtenerGananciasBarbero']);
 });
 
 

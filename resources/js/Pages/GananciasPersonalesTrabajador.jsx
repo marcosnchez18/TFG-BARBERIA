@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
-import NavigationAdmin from '../Components/NavigationAdmin';
+import NavigationTrabajador from '../Components/NavigationTrabajador';
 import SobreNosotros from '@/Components/Sobrenosotros';
 import Footer from '../Components/Footer';
 import axios from 'axios';
@@ -30,7 +30,7 @@ export default function ControlGanancias() {
     ];
 
     const volver = () => {
-        Inertia.visit('/mi-gestion-admin');
+        Inertia.visit('/mi-cuenta-trabajador');
     };
 
 
@@ -50,7 +50,7 @@ export default function ControlGanancias() {
     // Obtener los datos de ganancias del barbero seleccionado
     const obtenerDatos = async () => {
         try {
-            const response = await axios.get('/api/ganancias-barbero', {
+            const response = await axios.get('/api/ganancias-trabajador', {
                 params: { barbero_id: barberoId, mes, año }
             });
             setDatos(response.data);
@@ -75,7 +75,7 @@ export default function ControlGanancias() {
                 color: 'white',
             }}
         >
-            <NavigationAdmin />
+            <NavigationTrabajador />
             <div className="container mx-auto py-16 px-6">
                 <div className="bg-gray-900 bg-opacity-90 p-8 rounded-xl shadow-2xl">
                     <h2 className="text-4xl font-bold text-center text-white mb-6">💈 Ganancias de Barberos</h2>
