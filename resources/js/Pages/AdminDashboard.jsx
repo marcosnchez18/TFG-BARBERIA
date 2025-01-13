@@ -261,10 +261,14 @@ export default function AdminDashboard() {
                             <p className="text-xl font-semibold text-[#4A7A7C]">Nuevos Usuarios</p>
                             <span className="text-3xl font-bold">{nuevosUsuariosHoy}</span>
                         </div>
-                        <div className="stat bg-[#EFE3F0] p-4 rounded-lg text-center">
-                            <p className="text-xl font-semibold text-[#A87B43]">Ganancias de {nombreMesActual}</p>
-                            <span className="text-3xl font-bold">€{gananciasMes}</span>
+                        <div className="herramienta-item bg-[#d0fce1] p-4 rounded-lg text-center">
+                            <p className="text-lg font-semibold">Revisa tus Ganancias 💰</p>
+                            <br />
+                            <Link href={route('caja')} className="mt-2 px-4 py-2 bg-[#A87B43] text-white rounded hover:bg-[#875d34]">
+                                Revisar
+                            </Link>
                         </div>
+
                         <div className="stat bg-[#F3F1E4] p-4 rounded-lg text-center">
                             <p className="text-xl font-semibold text-[#A87B43]">Valoración media</p>
                             <div className="flex justify-center mt-2">

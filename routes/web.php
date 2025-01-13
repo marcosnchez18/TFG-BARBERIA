@@ -407,6 +407,19 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
     Route::post('/admin/pedidos-proveedores/{codigo_pedido}/añadir-stock', [PedidoProveedorController::class, 'añadirStock'])
     ->name('admin.pedidos-proveedores.añadirStock');
 
+    Route::get('/caja', function () {
+        return Inertia::render('ControlCaja');
+    })->name('caja');
+
+    Route::get('/api/caja', [CitaController::class, 'obtenerCaja']);
+
+    Route::get('/api/beneficio-pedidos', [PedidoController::class, 'obtenerBeneficioPedidos']);
+
+    Route::get('/api/gastos-proveedores', [PedidoController::class, 'obtenerGastosProveedores']);
+
+
+
+
 
 });
 

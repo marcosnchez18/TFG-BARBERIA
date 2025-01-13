@@ -319,6 +319,55 @@ public function realizarPedido(Request $request)
 
 
 
+public function obtenerGastosProveedores(Request $request)
+{
+    $mes = $request->query('mes');
+    $año = $request->query('año');
+
+    $gastos = DB::table('pedidos_proveedores')
+        ->whereYear('created_at', $año)
+        ->whereMonth('created_at', $mes)
+        ->where('estado', 'entregado') // Solo pedidos recibidos
+        ->selectRaw('SUM(total) as total_gastado, COUNT(DISTINCT codigo_pedido) as total_pedidos')
+        ->first();
+
+    return response()->json([
+        'total_gastado' => $gastos->total_gastado ?? 0,
+        'total_pedidos' => $gastos->total_pedidos ?? 0
+    ]);
+}
+
+
+public function obtenerBeneficioPedidos(Request $request)
+{
+    $mes = $request->query('mes');
+    $año = $request->query('año');
+
+    $beneficios = DB::table('pedido_productos')
+        ->join('productos', 'pedido_productos.producto_id', '=', 'productos.id')
+        ->join('pedidos', 'pedido_productos.pedido_id', '=', 'pedidos.id')
+        ->whereYear('pedidos.created_at', $año)
+        ->whereMonth('pedidos.created_at', $mes)
+        ->where('pedidos.estado', 'entregado') // Solo pedidos completados
+        ->selectRaw('
+            SUM(pedido_productos.cantidad * pedido_productos.precio_unitario) as ingresos_brutos,
+            SUM(pedido_productos.cantidad * productos.precio_proveedor) as costos
+        ')
+        ->first();
+
+    $ganancia_neta = $beneficios->ingresos_brutos - $beneficios->costos;
+
+    return response()->json([
+        'ingresos_brutos' => $beneficios->ingresos_brutos,
+        'costos' => $beneficios->costos,
+        'ganancia_neta' => $ganancia_neta
+    ]);
+}
+
+
+
+
+
 
 
 
