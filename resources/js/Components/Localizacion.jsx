@@ -1,5 +1,5 @@
 import React from 'react';
-import '../../css/Barber.css'; // Asegúrate de que Barber.css esté importado si tiene estilos adicionales
+import '../../css/Barber.css'; 
 
 export default function Localizacion() {
     return (

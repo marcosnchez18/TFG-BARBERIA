@@ -1,5 +1,5 @@
 import React from 'react';
-import '../../css/Barber.css'; // Asegúrate de importar tu archivo CSS
+import '../../css/Barber.css'; 
 
 export default function TrianguloInvertido() {
     return (

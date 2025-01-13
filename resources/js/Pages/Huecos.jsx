@@ -66,7 +66,7 @@ export default function Huecos() {
 
     useEffect(() => {
         // Llamada a la API para obtener los días de descanso
-        axios.get('/api/public/descansos')  // Asegúrate de que la URL sea la correcta
+        axios.get('/api/public/descansos')  
             .then(response => {
                 setDescansos(response.data);
             })
@@ -297,7 +297,7 @@ export default function Huecos() {
                         <h3 className="text-2xl font-semibold text-center">¿Con quién quieres reservar la cita?</h3>
                         <div className="flex justify-around mt-6">
                         {barberos.map(barbero => {
-    
+
     const imagenFinal = barbero.imagen ? `/storage/${barbero.imagen}` : '/images/default-avatar.png';
 
     return (

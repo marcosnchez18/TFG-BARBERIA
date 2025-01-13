@@ -250,7 +250,7 @@ export default function MisCitasCliente() {
             },
         })
             .then((response) => {
-                // Asegúrate de que la respuesta sea un array de horarios
+               
                 if (Array.isArray(response.data)) {
                     setHorariosDisponibles(response.data);
                 } else {

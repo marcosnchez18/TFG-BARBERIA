@@ -21,15 +21,22 @@ class ProveedorController extends Controller
             'telefono' => 'required|string|max:20',
             'email' => 'required|email|unique:proveedores,email',
             'direccion' => 'required|string',
-            'cif' => 'nullable|string|max:9',
-            'nif' => 'nullable|string|max:9',
+            'cif' => ['nullable', 'string', 'max:9', function ($attribute, $value, $fail) {
+                if ($value && !$this->validateCIF($value)) {
+                    $fail('El CIF introducido no es válido.');
+                }
+            }],
+            'nif' => ['nullable', 'string', 'max:9', function ($attribute, $value, $fail) {
+                if ($value && !$this->validateNIF($value)) {
+                    $fail('El NIF introducido no es válido.');
+                }
+            }],
         ]);
 
-        $validator->after(function ($validator) use ($request) {
-            if (!$request->cif && !$request->nif) {
-                $validator->errors()->add('cif_nif', 'Debe proporcionar al menos un CIF o un NIF.');
-            }
-        });
+        // Asegurar que al menos uno de los dos (CIF o NIF) sea obligatorio
+        if (!$request->cif && !$request->nif) {
+            $validator->errors()->add('cif_nif', 'Debe proporcionar al menos un CIF o un NIF válido.');
+        }
 
         if ($validator->fails()) {
             return response()->json([
@@ -56,6 +63,56 @@ class ProveedorController extends Controller
         return response()->json(['message' => 'Ocurrió un error en el servidor.'], 500);
     }
 }
+
+// Validación de NIF (DNI español con letra correcta)
+private function validateNIF($nif)
+{
+    if (!preg_match('/^\d{8}[A-Z]$/', $nif)) {
+        return false;
+    }
+
+    $letras = 'TRWAGMYFPDXBNJZSQVHLCKE';
+    $numero = substr($nif, 0, 8);
+    $letraCalculada = $letras[$numero % 23];
+
+    return $letraCalculada === substr($nif, -1);
+}
+
+// Validación de CIF (Identificación fiscal de empresas en España)
+private function validateCIF($cif)
+{
+    if (!preg_match('/^[ABCDEFGHJKLMNPQRSUVW]\d{7}[A-J0-9]$/', $cif)) {
+        return false;
+    }
+
+    $letras = 'JABCDEFGHI';
+    $letra = $cif[0];
+    $numeros = substr($cif, 1, 7);
+    $control = substr($cif, -1);
+
+    $sumaPar = 0;
+    $sumaImpar = 0;
+
+    for ($i = 0; $i < 7; $i++) {
+        $digito = (int)$numeros[$i];
+        if ($i % 2 === 0) { // Posiciones impares (pares en índice)
+            $doble = $digito * 2;
+            $sumaImpar += floor($doble / 10) + ($doble % 10);
+        } else {
+            $sumaPar += $digito;
+        }
+    }
+
+    $sumaTotal = $sumaPar + $sumaImpar;
+    $digitoControl = (10 - ($sumaTotal % 10)) % 10;
+
+    if (ctype_alpha($control)) {
+        return $letras[$digitoControl] === $control;
+    } else {
+        return (string)$digitoControl === $control;
+    }
+}
+
 
 
 
