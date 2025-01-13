@@ -192,7 +192,7 @@ public function pedidosTrabVista()
             return [
                 'id' => $producto->id,
                 'nombre' => $producto->nombre,
-                'imagen' => $producto->imagen, // Asegúrate de que este campo existe
+                'imagen' => $producto->imagen, 
                 'pivot' => [
                     'cantidad' => $producto->pivot->cantidad,
                     'precio_unitario' => $producto->pivot->precio_unitario,

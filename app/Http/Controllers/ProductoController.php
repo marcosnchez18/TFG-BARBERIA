@@ -151,7 +151,7 @@ public function obtenerProductosBajoStock(): JsonResponse
 
         // Consulta los productos con stock menor al umbral
         $productos = Producto::where('stock', '<', $umbral)
-            ->get(['id', 'nombre', 'stock', 'imagen']); // Asegúrate de que el campo 'imagen' existe en tu modelo
+            ->get(['id', 'nombre', 'stock', 'imagen']); 
 
         // Retorna los datos en formato JSON
         return response()->json($productos);
