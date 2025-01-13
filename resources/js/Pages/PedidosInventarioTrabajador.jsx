@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import NavigationAdmin from '../Components/NavigationAdmin';
+import NavigationTrabajador from '../Components/NavigationTrabajador';
 import Footer from '../Components/Footer';
 import Swal from 'sweetalert2';
 import dayjs from 'dayjs';
 import SobreNosotros from '@/Components/Sobrenosotros';
 
-export default function PedidosInventario() {
+export default function PedidosInventarioTrabajador() {
     const [pedidos, setPedidos] = useState([]);
     const [paginaActual, setPaginaActual] = useState(1);
     const pedidosPorPagina = 4;
@@ -14,7 +14,7 @@ export default function PedidosInventario() {
     const [filtroFecha, setFiltroFecha] = useState('');
 
     const añadirStock = (codigo_pedido) => {
-        axios.post(`/admin/pedidos-proveedores/${codigo_pedido}/añadir-stock`)
+        axios.post(`/trabajador/pedidos-proveedores/${codigo_pedido}/añadir-stock`)
             .then(response => {
                 Swal.fire('¡Stock actualizado!', response.data.message, 'success');
 
@@ -36,7 +36,7 @@ export default function PedidosInventario() {
 
 
     useEffect(() => {
-        axios.get('/admin/pedidos-proveedores')
+        axios.get('/trabajador/pedidos-proveedores')
             .then(response => {
                 if (Array.isArray(response.data)) {
                     agruparPedidos(response.data);
@@ -109,7 +109,7 @@ export default function PedidosInventario() {
 
     // Actualizar estado del pedido
     const actualizarEstadoPedido = (codigo_pedido, nuevoEstado) => {
-        axios.patch(`/admin/pedidos-proveedores/${codigo_pedido}/estado`, { estado: nuevoEstado })
+        axios.patch(`/trabajador/pedidos-proveedores/${codigo_pedido}/estado`, { estado: nuevoEstado })
             .then(() => {
                 Swal.fire('¡Éxito!', 'El estado del pedido ha sido actualizado.', 'success');
                 setPedidos(prevPedidos =>
@@ -132,7 +132,7 @@ export default function PedidosInventario() {
                 backgroundAttachment: 'fixed',
             }}
         >
-            <NavigationAdmin />
+            <NavigationTrabajador />
 
             <div className="container mx-auto p-8">
                 <div className="bg-white bg-opacity-80 p-8 rounded-lg shadow-lg w-full max-w-5xl mx-auto mt-12 relative">

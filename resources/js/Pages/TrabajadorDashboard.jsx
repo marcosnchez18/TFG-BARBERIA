@@ -435,6 +435,14 @@ export default function TrabajadorDashboard() {
                             </Link>
                         </div>
 
+                        <div className="herramienta-item bg-[#e7d0fc] p-4 rounded-lg text-center">
+                            <p className="text-lg font-semibold">Gestionar Inventario pedidos 🗠</p>
+                            <br />
+                            <Link href={route('inventario.trabajador')} className="mt-2 px-4 py-2 bg-[#A87B43] text-white rounded hover:bg-[#875d34]">
+                                Gestionar
+                            </Link>
+                        </div>
+
 
 
 

@@ -34,7 +34,7 @@ public function añadirStock($codigo_pedido)
 {
     // Obtener todos los pedidos con el mismo código
     $pedidos = PedidoProveedor::where('codigo_pedido', $codigo_pedido)
-        ->where('stock_añadido', false) // Solo procesar los que aún no han añadido stock
+        ->where('stock_añadido', false) // Solo los que aún no han añadido stock
         ->get();
 
     if ($pedidos->isEmpty()) {

@@ -540,6 +540,24 @@ Route::middleware(['auth', 'verified', 'trabajador'])->group(function () {
 
     Route::get('/api/barbero-logueado', [AdminController::class, 'obtenerBarberoLogueado']);
 
+    Route::get('/inventario/trabajador', function () {
+        return Inertia::render('PedidosInventarioTrabajador');
+    })->name('inventario.trabajador');
+
+
+
+    Route::get('/trabajador/pedidos-proveedores', [PedidoProveedorController::class, 'index'])
+        ->name('trabajador.pedidos-proveedores');
+
+    Route::patch('/trabajador/pedidos-proveedores/{codigo_pedido}/estado', [PedidoProveedorController::class, 'actualizarEstado'])
+        ->name('trabajador.pedidos-proveedores.actualizarEstado');
+
+    Route::post('/trabajador/pedidos-proveedores/{codigo_pedido}/añadir-stock', [PedidoProveedorController::class, 'añadirStock'])
+    ->name('trabajador.pedidos-proveedores.añadirStock');
+
+
+
+
 });
 
 
