@@ -95,7 +95,7 @@ public function pedidosTrabVista()
         DB::beginTransaction(); // Iniciar transacción para evitar datos inconsistentes
 
         try {
-            // Generar un código único de 16 dígitos para el pedido
+            // Generar un código único de 16 dígitos para el pedido--
             do {
                 $codigoPedido = str_pad(mt_rand(0, 9999999999999999), 16, '0', STR_PAD_LEFT);
             } while (Pedido::where('codigo_pedido', $codigoPedido)->exists());
@@ -110,7 +110,7 @@ public function pedidosTrabVista()
             $pedido = Pedido::create([
                 'user_id' => auth()->id(),
                 'estado' => 'pendiente',
-                'total' => $total, // Ahora almacena el total real del pedido
+                'total' => $total, // Ahora almacena el total real del pdido
                 'metodo_entrega' => $request->metodo_entrega,
                 'direccion_entrega' => $request->metodo_entrega === 'envio'
                     ? $request->direccion
@@ -192,7 +192,7 @@ public function pedidosTrabVista()
             return [
                 'id' => $producto->id,
                 'nombre' => $producto->nombre,
-                'imagen' => $producto->imagen, 
+                'imagen' => $producto->imagen,
                 'pivot' => [
                     'cantidad' => $producto->pivot->cantidad,
                     'precio_unitario' => $producto->pivot->precio_unitario,
