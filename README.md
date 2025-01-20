@@ -99,7 +99,7 @@ Barber's 18 es una web para llevar a cabo la gestión de una barbería. Gestiona
 Para instalar el proyecto:
 
 
-### para instalar php : 
+### Para instalar php : 
 
 sudo apt install -y software-properties-common apt-transport-https ca-certificates lsb-release
 
@@ -115,7 +115,7 @@ php -v
 
 
 
-### para instalar composer : 
+### Para instalar composer : 
 
 php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
 
@@ -127,7 +127,7 @@ composer -V
 
 
 
-### para instalar npm : 
+### Para instalar npm : 
 
 sudo apt install curl -y
 
@@ -143,7 +143,7 @@ npm -v
 
 
 
-### para instalar git : 
+### Para instalar git : 
 
 sudo apt update
 
@@ -153,7 +153,7 @@ git clone https://github.com/marcosnchez18/tfg-barberia.git
 
 
 
-### para instalar postgresql : 
+### Para instalar postgresql : 
 
 sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
 
