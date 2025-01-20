@@ -331,44 +331,39 @@ class AdminController extends Controller
 
 
 
-    public function store(Request $request)
-    {
-        // Validar los datos del formulario
-        $request->validate([
-            'nombre' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|confirmed|min:6', // La contraseña debe confirmarse
-            'imagen' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Validar que la imagen sea válida
-        ]);
+public function store(Request $request)
+{
+    // Validar los datos del formulario
+    $request->validate([
+        'nombre' => 'required|string|max:255',
+        'email' => 'required|string|email|max:255|unique:users',
+        'password' => 'required|string|confirmed|min:6',
+        'imagen' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+    ]);
 
-        // Manejar la imagen si existe
-        $imagenPath = null;
-        if ($request->hasFile('imagen')) {
-            $imagenPath = $request->file('imagen')->store('images', 'public');
-        }
-
-        // Crear un nuevo usuario con el rol de "trabajador"
-        $user = User::create([
-            'nombre' => $request->nombre,
-            'email' => $request->email,
-            'password' => Hash::make($request->password), // Encriptar la contraseña
-            'rol' => 'trabajador', // Asignar el rol fijo de trabajador
-            'imagen' => $imagenPath, // Guardar la ruta de la imagen si se proporcionó
-        ]);
-
-        // Enviar correo de bienvenida y verificación
-        Mail::to($user->email)->send(new WelcomeMail($user));
-
-        // Activar el evento de registro para generar el enlace de verificación
-        event(new Registered($user));
-
-
-
-        // Redirigir al usuario a la página para verificar su correo electrónico
-        return redirect()->route('verification.notice');
-        return response()->json(['message' => 'Barbero creado exitosamente'], 201);
+    // Manejar la imagen si existe
+    $imagenPath = null;
+    if ($request->hasFile('imagen')) {
+        $imagenPath = $request->file('imagen')->store('images', 'public');
     }
-    // Redirigir con un mensaje de éxito
+
+    // Crear un nuevo usuario con el rol de "trabajador" y marcarlo como verificado
+    $user = User::create([
+        'nombre' => $request->nombre,
+        'email' => $request->email,
+        'password' => Hash::make($request->password),
+        'rol' => 'trabajador',
+        'imagen' => $imagenPath,
+        'email_verified_at' => Carbon::now(),
+    ]);
+
+    // Redirigir con un mensaje de éxito sin enviar correo de verificación
+    return response()->json([
+        'message' => 'Barbero creado exitosamente con email verificado',
+        'user' => $user
+    ], 201);
+}
+
 
 
     public function editarBarberos()

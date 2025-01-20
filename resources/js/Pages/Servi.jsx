@@ -16,56 +16,56 @@ export default function Servi() {
 
     const services = [
         {
-            title: 'Corte de Pelo',
-            price: '12€',
+            title: 'El peinado',
+
             description: 'Nuestros cortes de pelo están diseñados para resaltar tu estilo único, cuidando cada detalle para asegurar que salgas luciendo perfecto.',
             image: '/images/bajo.jpg'
         },
         {
-            title: 'Afeitado Clásico',
-            price: '4€',
+            title: 'El Brillo',
+
             description: 'Disfruta de un afeitado tradicional con navaja y espuma caliente, para una experiencia de barbería como ninguna otra.',
             image: '/images/x3.jpg'
         },
         {
-            title: 'Arreglo de Barba',
-            price: '6€',
+            title: 'La Clase',
+
             description: 'Déjanos cuidar de tu barba con precisión y dedicación, logrando un estilo impecable que combine con tu look personal.',
             image: '/images/precio_fondo.jpg'
         },
         {
-            title: 'Corte + Barba',
-            price: '15€',
+            title: 'La combinación',
+
             description: 'Un servicio completo que incluye corte de pelo y arreglo de barba, perfecto para quienes buscan un estilo definido.',
             image: '/images/ca2.png'
         },
         {
-            title: 'Depilado de Cejas',
-            price: '4€',
+            title: 'El Estilo',
+
             description: 'Contamos con las técnicas más avanzadas para que tus cejas luzcan bien definidas y se ajusten a tu rostro.',
             image: '/images/ceja.png'
         },
         {
-            title: 'Champoo + Estilo',
-            price: '5€',
+            title: 'La Limpieza',
+
             description: 'Nuestro servicio de lavado de cabello incluye un peinado a medida para que te sientas renovado y fresco.',
             image: '/images/peinado.png'
         },
         {
-            title: 'Alisado de Keratina',
-            price: '50€',
+            title: 'La Textura',
+
             description: 'Devuelve la vitalidad a tu cabello con nuestro alisado de keratina, ideal para eliminar el frizz y mejorar la salud del cabello.',
             image: '/images/mujer.png'
         },
         {
-            title: 'Mechas',
-            price: '7€',
+            title: 'El Color',
+
             description: '¿Te gustaría darle un toque de color a tu cabello? Nuestras mechas están hechas con los mejores productos del mercado.',
             image: '/images/rojo.jpg'
         },
         {
-            title: 'Corte + Barba + Cejas + Lavado',
-            price: '20€',
+            title: 'La Atracción',
+
             description: 'Un paquete completo que incluye corte de pelo, barba, cejas y lavado, perfecto para un cambio total de look.',
             image: '/images/ca4.png'
         }

@@ -58,6 +58,10 @@ export default function Daniel() {
             <Link href="/login" className="boton_lugar">
                     Reservar Cita
                 </Link>
+            <br /><br /><br /><br />
+            <Link href="/equipo" className="boton_lugar">
+                    Volver
+                </Link>
         </div>
 
             </section>
