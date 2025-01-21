@@ -22,7 +22,7 @@ export default function EditarProductos({ productos }) {
     const eliminarProducto = (id) => {
         Swal.fire({
             title: '¿Estás seguro?',
-            text: '¡Esta acción no se puede deshacer!',
+            text: 'Tendrás que volver a activarlo en caso de habilitarlo de nuevo.',
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#d33',
@@ -33,7 +33,7 @@ export default function EditarProductos({ productos }) {
             if (result.isConfirmed) {
                 Inertia.delete(route('productos.destroy', id), {
                     onSuccess: () => {
-                        Swal.fire('Eliminado', 'Producto eliminado con éxito.', 'success');
+                        Swal.fire('Eliminado', 'Producto deshabilitado.', 'success');
                     },
                     onError: (errors) => {
                         if (errors.error) {
@@ -207,7 +207,7 @@ export default function EditarProductos({ productos }) {
 
                                 <th className="border border-gray-300 px-4 py-2">Proveedor</th>
                                 <th className="border border-gray-300 px-4 py-2">Stock</th>
-                                <th className="border border-gray-300 px-4 py-2 text-center">Acciones</th>
+                                <th className="border border-gray-300 px-4 py-2 text-center">Deshabilitar</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -513,7 +513,7 @@ export default function EditarProductos({ productos }) {
                                             onClick={() => eliminarProducto(producto.id)}
                                             className="bg-red-500 text-white px-4 py-2 rounded-lg"
                                         >
-                                            Eliminar
+                                            No disponible
                                         </button>
                                     </td>
                                 </tr>

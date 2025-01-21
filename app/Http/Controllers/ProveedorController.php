@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\PedidoProveedor;
+use App\Models\Producto;
 use App\Models\Proveedor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -121,14 +123,27 @@ public function destroy($id)
 {
     $proveedor = Proveedor::findOrFail($id);
 
+    // Verificar si hay referencias en otras tablas
+    $existePedidoProveedor = PedidoProveedor::where('proveedor_id', $id)->exists();
+    $existeProducto = Producto::where('proveedor_id', $id)->exists();
 
+    if ($existePedidoProveedor || $existeProducto) {
+        // Usamos la misma clave `message` pero con un mensaje de error
+        return redirect()
+            ->route('admin.proveedores.editar')
+            ->with('message', 'ERROR: No se puede eliminar el proveedor porque tiene pedidos o productos asociados.');
+    }
+
+    // Si no está referenciado, se elimina
     $proveedor->delete();
-
 
     return redirect()
         ->route('admin.proveedores.editar')
         ->with('message', 'Proveedor eliminado con éxito.');
 }
+
+
+
 
 public function obtenerProveedores()
 {

@@ -25,13 +25,27 @@ export default function EditarProveedores({ proveedores }) {
         }).then((result) => {
             if (result.isConfirmed) {
                 Inertia.delete(route('proveedores.destroy', id), {
-                    onSuccess: () => {
-                        Swal.fire('Eliminado', 'Proveedor eliminado con éxito.', 'success');
+                    onSuccess: (page) => {
+                        // Obtenemos el mensaje de `page.props.flash.message`
+                        const message = page.props?.flash?.message;
+
+                        // Si no hay mensaje, terminamos
+                        if (!message) return;
+
+                        // Si el mensaje contiene "ERROR:", mostramos alerta de error
+                        if (message.includes('ERROR:')) {
+                            Swal.fire('Error', message, 'error');
+                        } else {
+                            // Caso contrario, asumimos que es éxito
+                            Swal.fire('Eliminado', message, 'success');
+                        }
                     },
                 });
             }
         });
     };
+
+
 
 
 
@@ -178,6 +192,9 @@ export default function EditarProveedores({ proveedores }) {
                     <Link href="/opciones" className="text-black-600 text-xl font-bold hover:text-gray-400">✕</Link>
                 </div>
                 <h2 className="text-4xl text-center font-bold text-gray-800 mb-6">Gestión de Proveedores</h2>
+                <br />
+                <p className=" text-center font-bold text-red-800 mb-6">Recuerda que no puedes eliminar un proveedor con productos.</p>
+
 
                 <div className="mb-4">
                     <input

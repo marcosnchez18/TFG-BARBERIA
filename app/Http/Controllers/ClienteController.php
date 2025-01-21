@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\ClienteDeshabilitado;
 use App\Models\Ficha;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
@@ -46,11 +48,19 @@ class ClienteController extends Controller
     }
 
     public function deshabilitar($id)
-    {
-        $cliente = User::findOrFail($id);
-        $cliente->update(['estado' => 'inactivo']);
-        return redirect()->route('admin-clientes')->with('message', 'Cliente deshabilitado con éxito.');
-    }
+{
+    $cliente = User::findOrFail($id);
+
+    // Actualizar el estado del cliente
+    $cliente->update(['estado' => 'inactivo']);
+
+    // Enviar correo al cliente
+    Mail::to($cliente->email)->send(new ClienteDeshabilitado($cliente));
+
+    return redirect()
+        ->route('admin-clientes')
+        ->with('message', 'Cliente deshabilitado con éxito. Se ha enviado un correo al cliente.');
+}
 
     public function habilitar($id)
     {
