@@ -135,7 +135,7 @@ export default function PedidosInventario() {
             <NavigationAdmin />
 
             <div className="container mx-auto p-8">
-                <div className="bg-white bg-opacity-80 p-8 rounded-lg shadow-lg w-full max-w-5xl mx-auto mt-12 relative">
+                <div className="bg-white bg-opacity-80 p-8 rounded-lg shadow-lg w-full max-w-6xl mx-auto mt-12 relative">
                     <h2 className="text-4xl font-extrabold text-center text-[#000000] mb-6">
                         Pedidos de Inventario 📦
                     </h2>

@@ -109,7 +109,7 @@ export default function PedidosAdmin() {
         setPedidos(pedidosOrdenados);
     };
 
-    
+
     const handleVerPedido = (pedidoId) => {
         axios.get(`/api/admin/ver-pedido/${pedidoId}`)
             .then(response => {
@@ -141,7 +141,8 @@ export default function PedidosAdmin() {
                 }}
             >
                 <br /><br /><br />
-                <div className="container mx-auto p-6 mt-10 bg-white shadow-md rounded-lg">
+
+                <div className="container mx-auto p-6 mt-10 bg-white bg-opacity-80 shadow-md rounded-lg">
                     <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">Mis Pedidos 📦</h2>
                     <br /><br />
 
