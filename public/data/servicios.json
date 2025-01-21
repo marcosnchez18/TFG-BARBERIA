@@ -56,13 +56,6 @@
         "duracion": 60
     },
     {
-        "id": 14,
-        "nombre": "Bigote",
-        "precio": "2.00",
-        "descripcion": "Pon tu bigote a punto",
-        "duracion": 5
-    },
-    {
         "id": 2,
         "nombre": "Afeitado Cl\u00e1sico",
         "precio": "4.00",
