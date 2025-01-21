@@ -118,8 +118,8 @@ export default function PedidosProveedores() {
 
                                     <div className="text-left flex-grow">
                                         <p><FontAwesomeIcon icon={faBox} className="mr-2 text-gray-600" /> <strong>Producto:</strong> {producto.nombre}</p>
-                                        <p><FontAwesomeIcon icon={faStore} className="mr-2 text-gray-600" /> <strong>Proveedor:</strong> {producto.proveedor?.nombre || "No disponible"}</p>
-                                        <p><strong>Precio:</strong> {(Number(producto.precio_proveedor) || 0).toFixed(2)}€</p>
+
+                                        <p><strong>Precio proveedor:</strong> {(Number(producto.precio_proveedor) || 0).toFixed(2)}€</p>
                                     </div>
 
                                     {/* Cantidad de pedido */}
