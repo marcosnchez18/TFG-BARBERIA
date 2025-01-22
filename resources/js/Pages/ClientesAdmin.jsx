@@ -9,6 +9,9 @@ export default function ClientesAdmin({ clientes }) {
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedCliente, setSelectedCliente] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1); // Página actual
+    const itemsPerPage = 5; // Número de clientes por página
+
 
     const eliminarCliente = (id) => {
         Swal.fire({
@@ -96,9 +99,14 @@ export default function ClientesAdmin({ clientes }) {
         });
     };
 
+
+
     const filteredClientes = clientes.filter(cliente =>
         cliente.email.toLowerCase().includes(searchTerm.toLowerCase())
     );
+    const indexOfLastItem = currentPage * itemsPerPage;
+const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+const currentClientes = filteredClientes.slice(indexOfFirstItem, indexOfLastItem);
 
     return (
         <div
@@ -140,7 +148,7 @@ export default function ClientesAdmin({ clientes }) {
                             </tr>
                         </thead>
                         <tbody>
-                            {filteredClientes.map((cliente) => (
+                            {currentClientes.map((cliente) => (
                                 <tr key={cliente.id} className="clientes-admin-table-row">
                                     {/* Nombre del cliente */}
                                     <td className="clientes-admin-table-cell text-center">{cliente.nombre}</td>
@@ -244,6 +252,21 @@ export default function ClientesAdmin({ clientes }) {
 
 
                     </table>
+                    <br />
+                    <div className="pagination-container flex justify-center space-x-2 mt-4">
+    {Array.from({ length: Math.ceil(clientes.length / itemsPerPage) }, (_, i) => i + 1).map(page => (
+        <button
+            key={page}
+            onClick={() => setCurrentPage(page)}
+            className={`px-3 py-1 rounded ${
+                currentPage === page ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'
+            }`}
+        >
+            {page}
+        </button>
+    ))}
+</div>
+
                 </div>
                 {isModalOpen && (
                     <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50">
