@@ -250,7 +250,7 @@ export default function MisCitasCliente() {
             },
         })
             .then((response) => {
-               
+
                 if (Array.isArray(response.data)) {
                     setHorariosDisponibles(response.data);
                 } else {
@@ -467,7 +467,8 @@ export default function MisCitasCliente() {
                             </div>
                             <div className="calendar-selection text-center mt-6">
                                 <h3 className="text-xl font-semibold">Selecciona el Día:</h3>
-                                <br /><br />
+                                <br />
+
                                 {isLoadingCalendar ? (
                                     <p className="text-gray-500 text-xl">Cargando calendario...</p>
                                 ) : (
@@ -523,7 +524,7 @@ export default function MisCitasCliente() {
 
 
                             </div>
-                            <br /><br /><br />
+
                             <div className="flex flex-col items-center mt-4 space-y-2">
     <div className="flex items-center">
         <span className="font-bold text-blue-600 w-6 text-center">🔵</span>
@@ -540,7 +541,7 @@ export default function MisCitasCliente() {
 </div>
 
 
-                            <br /><br />
+
                             {selectedDate && horariosDisponibles.length > 0 && (
                                 <div className="horarios-disponibles mt-4 grid grid-cols-4 gap-2 justify-center">
                                     {horariosDisponibles.map((hora) => (
