@@ -54,7 +54,7 @@ class AdminController extends Controller
             ->whereNotNull('valoracion')
             ->avg('valoracion');
 
-        return Inertia::render('AdminDashboard', [
+        return Inertia::render('Admin/AdminDashboard', [
             'user' => Auth::user(),
             'citasHoy' => $citasHoy,
             'nuevosUsuariosHoy' => $nuevosUsuariosHoy,
@@ -110,7 +110,7 @@ class AdminController extends Controller
             ->whereNotNull('valoracion')
             ->avg('valoracion');
 
-        return Inertia::render('TrabajadorDashboard', [
+        return Inertia::render('Trabajador/TrabajadorDashboard', [
             'user' => Auth::user(),
             'citasHoy' => $citasHoy,
             'nuevosUsuariosHoy' => $nuevosUsuariosHoy,
@@ -273,7 +273,7 @@ class AdminController extends Controller
 
     public function createBarbero()
     {
-        return Inertia::render('BarberoNuevo', [
+        return Inertia::render('Admin/BarberoNuevo', [
             'storeUrl' => route('admin.barberos.store'),
         ]);
     }
@@ -373,7 +373,7 @@ public function store(Request $request)
         $trabajadores = User::where('rol', 'trabajador')->get();
 
         // Pasar los datos a la vista
-        return inertia('BarberosEditar', ['trabajadores' => $trabajadores]);
+        return inertia('Admin/BarberosEditar', ['trabajadores' => $trabajadores]);
     }
 
     public function deshabilitar($id)
@@ -615,7 +615,7 @@ public function store(Request $request)
     {
         $admin = auth()->user(); // Obtiene el usuario autenticado (admin)
 
-        return Inertia::render('MisDatosAdmin', [
+        return Inertia::render('Admin/MisDatosAdmin', [
             'admin' => $admin,
         ]);
     }

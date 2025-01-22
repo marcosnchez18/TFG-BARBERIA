@@ -163,7 +163,7 @@ public function obtenerProveedores()
         $proveedores = Proveedor::all();
 
         // Pasar los datos a la vista
-        return inertia('EditarProveedores', ['proveedores' => $proveedores]);
+        return inertia('Admin/EditarProveedores', ['proveedores' => $proveedores]);
     }
 
     public function updateField(Request $request, $id)

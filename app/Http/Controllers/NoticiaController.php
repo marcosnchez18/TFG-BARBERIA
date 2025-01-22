@@ -14,7 +14,7 @@ class NoticiaController extends Controller
         // Obtener todas las noticias junto con la información del usuario que las publicó
         $noticias = Noticia::with('usuario')->get();
 
-        return Inertia::render('ForoAdmin', [
+        return Inertia::render('Admin/ForoAdmin', [
             'noticias' => $noticias
         ]);
     }
@@ -24,7 +24,7 @@ class NoticiaController extends Controller
 
         $noticias = Noticia::with('usuario')->get();
 
-        return Inertia::render('ForoAdminTrabajador', [
+        return Inertia::render('Trabajador/ForoAdminTrabajador', [
             'noticias' => $noticias
         ]);
     }
@@ -75,7 +75,7 @@ class NoticiaController extends Controller
         // Obtener todas las noticias para los clientes
         $noticias = Noticia::with('usuario')->get();
 
-        return Inertia::render('ReservarCitaCliente', [
+        return Inertia::render('Cliente/ReservarCitaCliente', [
             'noticias' => $noticias,
         ]);
     }
@@ -84,7 +84,7 @@ class NoticiaController extends Controller
     public function edit(Noticia $noticia)
     {
 
-        return Inertia::render('EditarNoticia', [
+        return Inertia::render('Admin/EditarNoticia', [
             'noticia' => $noticia
         ]);
     }

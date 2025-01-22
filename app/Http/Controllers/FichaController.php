@@ -17,7 +17,7 @@ class FichaController extends Controller
         $ficha = Ficha::where('user_id', auth()->id())->first();
 
         // Retorna la vista con la ficha y el usuario autenticado
-        return Inertia::render('Ficha', [
+        return Inertia::render('Cliente/Ficha', [
             'ficha' => $ficha,
             'user' => auth()->user(),
         ]);

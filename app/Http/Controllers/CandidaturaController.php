@@ -137,7 +137,7 @@ public function consultarEstado(Request $request)
 {
     $candidaturas = Candidatura::where('oferta_id', $ofertaId)->get();
 
-    return inertia('Candidatos', [
+    return inertia('Admin/Candidatos', [
         'candidaturas' => $candidaturas,
     ]);
 }
@@ -177,7 +177,7 @@ public function destroy($localizador)
         return response()->json(['error' => 'Candidatura no encontrada.'], 404);
     }
 
-    
+
     $candidatura->delete();
 
     return response()->json(['message' => 'Candidatura eliminada exitosamente.']);

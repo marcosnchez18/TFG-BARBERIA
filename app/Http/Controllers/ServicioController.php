@@ -27,12 +27,12 @@ class ServicioController extends Controller
 
     public function create()
     {
-        return Inertia::render('NuevosServicios');
+        return Inertia::render('Admin/NuevosServicios');
     }
 
     public function createTrab()
     {
-        return Inertia::render('NuevosServiciosTrab', [
+        return Inertia::render('Trabajador/NuevosServiciosTrab', [
             'auth' => ['user' => Auth::user()]
         ]);
     }
@@ -101,7 +101,7 @@ public function storeTrab(Request $request)
     {
         $servicios = Servicio::all();
 
-        return Inertia::render('EditarServicios', [
+        return Inertia::render('Admin/EditarServicios', [
             'servicios' => $servicios,
         ]);
     }

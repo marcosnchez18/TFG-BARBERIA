@@ -31,7 +31,7 @@ class ClienteController extends Controller
             return $cliente;
         });
 
-    return Inertia::render('ClientesAdmin', [
+    return Inertia::render('Admin/ClientesAdmin', [
         'clientes' => $clientes
     ]);
 }
@@ -74,7 +74,7 @@ class ClienteController extends Controller
     {
         $cliente = $request->user();
 
-        return Inertia::render('MisDatosCliente', [
+        return Inertia::render('Cliente/MisDatosCliente', [
             'cliente' => [
                 'id' => $cliente->id,
                 'nombre' => $cliente->nombre,

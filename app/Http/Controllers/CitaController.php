@@ -316,7 +316,7 @@ class CitaController extends Controller
             ->with(['barbero:id,nombre', 'servicio:id,nombre,precio,duracion'])
             ->get();
 
-        return Inertia::render('MisCitasCliente', [
+        return Inertia::render('Cliente/MisCitasCliente', [
             'citas' => $citas,
         ]);
     }

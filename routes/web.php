@@ -97,7 +97,7 @@ Route::middleware(['auth', 'verified', 'cliente'])->group(function () {
     // RUTAS DE CLIENTES
 
     Route::get('/barbershop', function () {
-        return Inertia::render('Shop');
+        return Inertia::render('Cliente/Shop');
     })->name('barbershop');
 
 
@@ -107,7 +107,7 @@ Route::middleware(['auth', 'verified', 'cliente'])->group(function () {
     Route::get('/mis-citas', [CitaController::class, 'misCitas'])->name('mis-citas');
 
     Route::get('/mis-citas/elegir', function () {
-        return Inertia::render('ElegirCita');
+        return Inertia::render('Cliente/ElegirCita');
     })->name('mis-citas-elegir');
 
     Route::get('/api/descansos', [DescansoController::class, 'getDescansos']);
@@ -145,7 +145,7 @@ Route::middleware(['auth', 'verified', 'cliente'])->group(function () {
     Route::post('/clientes/{id}/upload-image', [ClienteController::class, 'uploadImage'])->name('clientes.ficha.uploadImage');
 
     Route::get('/miempleo', function () {
-        return Inertia::render('MiEmpleo');
+        return Inertia::render('Cliente/MiEmpleo');
     })->name('miempleo');
 
 
@@ -181,7 +181,7 @@ Route::middleware(['auth', 'verified', 'cliente'])->group(function () {
     });
 
     Route::get('/tramitar-pedido', function () {
-        return Inertia::render('TramitarPedido', [
+        return Inertia::render('Cliente/TramitarPedido', [
             'carrito' => session('carrito', []) // Pasa el carrito guardado en sesión
         ]);
     })->name('tramitar-pedido');
@@ -229,12 +229,12 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
 
 
     Route::get('/opciones', function () {
-        return Inertia::render('Opciones');
+        return Inertia::render('Admin/Opciones');
     })->name('opciones');
 
     // Ruta para la vista de citas del barbero en la interfaz de administración
     Route::get('/admin/citas', function () {
-        return Inertia::render('CitasAdmin');
+        return Inertia::render('Admin/CitasAdmin');
     })->name('admin-citas');
 
     // Ruta para obtener las citas del barbero logueado
@@ -286,7 +286,7 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
     Route::get('/admin/proveedores/editar', [ProveedorController::class, 'editarProveedores'])->name('admin.proveedores.editar');
 
     Route::get('/mis-datos-admin', function () {
-        return Inertia::render('MisDatosAdmin');
+        return Inertia::render('Admin/MisDatosAdmin');
     })->name('mis-datos-admin');
 
     Route::get('/mis-datos-admin', [AdminController::class, 'misDatos'])->name('mis-datos-admin');
@@ -296,7 +296,7 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
     Route::post('/admin/actualizar-foto/{id}', [AdminController::class, 'actualizarFoto'])->name('admin.actualizar-foto');
 
     Route::get('/admin/asignar-servicios', function () {
-        return Inertia::render('Asignar');
+        return Inertia::render('Admin/Asignar');
     })->name('admin.asignar.servicios');
 
     Route::post('/admin/asignar-servicios', [ServicioUsuarioController::class, 'asignarServicios'])
@@ -305,11 +305,11 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
 
 
     Route::get('/citas-barberia', function () {
-        return Inertia::render('CitasBarberia');
+        return Inertia::render('Admin/CitasBarberia');
     })->name('citas-barberia');
 
     Route::get('/admin/proveedores/nuevo', function () {
-        return Inertia::render('NuevoProveedor');
+        return Inertia::render('Admin/NuevoProveedor');
     })->name('admin.proveedores.nuevo');
 
     Route::post('/proveedores', [ProveedorController::class, 'store'])->name('proveedores.store');
@@ -338,13 +338,13 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
 
 
     Route::get('/admin/productos/crear', function () {
-        return Inertia::render('AltaProducto');
+        return Inertia::render('Admin/AltaProducto');
     })->name('admin.productos.crear');
 
     Route::post('/admin/productos', [ProductoController::class, 'store'])->name('productos.store');
 
     Route::get('/admin/productos/editar', function () {
-        return Inertia::render('EditarProductos');
+        return Inertia::render('Admin/EditarProductos');
     })->name('admin.productos.editar');
 
     Route::post('/admin/desasignar-servicio', [ServicioUsuarioController::class, 'desasignarServicio']);
@@ -388,14 +388,14 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
     ->name('admin.pedido.reembolso');
 
     Route::get('/admin/pedido/proveedor', function () {
-        return Inertia::render('PedidosProveedores');
+        return Inertia::render('Admin/PedidosProveedores');
     })->name('admin.pedido.proveedor');
 
 
     Route::post('/api/admin/pedidos-proveedores', [PedidoController::class, 'realizarPedido']);
 
     Route::get('/admin/gestionpedido/proveedor', function () {
-        return Inertia::render('PedidosInventario');
+        return Inertia::render('Admin/PedidosInventario');
     })->name('admin.gestionpedido.proveedor');
 
     Route::get('/admin/pedidos-proveedores', [PedidoProveedorController::class, 'index'])
@@ -408,7 +408,7 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
     ->name('admin.pedidos-proveedores.añadirStock');
 
     Route::get('/caja', function () {
-        return Inertia::render('ControlCaja');
+        return Inertia::render('Admin/ControlCaja');
     })->name('caja');
 
     Route::get('/api/caja', [CitaController::class, 'obtenerCaja']);
@@ -418,7 +418,7 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
     Route::get('/api/gastos-proveedores', [PedidoController::class, 'obtenerGastosProveedores']);
 
     Route::get('/ganancias/personales', function () {
-        return Inertia::render('GananciasPersonales');
+        return Inertia::render('Admin/GananciasPersonales');
     })->name('ganancias.personales');
 
     Route::get('/api/ganancias-barbero', [AdminController::class, 'obtenerGananciasBarbero']);
@@ -470,22 +470,22 @@ Route::middleware(['auth', 'verified', 'trabajador'])->group(function () {
     Route::delete('/trabajador/citas/{id}/cancelar', [AdminController::class, 'cancelarCita']);
 
     Route::get('/opciones-trabajador', function () {
-        return Inertia::render('OpcionesTrabajador');
+        return Inertia::render('Trabajador/OpcionesTrabajador');
     })->name('opciones-trabajador');
 
     Route::get('/trabajador/citas', function () {
-        return Inertia::render('CitasAdminTrabajador');
+        return Inertia::render('Trabajador/CitasAdminTrabajador');
     })->name('trabajador-citas');
 
     Route::get('/citas-barberia-trab', function () {
-        return Inertia::render('CitasBarberiaTrabajador', [
+        return Inertia::render('Trabajador/CitasBarberiaTrabajador', [
             'auth' => ['user' => Auth::user()]
         ]);
     })->middleware(['auth'])->name('citas-barberia-trab');
 
 
     Route::get('/mis-datos-trabajador', function () {
-        return Inertia::render('MisDatosAdminTrabajador', [
+        return Inertia::render('Trabajador/MisDatosAdminTrabajador', [
             'trabajador' => Auth::user(),
         ]);
     })->name('mis-datos-trabajador');
@@ -504,7 +504,7 @@ Route::middleware(['auth', 'verified', 'trabajador'])->group(function () {
 
 
     Route::get('/trabajador/asignar-servicios', function () {
-        return Inertia::render('AsignarTrab', [
+        return Inertia::render('Trabajador/AsignarTrab', [
             'auth' => ['user' => Auth::user()]
         ]);
     })->middleware(['auth'])->name('trabajador.asignar.servicios');
@@ -535,7 +535,7 @@ Route::middleware(['auth', 'verified', 'trabajador'])->group(function () {
     Route::get('/api/trabajador/ver-pedido/{id}', [PedidoController::class, 'show'])->name('pedido.trabajador.show');
 
     Route::get('/ganancias/trabajador/personales', function () {
-        return Inertia::render('GananciasPersonalesTrabajador');
+        return Inertia::render('Trabajador/GananciasPersonalesTrabajador');
     })->name('ganancias.trabajador.personales');
 
     Route::get('/api/ganancias-trabajador', [AdminController::class, 'obtenerGananciasBarbero']);
@@ -543,7 +543,7 @@ Route::middleware(['auth', 'verified', 'trabajador'])->group(function () {
     Route::get('/api/barbero-logueado', [AdminController::class, 'obtenerBarberoLogueado']);
 
     Route::get('/inventario/trabajador', function () {
-        return Inertia::render('PedidosInventarioTrabajador');
+        return Inertia::render('Trabajador/PedidosInventarioTrabajador');
     })->name('inventario.trabajador');
 
 
@@ -590,7 +590,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         } elseif (auth()->user()->rol === 'trabajador') {
             return redirect()->route('mi-cuenta-trabajador');
         }
-        return Inertia::render('Dashboard', ['user' => auth()->user()]);
+        return Inertia::render('Cliente/Dashboard', ['user' => auth()->user()]);
     })->name('mi-cuenta');
 
 

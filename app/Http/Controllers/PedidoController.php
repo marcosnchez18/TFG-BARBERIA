@@ -43,7 +43,7 @@ class PedidoController extends Controller
                 ];
             });
 
-        return Inertia::render('MisPedidos', [
+        return Inertia::render('Cliente/MisPedidos', [
             'pedidos' => $pedidos
         ]);
     }
@@ -69,12 +69,12 @@ class PedidoController extends Controller
 
 public function pedidosAdminVista()
 {
-    return Inertia::render('PedidosAdmin');
+    return Inertia::render('Admin/PedidosAdmin');
 }
 
 public function pedidosTrabVista()
 {
-    return Inertia::render('PedidosTrabajador');
+    return Inertia::render('Trabajador/PedidosTrabajador');
 }
 
 
