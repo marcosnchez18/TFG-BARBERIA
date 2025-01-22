@@ -67,34 +67,46 @@ export default function TramitarPedido() {
     };
 
 
-    // Validaciones para el paso de dirección
     const handleNextStep = () => {
         if (metodoEntrega === "envio") {
-            // Validar cada campo de dirección
-            const errores = [];
-            if (!direccion.nombre.trim()) errores.push("El nombre es obligatorio.");
-            if (!direccion.calle.trim()) errores.push("La calle es obligatoria.");
-            if (!direccion.ciudad.trim()) errores.push("La ciudad es obligatoria.");
-            if (!direccion.provincia.trim()) errores.push("La provincia es obligatoria.");
-            if (!direccion.codigo_postal.trim()) errores.push("El código postal es obligatorio.");
-            else if (!/^\d{5}$/.test(direccion.codigo_postal)) errores.push("El código postal debe tener 5 dígitos.");
-            if (!direccion.pais.trim()) errores.push("El país es obligatorio.");
-            if (!direccion.telefono.trim()) errores.push("El teléfono es obligatorio.");
-            else if (!/^\d{9,15}$/.test(direccion.telefono)) errores.push("El teléfono debe contener entre 9 y 15 dígitos.");
-
-            if (errores.length > 0) {
-                // Mostrar los errores con Swal
-                Swal.fire({
-                    title: "Error en la dirección",
-                    html: `<ul>${errores.map((error) => `<li>${error}</li>`).join("")}</ul>`,
-                    icon: "error",
-                    confirmButtonText: "Aceptar"
-                });
+            if (!direccion.nombre.trim()) {
+                Swal.fire("Error", "El nombre es obligatorio.", "error");
+                return;
+            }
+            if (!direccion.calle.trim()) {
+                Swal.fire("Error", "La calle es obligatoria.", "error");
+                return;
+            }
+            if (!direccion.ciudad.trim()) {
+                Swal.fire("Error", "La ciudad es obligatoria.", "error");
+                return;
+            }
+            if (!direccion.provincia.trim()) {
+                Swal.fire("Error", "La provincia es obligatoria.", "error");
+                return;
+            }
+            if (!direccion.codigo_postal.trim()) {
+                Swal.fire("Error", "El código postal es obligatorio.", "error");
+                return;
+            } else if (!/^\d{5}$/.test(direccion.codigo_postal)) {
+                Swal.fire("Error", "El código postal debe tener 5 dígitos.", "error");
+                return;
+            }
+            if (!direccion.pais.trim()) {
+                Swal.fire("Error", "El país es obligatorio.", "error");
+                return;
+            }
+            if (!direccion.telefono.trim()) {
+                Swal.fire("Error", "El teléfono es obligatorio.", "error");
+                return;
+            } else if (!/^\d{9,15}$/.test(direccion.telefono)) {
+                Swal.fire("Error", "El teléfono debe contener entre 9 y 15 dígitos.", "error");
                 return;
             }
         }
-        setStep(3);
+        setStep(3); // Avanza al siguiente paso solo si no hay errores
     };
+
 
 
     // Enviar el pedido a la API

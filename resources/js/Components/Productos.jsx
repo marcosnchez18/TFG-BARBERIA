@@ -6,6 +6,7 @@ export default function Productos({ productos, agregarAlCarrito, verProducto, ca
     const [rangoPrecio, setRangoPrecio] = useState(0);
     const [precioMaximo, setPrecioMaximo] = useState(0);
     const [mostrarFiltros, setMostrarFiltros] = useState(false);
+    
 
     useEffect(() => {
         if (productos.length > 0) {
@@ -121,22 +122,23 @@ export default function Productos({ productos, agregarAlCarrito, verProducto, ca
                                 }`}
                             >
                                 <div
-                                    className="relative"
-                                    onClick={() => producto.stock > 0 && verProducto(producto)}
-                                >
-                                    <img
-                                        src={`/storage/${producto.imagen}`}
-                                        alt={producto.nombre}
-                                        className="w-full h-80 object-cover rounded-md cursor-pointer"
-                                    />
-                                    {producto.stock === 0 && (
-                                        <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-md">
-                                            <span className="text-white text-lg font-bold animate-pulse">
-                                                Sin stock
-                                            </span>
-                                        </div>
-                                    )}
-                                </div>
+    className="relative group"
+    onClick={() => producto.stock > 0 && verProducto(producto)}
+>
+    <img
+        src={`/storage/${producto.imagen}`}
+        alt={producto.nombre}
+        className="w-full h-80 object-cover rounded-md cursor-pointer transform transition-transform duration-300 group-hover:scale-110"
+    />
+    {producto.stock === 0 && (
+        <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-md">
+            <span className="text-white text-lg font-bold animate-pulse">
+                Sin stock
+            </span>
+        </div>
+    )}
+</div>
+
 
                                 <h3 className="text-xl font-bold text-gray-700 mb-3 mt-4">
                                     {producto.nombre}
