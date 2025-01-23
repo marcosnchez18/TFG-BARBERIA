@@ -6,7 +6,7 @@ export default function Productos({ productos, agregarAlCarrito, verProducto, ca
     const [rangoPrecio, setRangoPrecio] = useState(0);
     const [precioMaximo, setPrecioMaximo] = useState(0);
     const [mostrarFiltros, setMostrarFiltros] = useState(false);
-    
+
 
     useEffect(() => {
         if (productos.length > 0) {
@@ -25,7 +25,7 @@ export default function Productos({ productos, agregarAlCarrito, verProducto, ca
         });
 
     return (
-        <section className="py-12 bg-white relative">
+        <section className="py-12 bg-gray-50 relative">
             <div className="container mx-auto px-6">
                 <h2 className="text-5xl font-extrabold mb-8 text-center text-blue-900">
                     Productos Disponibles
