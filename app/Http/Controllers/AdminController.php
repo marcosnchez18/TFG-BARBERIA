@@ -620,6 +620,17 @@ public function store(Request $request)
         ]);
     }
 
+    public function getTrabajadores()
+    {
+        // Obtener usuarios con rol 'trabajador' y su imagen
+        $trabajadores = User::where('rol', 'trabajador')
+            ->select('id', 'nombre', 'imagen')
+            ->get();
+
+        // Retornar los datos en formato JSON
+        return response()->json($trabajadores, 200);
+    }
+
     // Actualizar los datos del administrador
     public function actualizarDatos(Request $request)
     {

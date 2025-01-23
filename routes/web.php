@@ -703,3 +703,5 @@ Route::get('/barbershopinvitado', function () {
 
 
 Route::get('/api/public/productos', [ProductoController::class, 'obtenerProductos'])->name('public.productos.obtener');
+
+Route::get('/trabajadores-fotos', [AdminController::class, 'getTrabajadores']);

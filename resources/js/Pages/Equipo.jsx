@@ -3,6 +3,7 @@ import '../../css/Barber.css';
 import Footer from '../Components/Footer';
 import { Link } from '@inertiajs/react';
 import Navieq from '@/Components/NavigationEq';
+import Trabajadores from '@/Components/Trabajadores';
 import LogosServicios from '@/Components/Logosservicios';
 import SobreNosotros from '@/Components/Sobrenosotros';
 import WhatsAppButton from '@/Components/Wasa';
@@ -26,7 +27,7 @@ export default function Equipo() {
                     <span itemProp="name">Nuestro Equipo</span>
                 </h2>
                 <p className="text-lg mb-12 equipo-description" itemProp="description">
-                    Conoce a nuestros talentosos barberos, apasionados por su trabajo y siempre listos para ofrecer el mejor servicio.
+                    Conoce a los artífices de este movimiento.
                 </p>
 
                 {/* Barberos */}
@@ -65,6 +66,8 @@ export default function Equipo() {
                         </div>
                     </div>
                 </div>
+                <br /><br />
+                <Trabajadores />
 
                 <br /><br />
                 <Link href="/login" className="boton_lugar" itemProp="potentialAction" itemScope itemType="https://schema.org/ReserveAction">
