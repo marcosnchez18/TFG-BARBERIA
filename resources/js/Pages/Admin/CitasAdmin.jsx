@@ -16,7 +16,7 @@ export default function CitasAdmin() {
         >
             <NavigationAdmin />
             <AdministradorCitas />
-            <br /><br /><br /><br /><br /><br /><br />
+            <br /><br /><br /><br /><br /><br /><br /><br />
             <SobreNosotros />
             <Footer />
         </div>
