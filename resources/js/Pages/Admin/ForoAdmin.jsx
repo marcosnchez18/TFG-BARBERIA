@@ -5,6 +5,7 @@ import NavigationAdmin from '../../Components/NavigationAdmin';
 import SobreNosotros from '@/Components/Sobrenosotros';
 import Footer from '../../Components/Footer';
 import { Inertia } from '@inertiajs/inertia';
+import Publicaciones from '../../Components/Publicaciones';
 
 export default function ForoAdmin({ noticias }) {
     const { data, setData, post, put, reset, errors } = useForm({
@@ -15,7 +16,6 @@ export default function ForoAdmin({ noticias }) {
     const [isEditing, setIsEditing] = useState(false);
     const [editingNoticiaId, setEditingNoticiaId] = useState(null);
 
-    // Validar los campos
     const validateForm = () => {
         if (!data.titulo.trim()) {
             Swal.fire('Error', 'El título es obligatorio.', 'error');
@@ -39,7 +39,6 @@ export default function ForoAdmin({ noticias }) {
     const submit = (e) => {
         e.preventDefault();
 
-        // Validar los campos antes de enviar
         if (!validateForm()) return;
 
         if (isEditing) {
@@ -142,35 +141,8 @@ export default function ForoAdmin({ noticias }) {
                     </form>
                 </div>
 
-                {/* Columna derecha: Noticias */}
-                <div className="foro-noticias flex-1">
-                    <h2 className="foro-subtitulo text-2xl font-bold mb-4">Noticias Publicadas</h2>
-                    {noticias && noticias.length > 0 ? (
-                        noticias.map((noticia) => (
-                            <div key={noticia.id} className="foro-noticia mt-4 p-4 border-b bg-white shadow rounded">
-                                <h3 className="foro-noticia-titulo text-xl font-semibold">{noticia.titulo}</h3>
-                                <p className="foro-noticia-contenido">{noticia.contenido}</p>
-                                <small className="foro-noticia-autor">Publicado por: {noticia.usuario.nombre}</small>
-                                <div className="foro-noticia-acciones mt-2 flex justify-end gap-2">
-                                    <button
-                                        onClick={() => handleEdit(noticia)}
-                                        className="foro-boton-editar "
-                                    >
-                                        ✏️
-                                    </button>
-                                    <button
-                                        onClick={() => handleDelete(noticia.id)}
-                                        className="foro-boton-eliminar "
-                                    >
-                                        🗑️
-                                    </button>
-                                </div>
-                            </div>
-                        ))
-                    ) : (
-                        <p className="foro-sin-noticias">No hay noticias disponibles.</p>
-                    )}
-                </div>
+                {/* Columna derecha: Publicaciones */}
+                <Publicaciones noticias={noticias} onEdit={handleEdit} onDelete={handleDelete} />
             </div>
             <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
             <SobreNosotros />

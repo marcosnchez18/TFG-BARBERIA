@@ -624,6 +624,7 @@ public function store(Request $request)
     {
         // Obtener usuarios con rol 'trabajador' y su imagen
         $trabajadores = User::where('rol', 'trabajador')
+            ->where('estado', 'activo')
             ->select('id', 'nombre', 'imagen')
             ->get();
 

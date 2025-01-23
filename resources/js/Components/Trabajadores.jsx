@@ -42,7 +42,7 @@ export default function Trabajadores() {
 />
 
 
-                    <h3 className="text-2xl font-bold text-center">{trabajador.name}</h3>
+                    <h3 className="text-2xl font-bold text-center">{trabajador.nombre}</h3>
                 </div>
             ))}
         </div>

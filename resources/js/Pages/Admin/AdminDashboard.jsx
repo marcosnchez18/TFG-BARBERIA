@@ -386,6 +386,10 @@ useEffect(() => {
                     </header>
                     <div className="calendar-section mt-8 w-full flex flex-col items-center">
                         <h2 className="text-3xl font-semibold text-[#A87B43] mb-6">Calendario de Citas</h2>
+
+
+
+
                         <Calendar
                             onChange={handleDateChange}
                             value={selectedDate}
@@ -393,6 +397,13 @@ useEffect(() => {
                             className="calen-admin w-full max-w-xl mx-auto"
                             tileClassName={tileClassName}
                         />
+
+
+
+
+
+
+                        
                         <br /><br />
                         <div>
     <p className="flex items-center">
