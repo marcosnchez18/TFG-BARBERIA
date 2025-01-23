@@ -187,7 +187,7 @@ export default function EditarProveedores({ proveedores }) {
         >
             <NavigationAdmin />
 
-            <div className="bg-white bg-opacity-90 p-8 rounded-lg shadow-lg w-full max-w-7xl mx-auto mt-20 relative">
+            <div className="bg-white bg-opacity-90 p-8 rounded-lg shadow-lg w-full max-w-8xl mx-auto mt-20 relative">
                 <div className="absolute top-2 right-2">
                     <Link href="/opciones" className="text-black-600 text-xl font-bold hover:text-gray-400">✕</Link>
                 </div>

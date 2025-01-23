@@ -82,5 +82,12 @@
         "precio": "10.00",
         "descripcion": "Peinado para bodas, fiestas etc.",
         "duracion": 30
+    },
+    {
+        "id": 22,
+        "nombre": "Peinado para evento",
+        "precio": "11.00",
+        "descripcion": "Peinado para bodas, bautizos etc.",
+        "duracion": 35
     }
 ]

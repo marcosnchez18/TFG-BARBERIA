@@ -28,20 +28,24 @@ export default function NuevosServicios() {
         e.preventDefault();
 
         // Validar campos
-        if (!nombre || !descripcion || !precio || !duracion || !selectedBarbero) {
-            Swal.fire('Campos incompletos', 'Por favor, complete todos los campos y seleccione un barbero.', 'warning');
+        if (!nombre.trim()) {
+            Swal.fire('Campos incompletos', 'El campo "Nombre del Servicio" es obligatorio.', 'warning');
             return;
         }
-
-        // Validar que la duración sea un número entero positivo
-        if (isNaN(duracion) || duracion <= 0 || !Number.isInteger(Number(duracion))) {
-            Swal.fire('Duración inválida', 'La duración debe ser un número entero positivo.', 'warning');
+        if (!descripcion.trim()) {
+            Swal.fire('Campos incompletos', 'El campo "Descripción" es obligatorio.', 'warning');
             return;
         }
-
-        // Validar precio (número positivo)
-        if (isNaN(precio) || precio <= 0) {
-            Swal.fire('Precio inválido', 'El precio debe ser un número positivo.', 'warning');
+        if (!precio || isNaN(precio) || parseFloat(precio) <= 0) {
+            Swal.fire('Precio inválido', 'El campo "Precio" debe ser un número positivo.', 'warning');
+            return;
+        }
+        if (!duracion || isNaN(duracion) || parseInt(duracion) <= 0 || !Number.isInteger(Number(duracion))) {
+            Swal.fire('Duración inválida', 'El campo "Duración" debe ser un número entero positivo.', 'warning');
+            return;
+        }
+        if (!selectedBarbero) {
+            Swal.fire('Barbero no seleccionado', 'Debe seleccionar un barbero para asignar el servicio.', 'warning');
             return;
         }
 

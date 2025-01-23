@@ -20,30 +20,33 @@ export default function BarberoNuevo({ storeUrl }) {
     const [showPasswordConfirm, setShowPasswordConfirm] = useState(false); // Estado para mostrar/ocultar confirmación
 
     const validateClient = () => {
-        const newErrors = {};
-
         if (!data.nombre) {
-            newErrors.nombre = 'El nombre es obligatorio.';
+            Swal.fire('Error', 'El nombre es obligatorio.', 'error');
+            return false;
         }
 
         if (!data.email) {
-            newErrors.email = 'El correo electrónico es obligatorio.';
+            Swal.fire('Error', 'El correo electrónico es obligatorio.', 'error');
+            return false;
         } else if (!/\S+@\S+\.\S+/.test(data.email)) {
-            newErrors.email = 'Introduce un correo electrónico válido.';
+            Swal.fire('Error', 'Introduce un correo electrónico válido.', 'error');
+            return false;
         }
 
         if (!data.password) {
-            newErrors.password = 'La contraseña es obligatoria.';
+            Swal.fire('Error', 'La contraseña es obligatoria.', 'error');
+            return false;
         } else if (data.password.length < 6) {
-            newErrors.password = 'La contraseña debe tener al menos 6 caracteres.';
+            Swal.fire('Error', 'La contraseña debe tener al menos 6 caracteres.', 'error');
+            return false;
         }
 
         if (data.password !== data.password_confirmation) {
-            newErrors.password_confirmation = 'Las contraseñas no coinciden.';
+            Swal.fire('Error', 'Las contraseñas no coinciden.', 'error');
+            return false;
         }
 
-        setClientErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
+        return true;
     };
 
     const submit = async (e) => {
