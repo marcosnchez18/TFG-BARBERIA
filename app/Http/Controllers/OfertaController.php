@@ -87,13 +87,13 @@ public function inscribirse($id)
 public function trabaja2()
 {
     $ofertas = Oferta::orderBy('created_at', 'desc')->get();
-    return inertia('TrabajaCliente', ['ofertas' => $ofertas]);
+    return inertia('Cliente/TrabajaCliente', ['ofertas' => $ofertas]);
 }
 
 public function inscribirse2($id)
 {
     $oferta = Oferta::findOrFail($id);
-    return inertia('InscripcionesClientes', ['oferta' => $oferta]);
+    return inertia('Cliente/InscripcionesClientes', ['oferta' => $oferta]);
 }
 
 }

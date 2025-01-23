@@ -112,37 +112,15 @@ public function obtenerProductos()
 {
     $producto = Producto::findOrFail($id);
 
-    // Verificar si el producto está en un pedido de cliente con estado 'pendiente'
-    $pedidoClientePendiente = PedidoProducto::where('producto_id', $id)
-        ->whereHas('pedido', function ($query) {
-            $query->where('estado', 'pendiente');
-        })
-        ->exists();
-
-    // Verificar si el producto está en un pedido de proveedor con estado 'pendiente'
-    $pedidoProveedorPendiente = PedidoProveedor::where('producto_id', $id)
-        ->where('estado', 'pendiente')
-        ->exists();
-
-    if ($pedidoClientePendiente) {
-        return redirect()
-            ->route('admin.productos.editar')
-            ->with('message', 'No se puede eliminar el producto porque está en pedidos pendientes de clientes.');
-    }
-
-    if ($pedidoProveedorPendiente) {
-        return redirect()
-            ->route('admin.productos.editar')
-            ->with('message', 'No se puede eliminar el producto porque está en pedidos pendientes de proveedores.');
-    }
-
-    // Si el producto no está en pedidos pendientes, proceder con la eliminación
-    $producto->delete();
+    // Actualizar el stock del producto a 0
+    $producto->stock = 0;
+    $producto->save();
 
     return redirect()
         ->route('admin.productos.editar')
-        ->with('message', 'Producto eliminado con éxito.');
+        ->with('message', 'El stock del producto se ha actualizado a 0.');
 }
+
 
 public function obtenerProductosBajoStock(): JsonResponse
     {

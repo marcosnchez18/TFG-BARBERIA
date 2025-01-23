@@ -27,12 +27,12 @@ class ServicioController extends Controller
 
     public function create()
     {
-        return Inertia::render('NuevosServicios');
+        return Inertia::render('Admin/NuevosServicios');
     }
 
     public function createTrab()
     {
-        return Inertia::render('NuevosServiciosTrab', [
+        return Inertia::render('Trabajador/NuevosServiciosTrab', [
             'auth' => ['user' => Auth::user()]
         ]);
     }
@@ -101,43 +101,59 @@ public function storeTrab(Request $request)
     {
         $servicios = Servicio::all();
 
-        return Inertia::render('EditarServicios', [
+        return Inertia::render('Admin/EditarServicios', [
             'servicios' => $servicios,
         ]);
     }
 
 
-public function destroy($id)
-{
-    $servicio = Servicio::findOrFail($id);
+    public function destroy($id)
+    {
+        // Obtener el servicio y verificar su existencia
+        $servicio = Servicio::findOrFail($id);
 
-    // Verificar si hay citas futuras con este servicio
-    $citasFuturas = Cita::where('servicio_id', $id)
-        ->where('fecha_hora_cita', '>', now())
-        ->get();
+        // Obtener las citas futuras asociadas a este servicio (con fecha posterior al momento actual)
+        $citasFuturas = Cita::where('servicio_id', $id)
+            ->where('fecha_hora_cita', '>', now())
+            ->get();
 
-    if ($citasFuturas->isNotEmpty()) {
-        // Enviar un correo electrónico a cada usuario afectado
-        foreach ($citasFuturas as $cita) {
-            $usuario = User::find($cita->usuario_id);
+        // Verificar si hay citas futuras
+        if ($citasFuturas->isNotEmpty()) {
+            // Procesar cada cita futura
+            foreach ($citasFuturas as $cita) {
 
-            if ($usuario) {
-                Mail::to($usuario->email)->send(new CitaCanceladaPorServicio($usuario, $servicio, $cita));
+                // Localizar al usuario asociado a la cita
+                $usuario = User::find($cita->usuario_id);
+
+                if ($usuario) {
+                    // Si el método de pago fue "adelantado", reembolsar la cantidad al saldo del cliente
+                    if ($cita->metodo_pago === 'adelantado') {
+                        // Ajustar saldo del usuario sumando el precio de la cita (si está definido)
+                        $usuario->saldo += $cita->precio_cita ?? 0;
+                        $usuario->save();
+                    }
+
+                    // Enviar un correo electrónico avisando de la cancelación de la cita
+                    Mail::to($usuario->email)->send(new CitaCanceladaPorServicio($usuario, $servicio, $cita));
+                }
             }
+
+            // Cancelar (eliminar) todas las citas futuras de este servicio
+            Cita::where('servicio_id', $id)
+                ->where('fecha_hora_cita', '>', now())
+                ->delete();
         }
 
-        // Cancelar todas las citas futuras de este servicio
-        Cita::where('servicio_id', $id)
-            ->where('fecha_hora_cita', '>', now())
-            ->delete();
+        // Eliminar el servicio
+        $servicio->delete();
+
+        // Actualizar la información de servicios en JSON (si este método lo gestiona)
+        $this->actualizarServiciosJson();
+
+        // Redireccionar con mensaje de éxito
+        return redirect()->route('admin.servicios.editar')->with('success', 'Servicio eliminado correctamente.');
     }
 
-    // Eliminar el servicio
-    $servicio->delete();
-    $this->actualizarServiciosJson();
-
-    return redirect()->route('admin.servicios.editar')->with('success', 'Servicio eliminado correctamente.');
-}
 
 
 

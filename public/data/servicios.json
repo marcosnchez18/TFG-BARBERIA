@@ -56,17 +56,38 @@
         "duracion": 60
     },
     {
-        "id": 14,
-        "nombre": "Bigote",
-        "precio": "2.00",
-        "descripcion": "Pon tu bigote a punto",
-        "duracion": 5
-    },
-    {
         "id": 2,
         "nombre": "Afeitado Cl\u00e1sico",
         "precio": "4.00",
         "descripcion": "Disfruta de un afeitado tradicional con navaja y espuma caliente, para una experiencia de barber\u00eda como ninguna otra.",
         "duracion": 10
+    },
+    {
+        "id": 19,
+        "nombre": "Bigote",
+        "precio": "2.00",
+        "descripcion": "Bigote a punto",
+        "duracion": 5
+    },
+    {
+        "id": 20,
+        "nombre": "Prueba funcional",
+        "precio": "20.00",
+        "descripcion": "edwefwefwef",
+        "duracion": 13
+    },
+    {
+        "id": 21,
+        "nombre": "Peinado para eventos",
+        "precio": "10.00",
+        "descripcion": "Peinado para bodas, fiestas etc.",
+        "duracion": 30
+    },
+    {
+        "id": 22,
+        "nombre": "Peinado para evento",
+        "precio": "11.00",
+        "descripcion": "Peinado para bodas, bautizos etc.",
+        "duracion": 35
     }
 ]

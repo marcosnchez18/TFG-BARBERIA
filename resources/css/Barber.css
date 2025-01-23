@@ -1344,6 +1344,9 @@ nav {
 
 .day-no-disponible {
     color: red !important;
+
+    pointer-events: none; /* Deshabilita la interacción */
+    cursor: not-allowed; /* Cambia el cursor a "no permitido" */
 }
 
 

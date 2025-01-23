@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\CancelacionCitaCliente;
+use App\Mail\CitaCanceladaPorTrabajador;
 use App\Mail\WelcomeMail;
 use App\Models\DescansoIndividual;
 use Illuminate\Auth\Events\Registered;
@@ -53,7 +54,7 @@ class AdminController extends Controller
             ->whereNotNull('valoracion')
             ->avg('valoracion');
 
-        return Inertia::render('AdminDashboard', [
+        return Inertia::render('Admin/AdminDashboard', [
             'user' => Auth::user(),
             'citasHoy' => $citasHoy,
             'nuevosUsuariosHoy' => $nuevosUsuariosHoy,
@@ -109,7 +110,7 @@ class AdminController extends Controller
             ->whereNotNull('valoracion')
             ->avg('valoracion');
 
-        return Inertia::render('TrabajadorDashboard', [
+        return Inertia::render('Trabajador/TrabajadorDashboard', [
             'user' => Auth::user(),
             'citasHoy' => $citasHoy,
             'nuevosUsuariosHoy' => $nuevosUsuariosHoy,
@@ -272,7 +273,7 @@ class AdminController extends Controller
 
     public function createBarbero()
     {
-        return Inertia::render('BarberoNuevo', [
+        return Inertia::render('Admin/BarberoNuevo', [
             'storeUrl' => route('admin.barberos.store'),
         ]);
     }
@@ -372,7 +373,7 @@ public function store(Request $request)
         $trabajadores = User::where('rol', 'trabajador')->get();
 
         // Pasar los datos a la vista
-        return inertia('BarberosEditar', ['trabajadores' => $trabajadores]);
+        return inertia('Admin/BarberosEditar', ['trabajadores' => $trabajadores]);
     }
 
     public function deshabilitar($id)
@@ -404,18 +405,43 @@ public function store(Request $request)
     }
 
     public function destroy($id)
-    {
-        $trabajador = User::findOrFail($id);
+{
+    $trabajador = User::findOrFail($id);
 
-        // Verificamos si el usuario es un trabajador antes de eliminar
-        if ($trabajador->rol === 'trabajador') {
-            $trabajador->delete();
+    // Verificamos si el usuario es un trabajador antes de eliminar
+    if ($trabajador->rol === 'trabajador') {
+        // Obtener citas pendientes del trabajador
+        $citasPendientes = Cita::where('barbero_id', $trabajador->id)
+            ->where('estado', 'pendiente')
+            ->get();
+
+        // Procesar cada cita pendiente
+        foreach ($citasPendientes as $cita) {
+            $usuario = User::find($cita->usuario_id);
+
+            if ($usuario) {
+                // Enviar un correo notificando la cancelación de la cita
+                Mail::to($usuario->email)->send(new CitaCanceladaPorTrabajador($usuario, $trabajador, $cita));
+
+                // Si el método de pago fue "adelantado", reembolsar el precio al saldo del usuario
+                if ($cita->metodo_pago === 'adelantado') {
+                    $usuario->saldo += $cita->precio_cita ?? 0;
+                    $usuario->save();
+                }
+            }
+
+
         }
 
-        return redirect()
-            ->route('admin.barberos.editar')
-            ->with('message', 'Trabajador eliminado con éxito.');
+        // Eliminar al trabajador
+        $trabajador->delete();
     }
+
+    return redirect()
+        ->route('admin.barberos.editar')
+        ->with('message', 'Trabajador eliminado con éxito.');
+}
+
 
 
 
@@ -589,9 +615,21 @@ public function store(Request $request)
     {
         $admin = auth()->user(); // Obtiene el usuario autenticado (admin)
 
-        return Inertia::render('MisDatosAdmin', [
+        return Inertia::render('Admin/MisDatosAdmin', [
             'admin' => $admin,
         ]);
+    }
+
+    public function getTrabajadores()
+    {
+        // Obtener usuarios con rol 'trabajador' y su imagen
+        $trabajadores = User::where('rol', 'trabajador')
+            ->where('estado', 'activo')
+            ->select('id', 'nombre', 'imagen')
+            ->get();
+
+        // Retornar los datos en formato JSON
+        return response()->json($trabajadores, 200);
     }
 
     // Actualizar los datos del administrador
