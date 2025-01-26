@@ -35,13 +35,6 @@
         "duracion": 20
     },
     {
-        "id": 7,
-        "nombre": "Alisado de Keratina",
-        "precio": "50.00",
-        "descripcion": "Devuelve la vitalidad a tu cabello con nuestro alisado de keratina, ideal para eliminar el frizz y mejorar la salud del cabello.",
-        "duracion": 60
-    },
-    {
         "id": 8,
         "nombre": "Mechas",
         "precio": "7.00",
@@ -70,24 +63,24 @@
         "duracion": 5
     },
     {
-        "id": 20,
-        "nombre": "Prueba funcional",
-        "precio": "20.00",
-        "descripcion": "edwefwefwef",
-        "duracion": 13
-    },
-    {
-        "id": 21,
-        "nombre": "Peinado para eventos",
-        "precio": "10.00",
-        "descripcion": "Peinado para bodas, fiestas etc.",
-        "duracion": 30
-    },
-    {
         "id": 22,
         "nombre": "Peinado para evento",
         "precio": "11.00",
         "descripcion": "Peinado para bodas, bautizos etc.",
         "duracion": 35
+    },
+    {
+        "id": 7,
+        "nombre": "Alisado de Keratina",
+        "precio": "120.00",
+        "descripcion": "Devuelve la vitalidad a tu cabello con nuestro alisado de keratina, ideal para eliminar el frizz y mejorar la salud del cabello.",
+        "duracion": 60
+    },
+    {
+        "id": 23,
+        "nombre": "Limpieza facial",
+        "precio": "20.00",
+        "descripcion": "Limpieza facial, puntos negros...",
+        "duracion": 50
     }
 ]

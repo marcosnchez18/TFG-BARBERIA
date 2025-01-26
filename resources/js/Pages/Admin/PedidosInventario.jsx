@@ -180,7 +180,7 @@ export default function PedidosInventario() {
                                 <thead className="bg-gray-800 text-white">
                                     <tr>
                                         <th className="py-2 px-4 border">Código Pedido</th>
-                                        <th className="py-2 px-4 border">Proveedor</th>
+
                                         <th className="py-2 px-4 border">Estado</th>
                                         <th className="py-2 px-4 border">Fecha</th>
                                         <th className="py-2 px-4 border">Total (€)</th>
@@ -194,9 +194,7 @@ export default function PedidosInventario() {
                                             <td className="py-2 px-4 text-center font-semibold text-blue-500">
                                                 #{pedido.codigo_pedido}
                                             </td>
-                                            <td className="py-2 px-4 text-center">
-                                                {pedido.proveedor?.nombre || 'Desconocido'}
-                                            </td>
+                                            
 
                                             <td className={`py-2 px-4 text-center font-semibold ${pedido.estado === 'pendiente' ? 'text-yellow-500' :
                                                     pedido.estado === 'enviado' ? 'text-blue-500' :
