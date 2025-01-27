@@ -1,12 +1,12 @@
 import React from 'react';
-import '../../css/Barber.css'; 
+import '../../css/Barber.css';
 
 export default function Finpaginas() {
     return (
         <section className="fin_home2">
             <div className="fin-content">
                 <img className="logo_fin" src="/images/logo.png" alt="Logo de Barbería" />
-                <p className="dir">Calle Ancha, 43, Sanlúcar de Bda (11540), Cádiz</p>
+                <p className="dir">C/ Cristobal Colón, 20, Sanlúcar de Bda (11540), Cádiz</p>
                 <p className="dir">+34 622541527 +34 956 56 78 32</p>
                 <p className="dir">barbers18sanlucar@gmail.com</p>
                 <br /><br /><br />

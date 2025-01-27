@@ -66,7 +66,7 @@ export default function Huecos() {
 
     useEffect(() => {
         // Llamada a la API para obtener los días de descanso
-        axios.get('/api/public/descansos')  
+        axios.get('/api/public/descansos')
             .then(response => {
                 setDescansos(response.data);
             })
@@ -182,7 +182,12 @@ export default function Huecos() {
     };
 
     const verificarDisponibilidadMensual = async () => {
-        setIsLoadingCalendar(true); // Indica que se está cargando el calendario
+        if (!selectedBarbero || !selectedServicioId) {
+            console.warn("No hay barbero o servicio seleccionado. Saliendo de verificarDisponibilidadMensual.");
+            return; // Salir si no están definidos
+        }
+
+        setIsLoadingCalendar(true);
 
         const fechas = [];
         for (let i = 0; i <= 30; i++) {
@@ -192,31 +197,35 @@ export default function Huecos() {
 
         const diasSinCitasTemp = [];
 
-        await Promise.all(
-            fechas.map(async (fecha) => {
-                try {
-                    const response = await axios.get('/api/public/citas/disponibilidad', {
-                        params: {
-                            barbero_id: selectedBarbero.id,
-                            servicio_id: selectedServicioId,
-                            fecha: fecha,
-                        },
-                    });
+        try {
+            await Promise.all(
+                fechas.map(async (fecha) => {
+                    try {
+                        const response = await axios.get('/api/public/citas/disponibilidad', {
+                            params: {
+                                barbero_id: selectedBarbero.id,
+                                servicio_id: selectedServicioId,
+                                fecha: fecha,
+                            },
+                        });
 
-                    // Si no hay horarios disponibles para ese día, lo agregamos
-                    if (!response.data || response.data.length === 0) {
-                        diasSinCitasTemp.push(fecha);
+                        if (!response.data || response.data.length === 0) {
+                            diasSinCitasTemp.push(fecha);
+                        }
+                    } catch (error) {
+                        console.error(`Error comprobando disponibilidad para ${fecha}:`, error);
                     }
-                } catch (error) {
-                    console.error(`Error comprobando disponibilidad para ${fecha}:`, error);
-                }
-            })
-        );
+                })
+            );
 
-        console.log("Días sin citas después de la verificación:", diasSinCitasTemp);
-        setDiasSinCitas(diasSinCitasTemp);
-        setIsLoadingCalendar(false);
+            setDiasSinCitas(diasSinCitasTemp);
+        } catch (error) {
+            console.error("Error general verificando disponibilidad mensual:", error);
+        } finally {
+            setIsLoadingCalendar(false);
+        }
     };
+
 
 
 
@@ -225,28 +234,32 @@ export default function Huecos() {
 
 
     const tileClassName = ({ date }) => {
-        const dayOfWeek = dayjs(date).day();
-        const dateStr = dayjs(date).format('YYYY-MM-DD');
+    if (!descansos || !diasDescansoBarbero || !diasSinCitas) {
+        return null; // Si el estado no está listo, no aplica ninguna clase
+    }
 
-        if (descansos.includes(dateStr)) {
-            return 'day-no-disponible';  // Clase CSS para marcar el día como no disponible
-        }
+    const dayOfWeek = dayjs(date).day();
+    const dateStr = dayjs(date).format('YYYY-MM-DD');
 
-        // Verificar si la fecha está en los descansos del barbero
-        if (diasDescansoBarbero.includes(dateStr)) {
-            return 'day-no-disponible';  // Clase CSS para marcar el día como no disponible (vacaciones o descanso)
-        }
+    if (descansos.includes(dateStr)) {
+        return 'day-no-disponible';
+    }
 
-        if (holidays.isHoliday(date) || dayOfWeek === 0) {
-            return 'day-no-disponible';
-        }
+    if (diasDescansoBarbero.includes(dateStr)) {
+        return 'day-no-disponible';
+    }
 
-        if (diasSinCitas.includes(dateStr)) {
-            return 'day-sin-citas'; // Días sin citas
-        }
+    if (holidays.isHoliday(date) || dayOfWeek === 0) {
+        return 'day-no-disponible';
+    }
 
-        return null;
-    };
+    if (diasSinCitas.includes(dateStr)) {
+        return 'day-sin-citas';
+    }
+
+    return null;
+};
+
 
     const handleSelectHorario = (horario) => {
         Swal.fire({
@@ -269,6 +282,12 @@ export default function Huecos() {
         setStep((prevStep) => {
             const newStep = prevStep - 1;
 
+            // Si está en el paso del calendario (paso 3) y vuelve atrás
+            if (prevStep === 3) {
+                // Recargar la página para volver al estado inicial
+                window.location.reload();
+            }
+
             // Restablecer el estado según el paso al que se regresa
             if (newStep === 1) {
                 setSelectedBarbero(null); // Restablecer la selección del barbero
@@ -285,6 +304,7 @@ export default function Huecos() {
             return newStep;
         });
     };
+
 
 
     return (

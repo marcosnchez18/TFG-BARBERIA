@@ -73,7 +73,15 @@ export default function ProveedoresPedidos() {
     };
 
     return (
-        <div className="bg-white bg-opacity-80 p-8 rounded-lg shadow-lg w-full max-w-4xl mx-auto mt-12">
+        <div className="relative bg-white bg-opacity-80 p-8 rounded-lg shadow-lg w-full max-w-4xl mx-auto mt-12">
+            {/* Botón de cierre */}
+            <button
+                className="absolute top-4 right-4 text-gray-500 hover:text-gray-800 text-2xl font-bold"
+                onClick={() => (window.location.href = '/opciones')}
+            >
+                &times;
+            </button>
+
             <h1 className="text-4xl font-extrabold text-center text-[#000000] mb-6">Realizar Pedido a Proveedores</h1>
 
             {cargando ? (
