@@ -8,7 +8,7 @@ import Footer from '../../Components/Footer';
 import InicioCliente from '../../Components/InicioCliente'; // Ajustar la ruta según tu estructura
 
 export default function ClienteInicio() {
-    const { user } = usePage().props; // Asegúrate de que `usePage` está definido correctamente aquí.
+    const { user } = usePage().props; 
 
     return (
         <div
